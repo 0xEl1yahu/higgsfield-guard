@@ -119,3 +119,30 @@ def test_strip_negations_removes_negated_spans():
     assert "text" not in hl.strip_negations("cinematic, no text, warm light").lower()
     assert "logos" not in hl.strip_negations("without logos please").lower()
     assert "motion" in hl.strip_negations("slow motion shot").lower()
+
+
+def test_negation_placement_fires_when_negative_prompt_present():
+    params = load("kling2_6_4k_slowmo")["params"]
+    finding = hl.check_negation_placement(params, frozenset())
+    assert finding is not None
+    assert finding.check_id == "negation_placement"
+    assert "no text" in finding.message.lower()
+
+
+def test_negation_placement_fires_for_known_model_without_negative_prompt():
+    params = {"model": "kling2_6", "prompt": "a field, no text"}
+    assert hl.check_negation_placement(params, frozenset({"kling2_6"})) is not None
+
+
+def test_negation_placement_silent_for_unknown_model():
+    params = load("seedance_tree_clean")["params"]
+    assert hl.check_negation_placement(params, frozenset({"kling2_6"})) is None
+
+
+def test_negation_placement_silent_when_prompt_has_no_negations():
+    params = {"model": "kling2_6", "prompt": "a bright field at noon"}
+    assert hl.check_negation_placement(params, frozenset({"kling2_6"})) is None
+
+
+def test_load_models_reads_the_data_file():
+    assert "kling2_6" in hl.load_models()

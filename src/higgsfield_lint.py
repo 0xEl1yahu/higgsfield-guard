@@ -105,7 +105,29 @@ def check_prompt_negative_conflict(params: dict, models: frozenset) -> Optional[
     )
 
 
-CHECKS = (check_resolution_claim, check_prompt_negative_conflict)
+def check_negation_placement(params: dict, models: frozenset) -> Optional[Finding]:
+    prompt = params.get("prompt")
+    if not isinstance(prompt, str):
+        return None
+    model = params.get("model")
+    supports = isinstance(params.get("negative_prompt"), str) or (
+        isinstance(model, str) and model in models
+    )
+    if not supports:
+        return None
+    negations = [m.group(0).strip() for m in NEGATION_RE.finditer(prompt)]
+    if not negations:
+        return None
+    shown = ", ".join(f'"{n}"' for n in negations[:3])
+    more = f" and {len(negations) - 3} more" if len(negations) > 3 else ""
+    return Finding(
+        "negation_placement",
+        f"{shown}{more} sit in the positive prompt while this model accepts "
+        f"negative_prompt. Move them there; models follow negation poorly in the prompt.",
+    )
+
+
+CHECKS = (check_resolution_claim, check_prompt_negative_conflict, check_negation_placement)
 
 
 def lint(tool_input, models: frozenset) -> list:
