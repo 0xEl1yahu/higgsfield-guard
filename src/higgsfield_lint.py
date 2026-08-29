@@ -72,7 +72,40 @@ def check_resolution_claim(params: dict, models: frozenset) -> Optional[Finding]
     )
 
 
-CHECKS = (check_resolution_claim,)
+# Directive phrases worth comparing across the two prompt fields. A curated list,
+# because ordinary words legitimately appear in both and would drown the signal.
+CONFLICT_PHRASES = (
+    "slow motion", "slow-mo", "motion blur", "static", "blurred", "blurry",
+    "sharp", "text", "close-up", "wide shot", "zoom", "pan", "handheld", "grain",
+)
+
+# "no text", "without a logo", "avoid harsh shadows" - up to three trailing words.
+NEGATION_RE = re.compile(r"\b(?:no|without|avoid|not)\s+(?:[a-z-]+\s+){0,2}[a-z-]+", re.IGNORECASE)
+
+
+def strip_negations(text: str) -> str:
+    """Remove negated spans so a negated term does not read as a positive request."""
+    return NEGATION_RE.sub(" ", text)
+
+
+def check_prompt_negative_conflict(params: dict, models: frozenset) -> Optional[Finding]:
+    prompt = params.get("prompt")
+    negative = params.get("negative_prompt")
+    if not isinstance(prompt, str) or not isinstance(negative, str):
+        return None
+    positive = strip_negations(prompt).lower()
+    negative_low = negative.lower()
+    hits = [p for p in CONFLICT_PHRASES if _has_term(positive, p) and _has_term(negative_low, p)]
+    if not hits:
+        return None
+    listed = ", ".join(f'"{h}"' for h in hits)
+    return Finding(
+        "prompt_negative_conflict",
+        f"{listed} appears in both prompt and negative_prompt. Keep each term in one.",
+    )
+
+
+CHECKS = (check_resolution_claim, check_prompt_negative_conflict)
 
 
 def lint(tool_input, models: frozenset) -> list:

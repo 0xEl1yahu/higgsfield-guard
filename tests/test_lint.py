@@ -93,3 +93,29 @@ def test_hook_is_silent_on_clean_call():
     proc = run_hook(payload)
     assert proc.returncode == 0
     assert proc.stdout == ""
+
+
+def test_conflict_fires_on_slow_motion_in_both_fields():
+    params = load("kling2_6_4k_slowmo")["params"]
+    finding = hl.check_prompt_negative_conflict(params, frozenset())
+    assert finding is not None
+    assert finding.check_id == "prompt_negative_conflict"
+    assert "slow motion" in finding.message
+
+
+def test_conflict_does_not_fire_on_text_because_prompt_negates_it():
+    # "no text" in the prompt agrees with "random text" in negative_prompt.
+    params = load("kling2_6_4k_slowmo")["params"]
+    finding = hl.check_prompt_negative_conflict(params, frozenset())
+    assert '"text"' not in finding.message
+
+
+def test_conflict_silent_without_negative_prompt():
+    params = load("seedance_tree_clean")["params"]
+    assert hl.check_prompt_negative_conflict(params, frozenset()) is None
+
+
+def test_strip_negations_removes_negated_spans():
+    assert "text" not in hl.strip_negations("cinematic, no text, warm light").lower()
+    assert "logos" not in hl.strip_negations("without logos please").lower()
+    assert "motion" in hl.strip_negations("slow motion shot").lower()
