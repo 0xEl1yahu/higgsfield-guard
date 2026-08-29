@@ -1,0 +1,12 @@
+{
+  "params": {
+    "model": "seedance_2_5",
+    "prompt": "Flat 2D vector cartoon animation on a solid bright sunny yellow background that never changes. A tiny seedling sprout character wearing black sunglasses grows steadily into a large full tree over the shot. Camera locked off, no camera movement, no zoom, no pan. No text, no lettering, no words at any point.",
+    "aspect_ratio": "16:9",
+    "duration": 10,
+    "width": 1920,
+    "height": 1080,
+    "resolution": "1080p",
+    "generate_audio": false
+  }
+}

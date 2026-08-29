@@ -1,0 +1,10 @@
+{
+  "params": {
+    "model": "kling2_6",
+    "prompt": "cinematic, ultra-clean commercial style, 4K, shallow depth of field, soft natural lighting, minimal composition, calm pacing, premium, modern, no text, no logos, no clutter, visually poetic, slow motion, tasteful colour grading, warm highlights",
+    "negative_prompt": "transitions, scene cuts, fading, bad quality, low quality, overexposed, slow motion, static, blurred details, ugly, unnatural movement, random text, bad anatomy",
+    "duration": 5,
+    "width": 1376,
+    "height": 768
+  }
+}
