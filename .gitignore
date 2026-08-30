@@ -1,0 +1,6 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# Subagent-driven-development scratch workspace (ledger, briefs, review packages)
+.superpowers/
