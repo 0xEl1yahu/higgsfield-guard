@@ -53,14 +53,17 @@ def _claimed_short_side(prompt: str):
 
 
 # A dimension only counts when it looks like a real render size. `isinstance(True, int)`
-# is True in Python, so booleans are excluded explicitly. Anything below 128px is treated
-# as an aspect-ratio hint (e.g. width=16, height=9) rather than an actual pixel count, so
-# it is ignored instead of producing a nonsensical "9px short side" finding.
+# is True in Python, so booleans are excluded explicitly. The 128px floor is meant to
+# ignore aspect-ratio expressions (e.g. width=16, height=9), which have BOTH sides
+# small - so the floor is keyed on the LARGER of the two dimensions, not applied to
+# each side individually. A pair like 1920x100 has a genuinely narrow short side and
+# must still be reported; requiring the floor of both sides would suppress it too,
+# which is exactly the false negative this key change fixes.
 MIN_SANE_DIMENSION = 128
 
 
-def _is_valid_dimension(value) -> bool:
-    return isinstance(value, int) and not isinstance(value, bool) and value >= MIN_SANE_DIMENSION
+def _is_int_dimension(value) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool)
 
 
 class _Actual(NamedTuple):
@@ -74,7 +77,11 @@ def _actual_short_side(params: dict) -> Optional[_Actual]:
     if isinstance(res, str) and res.lower() in RESOLUTION_PARAM:
         return _Actual(RESOLUTION_PARAM[res.lower()])
     width, height = params.get("width"), params.get("height")
-    if _is_valid_dimension(width) and _is_valid_dimension(height):
+    if (
+        _is_int_dimension(width)
+        and _is_int_dimension(height)
+        and max(width, height) >= MIN_SANE_DIMENSION
+    ):
         return _Actual(min(width, height), width, height)
     return None
 
@@ -130,12 +137,14 @@ def _is_placement_noise(match_text: str) -> bool:
     words = match_text.lower().split()
     if len(words) >= 2 and tuple(words[:2]) in _PLACEMENT_STOPWORDS:
         return True
-    # A bare gerund right after the negator ("without moving", "avoid running") reads as
-    # narrative manner - "sitting without moving" describes what the subject is doing, it
-    # does not name an object to exclude from the shot. A gerund with a determiner or
-    # adjective in front ("without a watermark", "no clutter", "no lettering") is a noun
-    # phrase and still fires; only the bare two-word "negator + gerund" span is excluded.
-    if len(words) == 2 and words[1].endswith("ing"):
+    # The distinguishing feature here is the negator, not the gerund. "without moving"
+    # is a manner adverbial - "sitting without moving" describes how the subject
+    # behaves, not an object to exclude from the shot. "no flickering", "no warping",
+    # and "avoid flickering" name an artifact to exclude and must still fire; they
+    # happen to end in "-ing" too, so the gerund suffix alone can't be the test. Only
+    # a bare two-word "without + gerund" span is manner-adverbial noise; the same
+    # shape after "no" or "avoid" is a directive naming a defect, so it is left alone.
+    if len(words) == 2 and words[0] == "without" and words[1].endswith("ing"):
         return True
     return False
 

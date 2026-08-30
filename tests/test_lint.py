@@ -311,3 +311,71 @@ def test_resolution_claim_message_omits_raw_dimensions_when_source_is_resolution
     assert finding is not None
     assert "width" not in finding.message
     assert "the call produces a 1080px short side" in finding.message
+
+
+# --- Patch 1 regression: the bare-gerund noise clause must key on "without" only --
+#
+# `_is_placement_noise` used to fire on `len(words) == 2 and words[1].endswith("ing")`
+# regardless of which negator introduced it, so "no lettering", "no flickering",
+# "no warping" and "avoid flickering" were all silently dropped even though these are
+# exactly the artifact-exclusion directives this check exists to catch. All four use
+# a model known to accept negative_prompt (kling2_6) so the check actually runs.
+
+@pytest.mark.parametrize("phrase", ["no lettering", "no flickering", "no warping", "avoid flickering"])
+def test_patch1_fires_on_previously_silenced_gerund_directives(phrase):
+    params = {"model": "kling2_6", "prompt": f"clean scene, {phrase}"}
+    finding = hl.check_negation_placement(params, frozenset({"kling2_6"}))
+    assert finding is not None, f'"{phrase}" must fire negation_placement'
+    assert phrase in finding.message.lower()
+
+
+def test_patch1_stays_silent_on_without_plus_bare_gerund():
+    # "without moving" is a manner adverbial ("sitting without moving") describing how
+    # the subject behaves, not a noun naming an artifact to exclude from the shot.
+    params = {"model": "kling2_6", "prompt": "a monk sitting without moving, breathing slowly"}
+    assert hl.check_negation_placement(params, frozenset({"kling2_6"})) is None
+
+
+def test_patch1_stays_silent_on_narrative_negation():
+    params = {"model": "kling2_6",
+              "prompt": "a lighthouse at dawn, the sun has not yet risen over the water"}
+    assert hl.check_negation_placement(params, frozenset({"kling2_6"})) is None
+
+
+def test_patch1_stays_silent_on_quantifier_idiom():
+    params = {"model": "kling2_6",
+              "prompt": "a busy street with no more than three people visible"}
+    assert hl.check_negation_placement(params, frozenset({"kling2_6"})) is None
+
+
+@pytest.mark.parametrize("phrase", ["no text", "no logos", "no clutter", "without a watermark"])
+def test_patch1_still_fires_on_noun_phrase_directives(phrase):
+    params = {"model": "kling2_6", "prompt": f"clean scene, {phrase}"}
+    finding = hl.check_negation_placement(params, frozenset({"kling2_6"}))
+    assert finding is not None, f'"{phrase}" must still fire negation_placement'
+    assert phrase in finding.message.lower()
+
+
+# --- Patch 2 regression: the dimension floor must key on the larger side ---------
+#
+# `_is_valid_dimension` used to be required of BOTH width and height, so any pair
+# with one side under MIN_SANE_DIMENSION (128) suppressed the resolution check
+# entirely -- silencing genuine complaints like 1920x100. The floor should instead
+# be keyed on the larger dimension, since the aspect-ratio hints it was meant to
+# ignore (e.g. width=16, height=9) have BOTH sides small.
+
+def test_patch2_fires_on_narrow_short_side_with_large_long_side():
+    params = {"prompt": "a 4k banner shot", "width": 1920, "height": 100}
+    finding = hl.check_resolution_claim(params, frozenset())
+    assert finding is not None
+    assert "width 1920 x height 100 gives a 100px short side" in finding.message
+
+
+def test_patch2_stays_silent_on_aspect_ratio_style_pair():
+    params = {"prompt": "a 4k banner shot", "width": 16, "height": 9}
+    assert hl.check_resolution_claim(params, frozenset()) is None
+
+
+def test_patch2_stays_silent_when_both_dimensions_below_floor():
+    params = {"prompt": "a 4k banner shot", "width": 64, "height": 64}
+    assert hl.check_resolution_claim(params, frozenset()) is None
