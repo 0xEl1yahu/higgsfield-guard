@@ -1,4 +1,5 @@
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -146,3 +147,167 @@ def test_negation_placement_silent_when_prompt_has_no_negations():
 
 def test_load_models_reads_the_data_file():
     assert "kling2_6" in hl.load_models()
+
+
+# --- F1: check_negation_placement must not fire on ordinary English ---------------
+
+def test_negation_placement_silent_on_narrative_not():
+    params = {"model": "kling2_6",
+              "prompt": "a lighthouse at dawn, the sun has not yet risen over the water"}
+    assert hl.check_negation_placement(params, frozenset({"kling2_6"})) is None
+
+
+def test_negation_placement_silent_on_quantifier_no_more_than():
+    params = {"model": "kling2_6",
+              "prompt": "a busy street with no more than three people visible"}
+    assert hl.check_negation_placement(params, frozenset({"kling2_6"})) is None
+
+
+def test_negation_placement_silent_on_without_moving():
+    params = {"model": "kling2_6",
+              "prompt": "a monk sitting without moving, breathing slowly"}
+    assert hl.check_negation_placement(params, frozenset({"kling2_6"})) is None
+
+
+def test_negation_placement_still_fires_on_real_directives():
+    params = {"model": "kling2_6",
+              "prompt": "clean scene, no text, no logos, no clutter"}
+    finding = hl.check_negation_placement(params, frozenset({"kling2_6"}))
+    assert finding is not None
+    lowered = finding.message.lower()
+    for phrase in ('"no text"', '"no logos"', '"no clutter"'):
+        assert phrase in lowered
+
+
+def test_negation_placement_still_fires_on_without_a_watermark():
+    params = {"model": "kling2_6", "prompt": "clean scene, without a watermark"}
+    finding = hl.check_negation_placement(params, frozenset({"kling2_6"}))
+    assert finding is not None
+    assert '"without a watermark"' in finding.message.lower()
+
+
+def test_strip_negations_still_strips_not_phrases():
+    # strip_negations backs check_prompt_negative_conflict, where "not blurry" must
+    # still read as a negation so it doesn't look like a request for blur.
+    assert "blurry" not in hl.strip_negations("not blurry, cinematic").lower()
+
+
+# --- F2: batch tool shape ({"requests": [{"index", "params"}, ...]}) --------------
+
+def test_lint_handles_batch_with_one_offending_entry():
+    tool_input = {"requests": [{"index": 0, "params": load("kling2_6_4k_slowmo")["params"]}]}
+    findings = hl.lint(tool_input, frozenset({"kling2_6"}))
+    assert len(findings) == 3
+    assert all("request 0:" in f.message for f in findings)
+
+
+def test_lint_handles_batch_where_only_second_entry_offends():
+    tool_input = {"requests": [
+        {"index": 0, "params": load("seedance_tree_clean")["params"]},
+        {"index": 1, "params": load("kling2_6_4k_slowmo")["params"]},
+    ]}
+    findings = hl.lint(tool_input, frozenset({"kling2_6"}))
+    assert len(findings) == 3
+    assert all("request 1:" in f.message for f in findings)
+    assert all("request 0:" not in f.message for f in findings)
+
+
+def test_lint_handles_batch_with_missing_requests_list():
+    assert hl.lint({}, frozenset()) == []
+
+
+def test_lint_handles_batch_with_empty_requests_list():
+    assert hl.lint({"requests": []}, frozenset()) == []
+
+
+# --- F3: params as a JSON string is a legal shape, not malformed -----------------
+
+def test_lint_parses_params_given_as_json_string():
+    params = {"model": "kling2_6", "prompt": "4k hero shot", "width": 200, "height": 150}
+    findings = hl.lint({"params": json.dumps(params)}, frozenset())
+    assert any(f.check_id == "resolution_claim" for f in findings)
+
+
+def test_lint_still_silent_on_unparseable_string_params():
+    # "a bare string" is not valid JSON, so this stays malformed -> silent.
+    assert hl.lint({"params": "a bare string"}, frozenset()) == []
+
+
+# --- F4: absent prompt key entirely (SPEC §9 malformed fixture) ------------------
+
+def test_lint_returns_empty_when_prompt_key_is_entirely_absent():
+    params = {"model": "kling2_6", "width": 1920, "height": 1080}
+    assert hl.lint({"params": params}, frozenset()) == []
+
+
+# --- F5: empty negative_prompt is not evidence of support ------------------------
+
+def test_negation_placement_silent_when_negative_prompt_is_empty_string():
+    params = {"model": "seedance_2_5", "negative_prompt": "", "prompt": "a shot, no text"}
+    assert hl.check_negation_placement(params, frozenset()) is None
+
+
+# --- F6: booleans must not satisfy the int dimension check -----------------------
+
+def test_resolution_claim_ignores_boolean_dimensions():
+    params = {"prompt": "a 4k shot", "width": True, "height": True}
+    assert hl.check_resolution_claim(params, frozenset()) is None
+
+
+# --- F7: dimensions below the sanity floor (aspect-ratio hints) are ignored ------
+
+def test_resolution_claim_ignores_dimensions_below_sanity_floor():
+    params = {"prompt": "a 4k shot", "width": 16, "height": 9}
+    assert hl.check_resolution_claim(params, frozenset()) is None
+
+
+# --- F8: subject-verb agreement ---------------------------------------------------
+
+def test_negation_placement_uses_singular_verb_for_one_negation():
+    params = {"model": "kling2_6", "prompt": "a bright field, no clutter"}
+    finding = hl.check_negation_placement(params, frozenset({"kling2_6"}))
+    assert finding is not None
+    assert re.search(r"\bsits\b", finding.message)
+    assert not re.search(r"\bsit\b", finding.message)
+
+
+def test_negation_placement_uses_plural_verb_for_multiple_negations():
+    params = {"model": "kling2_6", "prompt": "a bright field, no clutter, no text"}
+    finding = hl.check_negation_placement(params, frozenset({"kling2_6"}))
+    assert finding is not None
+    assert re.search(r"\bsit\b", finding.message)
+    assert not re.search(r"\bsits\b", finding.message)
+
+
+def test_conflict_uses_singular_verb_for_one_shared_term():
+    params = {"prompt": "static shot, nice light", "negative_prompt": "static, bad quality"}
+    finding = hl.check_prompt_negative_conflict(params, frozenset())
+    assert finding is not None
+    assert re.search(r"\bappears\b", finding.message)
+    assert not re.search(r"\bappear\b", finding.message)
+
+
+def test_conflict_uses_plural_verb_for_multiple_shared_terms():
+    params = {"prompt": "static, sharp shot", "negative_prompt": "static, sharp, bad quality"}
+    finding = hl.check_prompt_negative_conflict(params, frozenset())
+    assert finding is not None
+    assert re.search(r"\bappear\b", finding.message)
+    assert not re.search(r"\bappears\b", finding.message)
+
+
+# --- F9: raw dimensions in the message, original prompt casing for the claim ----
+
+def test_resolution_claim_message_includes_raw_dimensions_and_original_casing():
+    params = load("kling2_6_4k_slowmo")["params"]
+    finding = hl.check_resolution_claim(params, frozenset())
+    assert finding is not None
+    assert '"4K"' in finding.message
+    assert "width 1376 x height 768 gives a 768px short side" in finding.message
+
+
+def test_resolution_claim_message_omits_raw_dimensions_when_source_is_resolution_param():
+    params = {"prompt": "shot in 4k", "resolution": "1080p"}
+    finding = hl.check_resolution_claim(params, frozenset())
+    assert finding is not None
+    assert "width" not in finding.message
+    assert "the call produces a 1080px short side" in finding.message

@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 /Users/elibelilty/Documents/GitHub/higgsfield-preprocessor/src/higgsfield_lint.py"
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/src/higgsfield_lint.py\""
           }
         ]
       }

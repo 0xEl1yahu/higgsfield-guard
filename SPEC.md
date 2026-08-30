@@ -112,13 +112,17 @@ Seed list: `slow motion`, `slow-mo`, `static`, `blurred`, `blurry`, `sharp`, `te
 ### 5.3 Negation belongs in negative_prompt
 
 Fires when the positive prompt contains a negation (`no X`, `without X`, `avoid X`) **and**
-the model is known to accept a `negative_prompt`.
+the model is known to accept a `negative_prompt`. Only these three forms count as a
+directive; ordinary narrative negation (`"has not yet risen"`), quantifier idioms
+(`"no more than three"`, `"no longer"`, `"no matter"`), and a bare gerund right after the
+negator (`"without moving"`) are not treated as a misplaced directive, since moving any of
+those into `negative_prompt` would do nothing or damage the shot.
 
 Known-accepts is evidence-seeded, not inferred: a model qualifies when `negative_prompt` is
-already present in this call, or when it appears in `data/negative_prompt_models.json`,
-which starts as `["kling2_6"]` because that is what the generation history proves. The
-catalog does not publish negative-prompt support, so guessing would produce false findings
-on models that silently ignore the field.
+already present in this call **and non-empty**, or when it appears in
+`data/negative_prompt_models.json`, which starts as `["kling2_6"]` because that is what the
+generation history proves. The catalog does not publish negative-prompt support, so
+guessing would produce false findings on models that silently ignore the field.
 
 ## 6. Output contract
 
@@ -164,8 +168,11 @@ corpus is actual usage rather than invented cases.
 - **Negative fixtures:** the six `seedance_2_5` calls, which must produce **no** findings
   for 5.1 and 5.2. These matter more than the positives; a check that fires on a known-good
   call is a bug, and the whole value of an advisory tool is that its advice is worth reading.
-- **Malformed fixtures:** empty stdin, absent `params`, `params` as a string rather than an
-  object, absent `prompt`. All must exit 0 silently per §7.
+- **Malformed fixtures:** empty stdin, absent `params`, absent `prompt`. All must exit 0
+  silently per §7. `params` as a string is not malformed: all three tool schemas declare
+  `params` as `anyOf: [object, string]`, so a JSON-encoded string is parsed and linted like
+  any other call. Only a string that fails to parse, or that parses to something other than
+  an object, falls through to silence.
 
 ## 10. Repository layout
 
