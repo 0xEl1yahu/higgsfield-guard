@@ -373,7 +373,15 @@ fn gerund_sweep(known: &str) -> Vec<(String, Vec<u8>)> {
 fn dimension_pair_sweep() -> Vec<(String, Vec<u8>)> {
     let mut out = Vec::new();
     for (w, h) in DIMENSION_PAIRS {
-        let params = json!({"prompt": "a calm nature scene, no resolution claim here", "width": w, "height": h});
+        // F2: this prompt MUST carry a resolution claim. With no claim,
+        // `check_resolution_claim` returns at `claimed_short_side(prompt)?` and never
+        // calls `actual_short_side` at all - every pair here would compare silence to
+        // silence regardless of the MIN_SANE_DIMENSION floor logic this sweep exists to
+        // exercise. "shot in 8k" makes every pair's outcome depend on the actual
+        // width/height math: pairs below the 128px floor ((16,9), (64,64)) stay silent,
+        // and pairs that clear the floor ((1920,100), (1376,768), (3840,2160)) all fire,
+        // since none reaches the 8k claim's 4320px minimum short side.
+        let params = json!({"prompt": "a calm nature scene shot in 8k", "width": w, "height": h});
         out.push((format!("dims:{w}x{h}:obj"), wrap(TOOL_SINGLE, single(params.clone()))));
         out.push((format!("dims:{w}x{h}:str"), wrap(TOOL_SINGLE, single_str(&params))));
     }
@@ -381,6 +389,18 @@ fn dimension_pair_sweep() -> Vec<(String, Vec<u8>)> {
     out.push(("dims:true_true".to_string(), wrap(TOOL_SINGLE, single(bool_params))));
     let float_params = json!({"prompt": "shot in 4k, dramatic lighting", "width": 100.0, "height": 100.0});
     out.push(("dims:floats_excluded".to_string(), wrap(TOOL_SINGLE, single(float_params))));
+
+    // F1: an ASYMMETRIC boolean/integer pair. Every other boolean case in this corpus
+    // pairs `true` with `true` (or `false` with `false`), which is non-discriminating: a
+    // buggy `is_int_dimension` that coerces `Bool(true)` to `1` still computes
+    // `max(1,1)=1 < MIN_SANE_DIMENSION`, so it stays silent exactly like the correct
+    // code, and no test would ever notice. Pairing `width: true` with a real,
+    // claim-defeating `height` closes that hole: a buggy implementation would compute
+    // max(1, 3840) = 3840 (clears the floor), min(1, 3840) = 1 (a 1px short side), and
+    // WOULD fire against the "8k" claim's 4320px minimum, while the correct
+    // implementation excludes the boolean `width` entirely and stays silent.
+    let asymmetric_bool_params = json!({"prompt": "shot in 8k", "width": true, "height": 3840});
+    out.push(("dims:asymmetric_bool".to_string(), wrap(TOOL_SINGLE, single(asymmetric_bool_params))));
     out
 }
 
@@ -505,8 +525,14 @@ fn extra_edge_sweep() -> Vec<(String, Vec<u8>)> {
         ("edge:prompt_non_string", json!({"prompt": 12345, "width": 100, "height": 100})),
         ("edge:no_prompt_at_all", json!({"width": 100, "height": 100})),
         (
+            // F2: 100x100 is below MIN_SANE_DIMENSION (128), so `actual_short_side`
+            // returns None and `check_resolution_claim` stays silent regardless of
+            // whether the Unicode boundary scan correctly found "4K" in the prompt -
+            // the very thing this case exists to exercise becomes unobservable. 1280
+            // clears the floor so the "4K" claim (2160px minimum) actually reaches the
+            // final comparison and fires.
             "edge:unicode_prompt",
-            json!({"prompt": "caf\u{e9} shot in \u{201c}4K\u{201d}, no logos, na\u{ef}ve style", "width": 100, "height": 100}),
+            json!({"prompt": "caf\u{e9} shot in \u{201c}4K\u{201d}, no logos, na\u{ef}ve style", "width": 1280, "height": 1280}),
         ),
     ]
     .into_iter()

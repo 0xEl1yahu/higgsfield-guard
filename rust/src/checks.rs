@@ -505,6 +505,20 @@ mod tests {
     }
 
     #[test]
+    fn resolution_claim_ignores_asymmetric_boolean_width() {
+        // F1: every other boolean case in the corpus pairs `true` with `true`, which
+        // does not discriminate a buggy `is_int_dimension` that coerces `Bool(true)` to
+        // `1` (max(1,1)=1 already misses the floor, so correct and buggy code produce
+        // identical silence). Pairing a boolean `width` with a real `height` that would
+        // defeat the claim on its own closes that hole: if `is_int_dimension` wrongly
+        // returned `Some(1)` for `Bool(true)`, this would compute a 1px short side and
+        // FIRE against the "8k" claim; the correct implementation excludes the boolean
+        // entirely and stays silent.
+        let params = json!({"prompt": "shot in 8k", "width": true, "height": 3840});
+        assert!(check_resolution_claim(&params).is_none());
+    }
+
+    #[test]
     fn resolution_claim_silent_on_aspect_ratio_style_pair() {
         let params = json!({"prompt": "a 4k banner shot", "width": 16, "height": 9});
         assert!(check_resolution_claim(&params).is_none());
