@@ -148,7 +148,14 @@ invisible.
 - Any exception, malformed stdin, or missing field exits 0 with no output.
 - The hook never writes to stderr on the success path, since exit 2 plus stderr would block.
 - No network calls, no MCP access, no filesystem writes beyond reading its own data file.
-- Standard library only. A dependency that fails to import would break every generation call.
+- The shipped hook is a statically-linked Rust binary (`serde_json` and `regex` are the
+  only two dependencies; see §12) rather than a standard-library-only script. The
+  dependency-import failure this line originally guarded against doesn't apply the same
+  way to a compiled binary: there is no import step at `PreToolUse` time, since both
+  crates are compiled in at `cargo build --release` and become part of the single
+  executable. What still must hold, and does: no dependency is fetched or resolved at
+  run time, and a missing or stale binary is a build-and-deploy problem (§12.1), not a
+  standard-library-only one.
 
 ## 8. Credit expiry reminder
 
@@ -174,14 +181,34 @@ corpus is actual usage rather than invented cases.
   any other call. Only a string that fails to parse, or that parses to something other than
   an object, falls through to silence.
 
+Since the port (§12), `tests/test_lint.py` verifies only the Python oracle. The Rust
+binary is verified two ways:
+
+- **Unit and integration tests** (`cargo test --release`), covering each check's ported
+  logic directly against the same behaviour documented above.
+- **The differential parity harness** (`rust/tests/parity.rs`), which is the actual
+  verification instrument for the port: it runs an identical corpus of stdin payloads
+  (fixtures, pathological inputs, and a generated sweep across every lexicon entry,
+  dimension pair, and negation form - 320 distinct inputs at last count) through both
+  `src/higgsfield_lint.py` and the compiled Rust binary, and asserts their outputs are
+  equal as parsed JSON (see §3 note in §12 on why not as raw bytes). A single divergence
+  fails the whole test, and the fix is always to change the Rust, never the oracle.
+  Run it with `cargo test --release --test parity`.
+
 ## 10. Repository layout
 
 ```
 SPEC.md                              this document
-src/higgsfield_lint.py               the hook, stdlib only
+README.md                            setup/build steps and the oracle-retention note
+Cargo.toml, Cargo.lock               Rust package manifest (serde_json, regex)
+rust/src/*.rs                        the hook, compiled to a Rust binary (§12)
+target/release/higgsfield-lint       the built hook; PreToolUse runs this directly (§12.1)
+src/higgsfield_lint.py               retained parity oracle, stdlib only - NOT the hook (§12.2)
 data/negative_prompt_models.json     evidence-seeded model list
 tests/fixtures/*.json                real captured tool inputs
-tests/test_lint.py                   pytest
+tests/test_lint.py                   pytest, verifies the Python oracle only
+rust/tests/parity.rs                 differential parity harness, the port's real verification (§9)
+rust/tests/fail_silent.rs            pathological-input and panic-silence tests
 docs/archive/                        the rejected design and its pseudocode
 docs/superpowers/plans/              implementation plan
 ```
@@ -219,9 +246,15 @@ Python was the right call, and it is recorded here so the next stack decision do
 repeat it.
 
 This plan reverses the reversal. The three checks in §5 are ported from
-`src/higgsfield_lint.py` to a compiled Rust binary, proven byte-identical to the Python via
-a differential parity harness (`rust/tests/parity.rs`, 319 distinct inputs, zero
-divergences) rather than by hand-ported assertions.
+`src/higgsfield_lint.py` to a compiled Rust binary, proven output-equivalent as parsed
+JSON to the Python via a differential parity harness (`rust/tests/parity.rs`, 320
+distinct inputs, zero divergences) rather than by hand-ported assertions. The two
+implementations are not byte-identical: `serde_json::to_string` and Python's `json.dump`
+differ in separator whitespace, and `serde_json`'s `Map` sorts keys where Python
+preserves insertion order, so a raw `shasum` of the two outputs differs even when they
+mean the same thing. The harness parses both sides back into structured values and
+compares those, specifically because raw bytes cannot match; no consumer of this output
+depends on either byte layout or key order.
 
 What Rust actually buys the current shape, stated narrowly so it cannot be inflated later:
 
@@ -236,9 +269,9 @@ What it costs, equally plainly:
 - A build step (`cargo build --release`) that did not exist before.
 - A new silent-failure mode, in §12.1.
 
-Startup drops from roughly 40ms (`python3` interpreter boot) to about 1ms (native binary
-exec). That is 0.1% of a generation call and is explicitly **not** a reason this port
-happened.
+Startup drops from a measured 25.1ms median (`python3` interpreter boot, 30 runs) to a
+measured 2.3ms median (native binary exec, 30 runs). That is still a small fraction of a
+generation call's latency and is explicitly **not** a reason this port happened.
 
 ### 12.1 New failure mode: stale or missing binary
 
