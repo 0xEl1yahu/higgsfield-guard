@@ -86,4 +86,16 @@ fn an_unrecognised_argument_still_behaves_as_the_hook() {
     let out = child.wait_with_output().expect("wait");
     assert_eq!(out.status.code().unwrap_or(-1), 0);
     assert!(out.stderr.is_empty());
+    // The payload above produces no findings, so a correctly-dispatched hook path
+    // emits nothing on stdout. A non-empty stdout here means the argument was
+    // wrongly routed to `doctor` (or some other diagnostic path) instead of falling
+    // through to the hook - exactly the `additionalContext` leak this test exists
+    // to catch. Without this assertion the test cannot tell "fell through to the
+    // hook and found nothing" apart from "wrongly dispatched and dumped a report",
+    // since doctor's stub also exits 0 with empty stderr.
+    assert!(
+        out.stdout.is_empty(),
+        "unrecognised argument must not produce diagnostic output on stdout, got: {:?}",
+        String::from_utf8_lossy(&out.stdout)
+    );
 }
