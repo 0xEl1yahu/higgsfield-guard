@@ -1,11 +1,10 @@
 //! Port of the lint checks in `src/higgsfield_lint.py` (the READ-ONLY oracle for this
-//! port; never edit that file). This module now ports lines 20-200: the boundary scan
+//! port; never edit that file). This module ports lines 20-200: the boundary scan
 //! helpers (`has_term`, `find_original_case`), `check_resolution_claim`, and the two
 //! negation checks (`check_prompt_negative_conflict`, `check_negation_placement`) plus
 //! their shared helpers (`strip_negations`, `is_placement_noise`). The `lint`/`render`
-//! orchestration (lines 203+) is a later task and is not wired up here yet, so these
-//! checks are not called from anywhere but their own tests.
-#![allow(dead_code)]
+//! orchestration (lines 203+) lives in `lint.rs`, which calls these checks from
+//! `lint_params`.
 
 use regex::Regex;
 use serde_json::Value;
@@ -94,47 +93,68 @@ fn is_boundary_char(c: char, ignore_case: bool) -> bool {
 
 /// Returns the byte range of the first valid (boundary-respecting) match, if any.
 ///
-/// Walks `text` and `term` as `char` sequences throughout, not bytes: this is what keeps
-/// non-ASCII input (smart quotes, accented characters, multi-byte UTF-8 anywhere in the
-/// prompt) safe, since indexing by byte offset into `text_chars`/`term_chars` can never
-/// land mid-codepoint. Byte offsets are only reintroduced at the very end, taken from
-/// `char_indices`, purely to slice the ORIGINAL (not case-folded) text for
-/// `find_original_case`.
+/// Walks `text` as a `char` sequence, not bytes: this is what keeps non-ASCII input
+/// (smart quotes, accented characters, multi-byte UTF-8 anywhere in the prompt) safe,
+/// since every offset used here comes from `char_indices` and can never land
+/// mid-codepoint.
+///
+/// F9: this used to `collect()` the ENTIRE text into a `Vec<(usize, char)>` on every
+/// call, and this function is called roughly 35 times per params object (once per
+/// resolution-claim term, once per conflict phrase in each of two fields, ...). On an
+/// 18MB adversarial input that measured 2.31GB RSS against the Python oracle's 93MB -
+/// the only path in this codebase that can blow both the memory AND the "never write to
+/// stderr" constraints at once, because an allocator failure in Rust `abort()`s with a
+/// message to stderr that `catch_unwind` cannot intercept (it isn't a panic).
+///
+/// This version never materialises the text as a buffer: `text.char_indices()` is a
+/// cheap `Clone` (a couple of pointers over the existing `&str`, no allocation), so each
+/// candidate start position gets its own cloned iterator to probe forward `m` characters
+/// (`m` = the term length, a handful of characters at most for every lexicon entry this
+/// is called with), then that probe is discarded. The only heap allocation left is
+/// `term_chars`, sized to the short lexicon term, not the (potentially huge) haystack.
 fn find_term_match(text: &str, term: &str, ignore_case: bool) -> Option<(usize, usize)> {
     let term_chars: Vec<char> = term.chars().collect();
-    let text_chars: Vec<(usize, char)> = text.char_indices().collect();
     let m = term_chars.len();
-    let n = text_chars.len();
-    if m == 0 || n < m {
+    if m == 0 {
         return None;
     }
-    for start in 0..=(n - m) {
-        let is_match = (0..m).all(|k| {
-            let (_, tc) = text_chars[start + k];
-            if ignore_case {
-                tc.to_ascii_lowercase() == term_chars[k].to_ascii_lowercase()
-            } else {
-                tc == term_chars[k]
+    let eq = |a: char, b: char| {
+        if ignore_case {
+            a.to_ascii_lowercase() == b.to_ascii_lowercase()
+        } else {
+            a == b
+        }
+    };
+
+    let mut before: Option<char> = None;
+    let mut positions = text.char_indices().peekable();
+    while let Some(&(start, _)) = positions.peek() {
+        let mut probe = positions.clone();
+        let mut matched = true;
+        let mut match_end = start;
+        for term_c in &term_chars {
+            match probe.next() {
+                Some((idx, c)) if eq(c, *term_c) => match_end = idx + c.len_utf8(),
+                _ => {
+                    matched = false;
+                    break;
+                }
             }
-        });
-        if !is_match {
-            continue;
         }
-        let before_ok =
-            start == 0 || !is_boundary_char(text_chars[start - 1].1, ignore_case);
-        let after_ok =
-            start + m == n || !is_boundary_char(text_chars[start + m].1, ignore_case);
-        if before_ok && after_ok {
-            let match_start = text_chars[start].0;
-            let match_end = if start + m < n {
-                text_chars[start + m].0
-            } else {
-                text.len()
-            };
-            return Some((match_start, match_end));
+        if matched {
+            let before_ok = before.is_none_or(|c| !is_boundary_char(c, ignore_case));
+            let after_ok = probe
+                .peek()
+                .is_none_or(|&(_, c)| !is_boundary_char(c, ignore_case));
+            if before_ok && after_ok {
+                return Some((start, match_end));
+            }
         }
-        // Boundary check failed: keep scanning past this rejected match rather than
-        // giving up (e.g. "mp4k 4K" must still match on the second occurrence).
+        // Boundary check failed, or the term didn't match here: advance by one char and
+        // keep scanning rather than giving up (e.g. "mp4k 4K" must still match on the
+        // second occurrence).
+        let (_, c0) = positions.next().unwrap();
+        before = Some(c0);
     }
     None
 }

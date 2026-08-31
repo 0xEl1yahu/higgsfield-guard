@@ -1,5 +1,4 @@
 //! Port of `load_models` (`src/higgsfield_lint.py` lines ~18, ~195-198).
-#![allow(dead_code)]
 
 use std::collections::HashSet;
 use std::fs;

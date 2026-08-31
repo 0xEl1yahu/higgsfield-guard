@@ -37,6 +37,23 @@ fn every_pathological_input_exits_zero_and_silent() {
 #[test]
 fn an_internal_panic_is_still_silent_and_zero() {
     // Guarded by the panic hook plus catch_unwind, not by the absence of bugs.
+    //
+    // `__panic__` is read by nothing in the shipped hook - main.rs only wires a real
+    // panic to it behind `#[cfg(debug_assertions)]` (see main.rs's `run`), which is
+    // compiled OUT of `cargo build --release` / `cargo test --release`'s
+    // CARGO_BIN_EXE_higgsfield-lint entirely. So under `--release` this input takes
+    // the same silent, panic-free path as any other unrecognised field, and this
+    // assertion is a smoke test rather than proof the panic hook works.
+    //
+    // The panic hook + catch_unwind guarantee itself IS genuinely exercised: build and
+    // run this test in a plain debug profile (`cargo test`, no `--release`), where
+    // `debug_assertions` is on by default and this input actually panics inside
+    // `run()` before being caught. Confirmed by hand: with `main()`'s
+    // `panic::set_hook`/`catch_unwind` temporarily bypassed (calling `run()` directly),
+    // `cargo test --test fail_silent` on this exact input failed with exit code 101 -
+    // proof the panic really happens. Restoring the hook and `catch_unwind` makes the
+    // test pass again, for the right reason: the panic happened AND got caught, not
+    // because nothing panicked.
     let (code, out, err) = run(br#"{"tool_input": {"params": {"__panic__": true}}}"#);
     assert_eq!(code, 0);
     assert!(err.is_empty());

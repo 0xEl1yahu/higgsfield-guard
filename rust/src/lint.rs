@@ -74,14 +74,24 @@ fn format_index(value: &Value) -> String {
             }
         }
         Value::Null => "None".to_string(),
-        // KNOWN, ACCEPTED DIVERGENCE: `other` covers Value::Array and Value::Object, i.e. a
-        // compound `index`. The Python oracle's `str()` renders these Python-repr style -
-        // `[1, 2]` with a space after the comma, `{'a': 1}` with single quotes - while
-        // serde_json's `Display` renders `[1,2]` and `{"a":1}`. This was ruled acceptable
-        // rather than hand-rolling a Python-repr emulator in Rust: `index` is schema-typed
-        // as an integer, so a compound value here only arises from a malformed call, and a
-        // partial repr emulation would *look* like parity without *being* parity. Because of
-        // this, rust/tests/parity.rs deliberately generates scalar indices only.
+        // KNOWN, ACCEPTED DIVERGENCE: compound AND non-integer scalar `index` values may
+        // diverge. `other` covers Value::Array and Value::Object, i.e. a compound `index`.
+        // The Python oracle's `str()` renders these Python-repr style - `[1, 2]` with a
+        // space after the comma, `{'a': 1}` with single quotes - while serde_json's
+        // `Display` renders `[1,2]` and `{"a":1}`. This was ruled acceptable rather than
+        // hand-rolling a Python-repr emulator in Rust: `index` is schema-typed as an
+        // integer, so a compound value here only arises from a malformed call, and a
+        // partial repr emulation would *look* like parity without *being* parity.
+        //
+        // The same reasoning covers non-integer scalar `Value::Number`s reaching the arm
+        // above, not just this one: confirmed by direct measurement, `1e-7` renders as
+        // Python `1e-07` vs Rust `1e-7`; `-0.0` renders as Python `0.0`/`0` (via `-0`) vs
+        // Rust `-0.0`; and `10**29` (an integer literal outside i64/f64's exact range)
+        // renders as Python's full digit string vs Rust's `1e+29` once serde_json falls
+        // back to float formatting. `index` is schema-typed as an integer, so a float or
+        // an out-of-range integer here is already a malformed call, same as the compound
+        // case above - which is why rust/tests/parity.rs deliberately generates only
+        // in-range integer scalar indices.
         other => other.to_string(),
     }
 }
