@@ -8,7 +8,7 @@
 
 use serde_json::Value;
 
-use super::Finding;
+use crate::lint::Finding;
 
 // Claimed resolution -> minimum acceptable short side in pixels. Order matters: when a
 // prompt claims multiple resolutions, the highest-pixel claim wins; ties are broken by
@@ -40,24 +40,52 @@ const RESOLUTION_PARAM: &[(&str, i64)] = &[
 // exactly the false negative the Python's "Patch 2" fixed.
 const MIN_SANE_DIMENSION: i64 = 128;
 
-/// Case-insensitive "does `term` occur in `text` as a standalone token" check.
+/// Case-SENSITIVE "does `term` occur in `text` as a standalone token" check.
 ///
-/// Python's oracle (`_has_term`) uses regex lookaround:
-/// `(?<![a-z0-9])term(?![a-z0-9])`. Rust's `regex` crate has no lookaround support (and
-/// `fancy-regex` is deliberately not used - see the plan), so this is a manual boundary
-/// scan: find each case-insensitive occurrence of the literal term, then reject it if the
-/// character immediately before or after is ASCII alphanumeric. A rejected match does not
-/// stop the search - scanning resumes from the next start position so a later, valid
-/// occurrence can still be found.
+/// Python's oracle (`_has_term`) is `re.search(rf"(?<![a-z0-9]){escaped}(?![a-z0-9])",
+/// text)` - **no** `re.IGNORECASE`. Both the literal and the `[a-z0-9]` boundary class are
+/// case-sensitive, so an uppercase neighbour is not in the class and does not block a
+/// match, and the literal itself only matches text with the exact same case as `term`.
+/// This is deliberately different from `find_original_case` below, which folds case in
+/// both the literal and the boundary class (Python passes `re.IGNORECASE` there). Do not
+/// unify them: this is a parity port, and the oracle treats these two functions
+/// differently on purpose.
+///
+/// In practice this case-sensitivity is currently unreachable: the only production call
+/// site (`check_prompt_negative_conflict`, oracle line 164) always pre-lowercases both
+/// arguments with `.lower()` before calling `_has_term`, so it only ever sees all-lowercase
+/// input. Task 3's `check_prompt_negative_conflict` port must replicate those `.lower()`
+/// calls itself rather than relying on `has_term` to fold case - it no longer does.
+///
+/// Rust's `regex` crate has no lookaround support (and `fancy-regex` is deliberately not
+/// used - see the plan), so this is a manual boundary scan: find each occurrence of the
+/// literal term (case-sensitive), then reject it if the character immediately before or
+/// after is an ASCII lowercase letter or digit. A rejected match does not stop the search
+/// - scanning resumes from the next start position so a later, valid occurrence can still
+/// be found.
 pub fn has_term(text: &str, term: &str) -> bool {
-    find_term_match(text, term).is_some()
+    find_term_match(text, term, false).is_some()
 }
 
-/// Same scan as `has_term`, but returns the matched substring in its ORIGINAL casing from
-/// `text` (e.g. quoting `"4K"` as the user wrote it, not the lowercase lexicon key
-/// `"4k"`). Mirrors Python's `_find_original_case`.
+/// Same scan as `has_term`, but case-INSENSITIVE (both the literal and the boundary
+/// class), and returns the matched substring in its ORIGINAL casing from `text` (e.g.
+/// quoting `"4K"` as the user wrote it, not the lowercase lexicon key `"4k"`). Mirrors
+/// Python's `_find_original_case`, which passes `re.IGNORECASE`.
 pub fn find_original_case(text: &str, term: &str) -> Option<String> {
-    find_term_match(text, term).map(|(start, end)| text[start..end].to_string())
+    find_term_match(text, term, true).map(|(start, end)| text[start..end].to_string())
+}
+
+/// Is `c` a boundary-blocking character under the given case sensitivity? Mirrors the
+/// regex character class `[a-z0-9]`, which under `re.IGNORECASE` also matches `A-Z` (a
+/// Python/`re` behaviour: `IGNORECASE` case-folds literal ranges inside character classes
+/// too), and without it matches only lowercase letters and digits - an uppercase letter is
+/// simply not a member of `[a-z0-9]` and does not block anything.
+fn is_boundary_char(c: char, ignore_case: bool) -> bool {
+    if ignore_case {
+        c.is_ascii_alphanumeric()
+    } else {
+        c.is_ascii_digit() || c.is_ascii_lowercase()
+    }
 }
 
 /// Returns the byte range of the first valid (boundary-respecting) match, if any.
@@ -68,7 +96,7 @@ pub fn find_original_case(text: &str, term: &str) -> Option<String> {
 /// land mid-codepoint. Byte offsets are only reintroduced at the very end, taken from
 /// `char_indices`, purely to slice the ORIGINAL (not case-folded) text for
 /// `find_original_case`.
-fn find_term_match(text: &str, term: &str) -> Option<(usize, usize)> {
+fn find_term_match(text: &str, term: &str, ignore_case: bool) -> Option<(usize, usize)> {
     let term_chars: Vec<char> = term.chars().collect();
     let text_chars: Vec<(usize, char)> = text.char_indices().collect();
     let m = term_chars.len();
@@ -79,13 +107,19 @@ fn find_term_match(text: &str, term: &str) -> Option<(usize, usize)> {
     for start in 0..=(n - m) {
         let is_match = (0..m).all(|k| {
             let (_, tc) = text_chars[start + k];
-            tc.to_ascii_lowercase() == term_chars[k].to_ascii_lowercase()
+            if ignore_case {
+                tc.to_ascii_lowercase() == term_chars[k].to_ascii_lowercase()
+            } else {
+                tc == term_chars[k]
+            }
         });
         if !is_match {
             continue;
         }
-        let before_ok = start == 0 || !text_chars[start - 1].1.is_ascii_alphanumeric();
-        let after_ok = start + m == n || !text_chars[start + m].1.is_ascii_alphanumeric();
+        let before_ok =
+            start == 0 || !is_boundary_char(text_chars[start - 1].1, ignore_case);
+        let after_ok =
+            start + m == n || !is_boundary_char(text_chars[start + m].1, ignore_case);
         if before_ok && after_ok {
             let match_start = text_chars[start].0;
             let match_end = if start + m < n {
@@ -199,12 +233,15 @@ mod tests {
 
     #[test]
     fn has_term_respects_alphanumeric_boundaries() {
-        // Must match
-        for t in ["a 4K shot", "4K, cinematic", "shot in 4k.", "(4K)"] {
+        // Must match. `has_term` is case-sensitive (see its doc comment), so these use
+        // the lowercase literal that the real call site actually produces after its own
+        // `.lower()` - matching mixed-case text is a separate, explicitly-tested behaviour
+        // below, not this test's concern.
+        for t in ["a 4k shot", "4k, cinematic", "shot in 4k.", "(4k)"] {
             assert!(has_term(t, "4k"), "should match: {t}");
         }
-        // Must NOT match - alphanumeric on either side
-        for t in ["mp4k", "4kb", "x4K", "a4k", "24k", "4k9"] {
+        // Must NOT match - lowercase-letter-or-digit on either side blocks the match.
+        for t in ["mp4k", "4kb", "x4k", "a4k", "24k", "4k9"] {
             assert!(!has_term(t, "4k"), "should not match: {t}");
         }
         // Multi-word terms
@@ -215,8 +252,30 @@ mod tests {
     #[test]
     fn has_term_resumes_scanning_past_a_rejected_match() {
         // The first "4k" is glued to "mp" and must be rejected; the scan must not give up
-        // there - the second, standalone "4K" must still be found.
-        assert!(has_term("mp4k then a 4K shot", "4k"));
+        // there - the second, standalone "4k" must still be found.
+        assert!(has_term("mp4k then a 4k shot", "4k"));
+    }
+
+    #[test]
+    fn has_term_is_case_sensitive_unlike_find_original_case() {
+        // Oracle: `_has_term` has no `re.IGNORECASE`. The boundary class `[a-z0-9]` only
+        // blocks on lowercase letters/digits, so an UPPERCASE neighbour does not count as
+        // an alphanumeric boundary and does NOT block the match.
+        //   Python  _has_term("A4k respectfully", "4k") -> True
+        //   Python  _has_term("4kB respectfully", "4k") -> True
+        assert!(
+            has_term("A4k respectfully", "4k"),
+            "uppercase neighbour before the term must not block a case-sensitive match"
+        );
+        assert!(
+            has_term("4kB respectfully", "4k"),
+            "uppercase neighbour after the term must not block a case-sensitive match"
+        );
+        // The literal match itself is exact-case: "4K" (uppercase K) is not a
+        // case-sensitive match for the lowercase term "4k" at all, regardless of
+        // boundaries.
+        assert!(!has_term("a 4K shot", "4k"));
+        assert!(!has_term("shot in 4K.", "4k"));
     }
 
     #[test]
@@ -240,8 +299,10 @@ mod tests {
     fn boundary_scan_handles_non_ascii_surroundings_without_panicking() {
         // Smart quotes and accented characters around/near the term must not cause a
         // byte-index panic (char vs byte indexing) and must not themselves count as
-        // alphanumeric boundaries.
-        assert!(has_term("\u{201c}4K\u{201d} caf\u{e9} shot", "4k"));
+        // alphanumeric boundaries. Uses the lowercase literal for `has_term` (case-
+        // sensitive); the uppercase-in-text case is exercised separately via
+        // `find_original_case` (case-insensitive) below.
+        assert!(has_term("\u{201c}4k\u{201d} caf\u{e9} shot", "4k"));
         assert!(has_term("na\u{ef}ve 4k cr\u{e8}me br\u{fb}l\u{e9}e scene", "4k"));
         assert_eq!(
             find_original_case("\u{201c}4K\u{201d} caf\u{e9} shot", "4k").as_deref(),

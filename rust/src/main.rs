@@ -1,7 +1,9 @@
 use std::io::{Read, Write};
 use std::panic;
 
+mod checks;
 mod lint;
+mod models;
 
 fn run() -> Option<String> {
     let mut buf = Vec::new();
