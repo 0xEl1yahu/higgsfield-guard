@@ -418,7 +418,12 @@ fn batch_sweep(known: &str) -> Vec<(String, Vec<u8>)> {
         json!(2.5),
     ];
     for idx in &scalar_indices {
-        let params = json!({"prompt": "shot in 4k, cinematic", "width": 100, "height": 100});
+        // width/height chosen so this ACTUALLY fires (max side 1280 clears the 128px
+        // floor, short side 100 misses the 4k claim's 2160px minimum) - a silent
+        // params object would make every one of these comparisons a trivial
+        // silence-equals-silence match, never exercising `format_index`'s rendering of
+        // the index into the "request {index}: ..." message text at all.
+        let params = json!({"prompt": "shot in 4k, cinematic", "width": 1280, "height": 100});
         out.push((format!("batch:index={idx}"), wrap(TOOL_BATCH, batch_one(idx.clone(), params))));
     }
 
