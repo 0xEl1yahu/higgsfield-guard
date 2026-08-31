@@ -27,20 +27,19 @@ changes, and confirm it before relying on the hook for the first time. See SPEC.
 cargo test --release
 ```
 
-This runs the Rust unit tests, the pathological-input/fail-silent tests, and the
-differential parity harness (`rust/tests/parity.rs`), which is the actual verification
-instrument for this port: it feeds an identical corpus of inputs to both the Rust binary
-and the Python oracle (below) and asserts their outputs are equal as parsed JSON. See
-SPEC.md §9.
+This runs the Rust unit tests, the pathological-input/fail-silent tests, and the golden
+corpus (`rust/tests/parity.rs`): it feeds an identical corpus of inputs to the compiled
+binary and asserts each one's output matches a recorded expectation in
+`rust/tests/golden/expectations.json`, compared as parsed JSON. See SPEC.md §9.
 
-## `src/higgsfield_lint.py` is the parity oracle - do not delete it
+## The Rust is the specification
 
-The hook itself is the compiled Rust binary. `src/higgsfield_lint.py` is **not** a
-runtime fallback and nothing in the hook path calls it. It is retained as the read-only,
-fixed point that the parity harness checks the Rust binary against. Do not edit it to
-make a comparison pass, and do not delete it - that is a separate, later decision gated
-on the Rust binary having run against real production traffic for a period the human
-decides (SPEC.md §12.2).
+There is no second implementation checked against it any more. A hand-written Python
+port served as a differential oracle until the Rust was proven output-equivalent to it -
+320 inputs / 0 divergences, plus 4,200 independently-fuzzed inputs from a separate
+reviewer. It is now archived, read-only, at `docs/archive/verified-port/`: a **historical
+record**, never a runtime fallback, and never edited to match anything that changes here
+afterward. See that directory's README and SPEC.md §12.2 for the full history.
 
 ## Stack
 

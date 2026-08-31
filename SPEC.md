@@ -181,35 +181,40 @@ corpus is actual usage rather than invented cases.
   any other call. Only a string that fails to parse, or that parses to something other than
   an object, falls through to silence.
 
-Since the port (§12), `tests/test_lint.py` verifies only the Python oracle. The Rust
-binary is verified two ways:
+**The Rust is the specification.** There is no second implementation checked against it
+any more - §12.2 has the history: a hand-written Python port served as a differential
+oracle until the Rust port was proven output-equivalent to it, and was then archived,
+read-only, at `docs/archive/verified-port/`. The Rust binary is verified two ways:
 
-- **Unit and integration tests** (`cargo test --release`), covering each check's ported
-  logic directly against the same behaviour documented above.
-- **The differential parity harness** (`rust/tests/parity.rs`), which is the actual
-  verification instrument for the port: it runs an identical corpus of stdin payloads
-  (fixtures, pathological inputs, and a generated sweep across every lexicon entry,
-  dimension pair, and negation form - 320 distinct inputs at last count) through both
-  `src/higgsfield_lint.py` and the compiled Rust binary, and asserts their outputs are
-  equal as parsed JSON (see §3 note in §12 on why not as raw bytes). A single divergence
-  fails the whole test, and the fix is always to change the Rust, never the oracle.
-  Run it with `cargo test --release --test parity`.
+- **Unit and integration tests** (`cargo test --release`), covering each check's logic
+  directly against the behaviour documented above.
+- **The golden-output regression corpus** (`rust/tests/parity.rs`), the port's real
+  verification instrument now: it runs an identical corpus of stdin payloads (fixtures,
+  pathological inputs, and a generated sweep across every lexicon entry, dimension pair,
+  and negation form - 320 distinct inputs at last count) through the compiled binary and
+  asserts each one's output matches a recorded expectation in
+  `rust/tests/golden/expectations.json`, compared as parsed JSON (see §12 on why not as
+  raw bytes). A mismatch is a **behaviour change to review**, not a bug to silence: when
+  a change to `rust/src/checks.rs` deliberately flips a finding, the corresponding
+  entries in `expectations.json` are updated in that same change, individually, never
+  bulk-regenerated to turn a red diff green. Run it with `cargo test --release --test
+  parity`.
 
 ## 10. Repository layout
 
 ```
 SPEC.md                              this document
-README.md                            setup/build steps and the oracle-retention note
+README.md                            setup/build steps
 Cargo.toml, Cargo.lock               Rust package manifest (serde_json, regex)
 rust/src/*.rs                        the hook, compiled to a Rust binary (§12)
 target/release/higgsfield-lint       the built hook; PreToolUse runs this directly (§12.1)
-src/higgsfield_lint.py               retained parity oracle, stdlib only - NOT the hook (§12.2)
 data/negative_prompt_models.json     evidence-seeded model list
 tests/fixtures/*.json                real captured tool inputs
-tests/test_lint.py                   pytest, verifies the Python oracle only
-rust/tests/parity.rs                 differential parity harness, the port's real verification (§9)
+rust/tests/parity.rs                 golden-output regression corpus, the port's real verification (§9)
+rust/tests/golden/expectations.json  recorded expectations rust/tests/parity.rs checks against (§9)
 rust/tests/fail_silent.rs            pathological-input and panic-silence tests
-docs/archive/                        the rejected design and its pseudocode
+docs/archive/                        the rejected design, its pseudocode, and the retired Python port
+docs/archive/verified-port/          archived Python port + pytest suite - historical record (§12.2)
 docs/superpowers/plans/              implementation plan
 ```
 
@@ -287,27 +292,44 @@ Consequence: **`cargo build --release` is a required setup step**, not a one-tim
 convenience. It must be rerun whenever `rust/src/*.rs` changes, and confirmed before the
 binary is relied on for the first time.
 
-### 12.2 `src/higgsfield_lint.py` after the port
+### 12.2 `src/higgsfield_lint.py` is archived, not deleted
 
-`src/higgsfield_lint.py` is retained as the parity oracle: the fixed point that
-`rust/tests/parity.rs` compares the Rust binary against. It is not a runtime fallback.
-Nothing in the hook path calls it if the Rust binary fails; the Rust binary's own
-fail-silent behaviour (§7) is what runs on any internal error, not the Python.
+The port was verified: 320 differential inputs / 0 divergences, plus 4,200
+independently-fuzzed inputs from a separate reviewer (`docs/archive/verified-port/
+README.md` has the full record and the commit it was true at). That job is finished,
+and every rule change from here on would otherwise need implementing twice - once in
+Rust, once in a Python file kept alive for nothing but comparison. So
+`src/higgsfield_lint.py` and its pytest suite (`tests/test_lint.py`) were moved to
+`docs/archive/verified-port/`, retained as a **historical record**, not deleted.
 
-Deleting it is a separate, later decision, gated on the Rust binary having run against
-real production traffic for a period the human decides. It is not part of this plan.
+It was never a runtime fallback - nothing in the hook path ever called it, and the Rust
+binary's own fail-silent behaviour (§7) is what runs on any internal error, not the
+Python - so archiving it changes nothing about the hook itself. What changes is the test
+harness: `rust/tests/parity.rs` no longer runs a second live process at all. It compares
+the compiled binary's output against recorded expectations in
+`rust/tests/golden/expectations.json`, captured from the Rust binary at the moment the
+Python comparison last passed. **The Rust is now the specification**, and that golden
+file - not the archived Python - is the regression instrument going forward (§9).
 
-### 12.3 Known divergence: compound `index` values
+The archived files must not be edited to match anything that changes here afterward;
+doing so would misrepresent them as still-verified current behaviour, which they are not.
+
+### 12.3 Known divergence: compound `index` values (historical)
 
 `index` in a batch request is schema-typed as an integer. If a caller passes a JSON array
-or object as `index` anyway, which only happens on a malformed call, the Python oracle's
-`str()` renders it in Python repr form (`[1, 2]` with a space, `{'a': 1}` with single
-quotes), while the Rust port's `serde_json` `Display` renders `[1,2]` and `{"a":1}`, with no
-spaces and double quotes. This is a deliberate, accepted divergence, not a bug: emulating
-Python's `repr()` for arbitrarily nested JSON in Rust, to cover a case that only arises from
-a malformed call, would make the port look like parity without being it.
-`rust/tests/parity.rs` deliberately generates scalar indices only, for this reason; see the
-comment at `format_index` in `rust/src/lint.rs`.
+or object as `index` anyway, which only happens on a malformed call, the archived
+Python's `str()` rendered it in Python repr form (`[1, 2]` with a space, `{'a': 1}` with
+single quotes), while the Rust port's `serde_json` `Display` renders `[1,2]` and
+`{"a":1}`, with no spaces and double quotes. This was a deliberate, accepted divergence
+from the Python, not a bug: emulating Python's `repr()` for arbitrarily nested JSON in
+Rust, to cover a case that only arises from a malformed call, would have made the port
+look like parity without being it.
+
+The comparison this reasoning came from is historical now that the Python is archived
+(§12.2), but the corpus design it produced is still current: `rust/tests/parity.rs`
+deliberately generates scalar indices only, and `rust/tests/golden/expectations.json`
+records expectations only for those. See the comment at `format_index` in
+`rust/src/lint.rs`.
 
 ## 13. What would bring the big design back
 
