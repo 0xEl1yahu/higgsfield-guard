@@ -64,8 +64,19 @@ fn collect_checks() -> Vec<Check> {
             checks.push(check_data_file(root));
             checks.push(check_binary_freshness_real(root, &exe));
             checks.push(check_settings_file(root));
-            checks.push(check_matcher_present(root, &exe));
-            checks.push(check_matcher_correctness(root, &exe));
+
+            // A live Claude Code session always has CLAUDE_PROJECT_DIR set when
+            // it substitutes it into a hook `command`; `doctor` run by hand
+            // usually doesn't. Read the real value here (the one real call site)
+            // and hand it to the pure resolver below.
+            let env_value = std::env::var("CLAUDE_PROJECT_DIR").ok();
+            let project_dir = resolve_project_dir(env_value.as_deref(), root);
+            if let Some(warning) = project_dir.warning() {
+                checks.push(warning);
+            }
+            let note = project_dir.note();
+            checks.push(check_matcher_present(root, project_dir.path(), &exe, &note));
+            checks.push(check_matcher_correctness(root, project_dir.path(), &exe, &note));
         }
         None => {
             let skip = |name: &str| {
@@ -232,17 +243,124 @@ fn check_settings_file(repo_root: &Path) -> Check {
     }
 }
 
+/// The project directory a live Claude Code session substitutes for
+/// `$CLAUDE_PROJECT_DIR` when it resolves a hook `command`. A session always
+/// has the real environment variable set; `doctor`, run by hand, usually
+/// doesn't, so it falls back to the repo root it discovered by walking up
+/// from its own binary (check 1) - but that fallback is only ever an
+/// approximation. In a git worktree, a symlinked checkout, or a project
+/// opened from a subdirectory, the discovered root can silently disagree with
+/// what a live session actually uses, which would make checks 5 and 6 report
+/// PASS for wiring that a live session resolves completely differently.
+enum ProjectDir {
+    /// `CLAUDE_PROJECT_DIR` isn't set - the normal case for a manual `doctor`
+    /// run outside a live session. Falls back to the discovered repo root.
+    Unset(PathBuf),
+    /// `CLAUDE_PROJECT_DIR` is set and agrees with the discovered repo root.
+    Agrees(PathBuf),
+    /// `CLAUDE_PROJECT_DIR` is set but does NOT agree with the discovered repo
+    /// root - the exact blind spot this type exists to catch. `env` is what a
+    /// live session actually substitutes.
+    Disagrees { env: PathBuf, discovered: PathBuf },
+}
+
+impl ProjectDir {
+    /// The directory to substitute for `$CLAUDE_PROJECT_DIR`: the real
+    /// environment value whenever one was given (that's what a live session
+    /// actually does), the discovered root only when there is no real value
+    /// to prefer.
+    fn path(&self) -> &Path {
+        match self {
+            ProjectDir::Unset(p) | ProjectDir::Agrees(p) => p,
+            ProjectDir::Disagrees { env, .. } => env,
+        }
+    }
+
+    /// One-line explanation appended to checks 5 and 6's own messages so the
+    /// reader always sees which project dir was used and why - including the
+    /// unset case, where silent fallback would otherwise recreate the same
+    /// blind spot in a quieter form.
+    fn note(&self) -> String {
+        match self {
+            ProjectDir::Unset(p) => format!(
+                "CLAUDE_PROJECT_DIR not set, used the discovered repo root {}",
+                p.display()
+            ),
+            ProjectDir::Agrees(p) => format!(
+                "CLAUDE_PROJECT_DIR={} agrees with the discovered repo root",
+                p.display()
+            ),
+            ProjectDir::Disagrees { env, .. } => {
+                format!("CLAUDE_PROJECT_DIR={} - see the project dir warning above", env.display())
+            }
+        }
+    }
+
+    /// A standalone `Warn` surfaced in the report only when there is a real
+    /// disagreement to flag - not on every run, so a manual `doctor` from an
+    /// unusual cwd doesn't cry wolf.
+    fn warning(&self) -> Option<Check> {
+        match self {
+            ProjectDir::Disagrees { env, discovered } => Some(Check::Warn(format!(
+                "project dir: CLAUDE_PROJECT_DIR={} disagrees with the discovered repo root {} - \
+                 a live Claude Code session substitutes the environment variable when resolving hook \
+                 commands, not the path doctor discovers by walking up from its own binary; the matcher \
+                 checks below use CLAUDE_PROJECT_DIR, since that is what a live session actually does",
+                env.display(),
+                discovered.display()
+            ))),
+            _ => None,
+        }
+    }
+}
+
+fn paths_equal(a: &Path, b: &Path) -> bool {
+    match (fs::canonicalize(a), fs::canonicalize(b)) {
+        (Ok(a), Ok(b)) => a == b,
+        // Can't canonicalize both (e.g. a fixture path that was never created
+        // on disk) - fall back to plain equality rather than silently calling
+        // it a match.
+        _ => a == b,
+    }
+}
+
+/// Pure by construction: takes the environment value as a parameter instead
+/// of reading `std::env::var` internally, so all three states (unset /
+/// set-and-agreeing / set-and-disagreeing) are directly testable without
+/// mutating real process-global environment state - the same reason
+/// `check_binary_freshness` takes `exe_mtime` as a parameter instead of
+/// reading the running binary's real mtime itself. `collect_checks` is the
+/// one call site that reads the actual `CLAUDE_PROJECT_DIR`.
+fn resolve_project_dir(env_value: Option<&str>, discovered_root: &Path) -> ProjectDir {
+    match env_value {
+        None | Some("") => ProjectDir::Unset(discovered_root.to_path_buf()),
+        Some(v) => {
+            let env_root = PathBuf::from(v);
+            if paths_equal(&env_root, discovered_root) {
+                ProjectDir::Agrees(env_root)
+            } else {
+                ProjectDir::Disagrees {
+                    env: env_root,
+                    discovered: discovered_root.to_path_buf(),
+                }
+            }
+        }
+    }
+}
+
 /// Resolves a hook `command` string the way `.claude/settings.json` writes it:
 /// wrapped in literal double quotes (to survive spaces in the path) with
-/// `$CLAUDE_PROJECT_DIR` standing in for the repo root.
-fn resolve_command(command: &str, repo_root: &Path) -> PathBuf {
+/// `$CLAUDE_PROJECT_DIR` standing in for `project_dir` - the directory a live
+/// session would actually substitute (see `ProjectDir`), not necessarily the
+/// repo root `doctor` discovered on its own.
+fn resolve_command(command: &str, project_dir: &Path) -> PathBuf {
     let trimmed = command.trim().trim_matches('"');
-    let substituted = trimmed.replace("$CLAUDE_PROJECT_DIR", &repo_root.to_string_lossy());
+    let substituted = trimmed.replace("$CLAUDE_PROJECT_DIR", &project_dir.to_string_lossy());
     PathBuf::from(substituted)
 }
 
-fn command_resolves_to_exe(command: &str, repo_root: &Path, exe: &Path) -> bool {
-    let candidate = resolve_command(command, repo_root);
+fn command_resolves_to_exe(command: &str, project_dir: &Path, exe: &Path) -> bool {
+    let candidate = resolve_command(command, project_dir);
     match (fs::canonicalize(&candidate), fs::canonicalize(exe)) {
         (Ok(a), Ok(b)) => a == b,
         // One or both don't exist on disk (e.g. a test fixture that never
@@ -253,7 +371,7 @@ fn command_resolves_to_exe(command: &str, repo_root: &Path, exe: &Path) -> bool 
     }
 }
 
-fn find_own_hook_group<'a>(entries: &'a [Value], repo_root: &Path, exe: &Path) -> Option<&'a Value> {
+fn find_own_hook_group<'a>(entries: &'a [Value], project_dir: &Path, exe: &Path) -> Option<&'a Value> {
     entries.iter().find(|entry| {
         entry
             .get("hooks")
@@ -262,7 +380,7 @@ fn find_own_hook_group<'a>(entries: &'a [Value], repo_root: &Path, exe: &Path) -
                 hooks.iter().any(|h| {
                     h.get("command")
                         .and_then(Value::as_str)
-                        .is_some_and(|cmd| command_resolves_to_exe(cmd, repo_root, exe))
+                        .is_some_and(|cmd| command_resolves_to_exe(cmd, project_dir, exe))
                 })
             })
             .unwrap_or(false)
@@ -270,9 +388,10 @@ fn find_own_hook_group<'a>(entries: &'a [Value], repo_root: &Path, exe: &Path) -
 }
 
 /// Check 5: some `PreToolUse` entry's `hooks[].command` resolves to this exact
-/// executable - i.e. the hook is actually wired up for this binary, not just
-/// present in the settings file for some other one.
-fn check_matcher_present(repo_root: &Path, exe: &Path) -> Check {
+/// executable when `$CLAUDE_PROJECT_DIR` is resolved as `project_dir` - i.e.
+/// the hook is actually wired up for this binary the way a live session would
+/// see it, not just present in the settings file under some other root.
+fn check_matcher_present(repo_root: &Path, project_dir: &Path, exe: &Path, project_dir_note: &str) -> Check {
     let settings = match load_settings(repo_root) {
         Ok(v) => v,
         Err(err) => return Check::Fail(format!("matcher present: {err}")),
@@ -286,15 +405,16 @@ fn check_matcher_present(repo_root: &Path, exe: &Path) -> Check {
             )
         }
     };
-    match find_own_hook_group(entries, repo_root, exe) {
+    match find_own_hook_group(entries, project_dir, exe) {
         Some(_) => Check::Pass(format!(
-            "matcher present: a PreToolUse entry's command resolves to {}",
+            "matcher present: a PreToolUse entry's command resolves to {} ({project_dir_note})",
             exe.display()
         )),
         None => Check::Fail(format!(
-            "matcher present: no PreToolUse entry's command resolves to {} - \
-             the hook is not installed for this binary",
-            exe.display()
+            "matcher present: no PreToolUse entry's command resolves to {} when $CLAUDE_PROJECT_DIR \
+             is {} - the hook is not installed for this binary ({project_dir_note})",
+            exe.display(),
+            project_dir.display()
         )),
     }
 }
@@ -302,9 +422,10 @@ fn check_matcher_present(repo_root: &Path, exe: &Path) -> Check {
 const SHOULD_MATCH: &str = "mcp__ada4cfac-9b58-4bfb-9631-4a588b7a2e4b__generate_video";
 const SHOULD_NOT_MATCH: &[&str] = &["mcp__x__generate_3d", "mcp__x__show_generations"];
 
-/// Check 6: the matcher on this binary's own `PreToolUse` entry matches a real
-/// Higgsfield tool name and rejects the two nearest lookalikes.
-fn check_matcher_correctness(repo_root: &Path, exe: &Path) -> Check {
+/// Check 6: the matcher on this binary's own `PreToolUse` entry (resolved the
+/// same way check 5 does, via `project_dir`) matches a real Higgsfield tool
+/// name and rejects the two nearest lookalikes.
+fn check_matcher_correctness(repo_root: &Path, project_dir: &Path, exe: &Path, project_dir_note: &str) -> Check {
     let settings = match load_settings(repo_root) {
         Ok(v) => v,
         Err(err) => return Check::Fail(format!("matcher correctness: {err}")),
@@ -318,11 +439,12 @@ fn check_matcher_correctness(repo_root: &Path, exe: &Path) -> Check {
             )
         }
     };
-    let Some(entry) = find_own_hook_group(entries, repo_root, exe) else {
-        return Check::Fail(
-            "matcher correctness: no matching PreToolUse entry found for this binary (see matcher present check)"
-                .to_string(),
-        );
+    let Some(entry) = find_own_hook_group(entries, project_dir, exe) else {
+        return Check::Fail(format!(
+            "matcher correctness: no matching PreToolUse entry found for this binary when \
+             $CLAUDE_PROJECT_DIR is {} (see matcher present check) ({project_dir_note})",
+            project_dir.display()
+        ));
     };
     let Some(matcher) = entry.get("matcher").and_then(Value::as_str) else {
         return Check::Fail(
@@ -352,7 +474,7 @@ fn check_matcher_correctness(repo_root: &Path, exe: &Path) -> Check {
         }
     }
     Check::Pass(format!(
-        "matcher correctness: matcher {matcher:?} matches {SHOULD_MATCH:?} and rejects lookalikes"
+        "matcher correctness: matcher {matcher:?} matches {SHOULD_MATCH:?} and rejects lookalikes ({project_dir_note})"
     ))
 }
 
@@ -643,7 +765,7 @@ mod tests {
             ),
         );
         assert_pass(
-            &check_matcher_present(repo.path(), &exe),
+            &check_matcher_present(repo.path(), repo.path(), &exe, "test"),
             "command resolves to this exe",
         );
     }
@@ -657,8 +779,34 @@ mod tests {
             &settings_json("\"$CLAUDE_PROJECT_DIR/some/other/tool\"", REAL_MATCHER),
         );
         assert_fail(
-            &check_matcher_present(repo.path(), &exe),
+            &check_matcher_present(repo.path(), repo.path(), &exe, "test"),
             "no command resolves to this exe",
+        );
+    }
+
+    #[test]
+    fn matcher_present_fails_when_project_dir_disagrees_with_the_settings_command() {
+        // The exact bug the reviewer flagged: settings.json's command would
+        // resolve correctly if $CLAUDE_PROJECT_DIR were substituted with the
+        // discovered repo root - but a live session substitutes its OWN
+        // CLAUDE_PROJECT_DIR, which here points somewhere else entirely (a
+        // worktree, a symlinked checkout). Passing a `project_dir` that
+        // differs from `repo_root` must make this Fail, proving the function
+        // actually uses `project_dir` for substitution rather than silently
+        // falling back to `repo_root`.
+        let repo = TestRepo::new("present-fail-wrong-project-dir");
+        let exe = repo.path().join("target").join("release").join("higgsfield-lint");
+        repo.write(
+            ".claude/settings.json",
+            &settings_json(
+                "\"$CLAUDE_PROJECT_DIR/target/release/higgsfield-lint\"",
+                REAL_MATCHER,
+            ),
+        );
+        let wrong_project_dir = repo.path().join("not-the-real-project-dir");
+        assert_fail(
+            &check_matcher_present(repo.path(), &wrong_project_dir, &exe, "test"),
+            "CLAUDE_PROJECT_DIR pointing at a different checkout than the discovered repo root",
         );
     }
 
@@ -676,7 +824,7 @@ mod tests {
             ),
         );
         assert_pass(
-            &check_matcher_correctness(repo.path(), &exe),
+            &check_matcher_correctness(repo.path(), repo.path(), &exe, "test"),
             "the real matcher regex",
         );
     }
@@ -693,7 +841,7 @@ mod tests {
             ),
         );
         assert_fail(
-            &check_matcher_correctness(repo.path(), &exe),
+            &check_matcher_correctness(repo.path(), repo.path(), &exe, "test"),
             "matcher that misses generate_video",
         );
     }
@@ -710,7 +858,7 @@ mod tests {
             ),
         );
         assert_fail(
-            &check_matcher_correctness(repo.path(), &exe),
+            &check_matcher_correctness(repo.path(), repo.path(), &exe, "test"),
             "matcher that overmatches generate_3d",
         );
     }
@@ -729,8 +877,103 @@ mod tests {
             ),
         );
         assert_fail(
-            &check_matcher_correctness(repo.path(), &exe),
+            &check_matcher_correctness(repo.path(), repo.path(), &exe, "test"),
             "matcher that overmatches show_generations",
+        );
+    }
+
+    #[test]
+    fn matcher_correctness_fails_when_project_dir_disagrees_with_the_settings_command() {
+        // Same regression as check 5's version: an otherwise-correct settings
+        // file must not be reported correct when resolved under a
+        // `project_dir` other than the one it actually names.
+        let repo = TestRepo::new("correct-fail-wrong-project-dir");
+        let exe = repo.path().join("target").join("release").join("higgsfield-lint");
+        repo.write(
+            ".claude/settings.json",
+            &settings_json(
+                "\"$CLAUDE_PROJECT_DIR/target/release/higgsfield-lint\"",
+                REAL_MATCHER,
+            ),
+        );
+        let wrong_project_dir = repo.path().join("not-the-real-project-dir");
+        assert_fail(
+            &check_matcher_correctness(repo.path(), &wrong_project_dir, &exe, "test"),
+            "CLAUDE_PROJECT_DIR pointing at a different checkout than the discovered repo root",
+        );
+    }
+
+    // --- ProjectDir: the three CLAUDE_PROJECT_DIR states --------------------------------------
+    //
+    // `resolve_project_dir` takes the environment value as a plain parameter
+    // rather than reading `std::env::var` itself, specifically so these three
+    // states are testable without mutating real process-global environment
+    // state (which would need serialising across the whole test binary, since
+    // Rust tests run in parallel threads by default).
+
+    #[test]
+    fn project_dir_falls_back_to_discovered_root_when_env_var_is_unset() {
+        let discovered = PathBuf::from("/some/discovered/repo/root");
+        let project_dir = resolve_project_dir(None, &discovered);
+        // Asserts the actual variant, not just the derived path()/warning() -
+        // a bug that conflates "unset" with "agrees" (e.g. forgetting to
+        // branch on `Some(_)` at all) would otherwise slip past a test that
+        // only checked the derived values, since both variants resolve to the
+        // same `path()` and both have no warning.
+        assert!(
+            matches!(&project_dir, ProjectDir::Unset(p) if p == &discovered),
+            "expected Unset({}), matched a different variant or path",
+            discovered.display()
+        );
+        assert_eq!(project_dir.path(), discovered.as_path());
+        assert!(
+            project_dir.warning().is_none(),
+            "unset is the normal case for a manual run and must not warn"
+        );
+        assert!(
+            project_dir.note().contains("not set"),
+            "the unset case must still say so in the output: {}",
+            project_dir.note()
+        );
+    }
+
+    #[test]
+    fn project_dir_agrees_when_env_var_matches_discovered_root() {
+        let repo = TestRepo::new("projdir-agrees");
+        let discovered = repo.path().to_path_buf();
+        let env_value = discovered.to_string_lossy().into_owned();
+        let project_dir = resolve_project_dir(Some(&env_value), &discovered);
+        assert!(
+            matches!(&project_dir, ProjectDir::Agrees(p) if p == &discovered),
+            "expected Agrees({}), matched a different variant or path",
+            discovered.display()
+        );
+        assert_eq!(project_dir.path(), discovered.as_path());
+        assert!(
+            project_dir.warning().is_none(),
+            "agreement must not produce a warning"
+        );
+    }
+
+    #[test]
+    fn project_dir_disagrees_and_warns_when_env_var_points_elsewhere() {
+        let discovered = PathBuf::from("/discovered/repo/root");
+        let env_value = "/completely/different/checkout";
+        let project_dir = resolve_project_dir(Some(env_value), &discovered);
+        assert!(
+            matches!(&project_dir, ProjectDir::Disagrees { env, discovered: d }
+                if env.as_path() == Path::new(env_value) && d.as_path() == discovered.as_path()),
+            "expected Disagrees{{ env: {env_value}, discovered: {} }}, matched something else",
+            discovered.display()
+        );
+        assert_eq!(
+            project_dir.path(),
+            Path::new(env_value),
+            "a live session substitutes the real env value, not the discovered root"
+        );
+        assert!(
+            matches!(project_dir.warning(), Some(Check::Warn(_))),
+            "disagreement must surface a standalone Warn"
         );
     }
 
