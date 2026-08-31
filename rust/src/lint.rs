@@ -74,6 +74,14 @@ fn format_index(value: &Value) -> String {
             }
         }
         Value::Null => "None".to_string(),
+        // KNOWN, ACCEPTED DIVERGENCE: `other` covers Value::Array and Value::Object, i.e. a
+        // compound `index`. The Python oracle's `str()` renders these Python-repr style -
+        // `[1, 2]` with a space after the comma, `{'a': 1}` with single quotes - while
+        // serde_json's `Display` renders `[1,2]` and `{"a":1}`. This was ruled acceptable
+        // rather than hand-rolling a Python-repr emulator in Rust: `index` is schema-typed
+        // as an integer, so a compound value here only arises from a malformed call, and a
+        // partial repr emulation would *look* like parity without *being* parity. Because of
+        // this, rust/tests/parity.rs deliberately generates scalar indices only.
         other => other.to_string(),
     }
 }

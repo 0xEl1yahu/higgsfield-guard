@@ -196,7 +196,87 @@ docs/superpowers/plans/              implementation plan
   preset restriction. Those were seed rules in the archived design and are dead.
 - Content moderation. Higgsfield does this and reports it.
 
-## 12. What would bring the big design back
+## 12. Stack
+
+The hook has shipped in two languages. This is the honest record of why, so nobody
+re-litigates it from partial memory.
+
+Rust was the original choice for the hook, justified on compile-time enforcement of the
+archived design's spec invariants: constructors gated to a single privileged module, and a
+witness type that proved a caller held a validated registry rather than an arbitrary one.
+The pseudocode pass proved two of those invariants unbuildable as specified. Rust's privacy
+is crate-scoped, not module-scoped across a workspace, so a constructor meant to be private
+to `gate-core` was reachable from a separate `gate-eval` crate the moment the two lived in
+different crates: nothing in the type system stopped it. And the `&Registry` guarantee went
+vacuous once several call sites needed interior mutability, since a shared `&Registry`
+behind a `RefCell` or `Mutex` proves nothing about what the caller actually validated.
+Measurement then deleted the system those two invariants existed to protect (§1), so
+whether they were fixable was never answered.
+
+The replacement was written in Python. That decision was made without consulting the
+person who chose Rust in the first place. That is a process error, independent of whether
+Python was the right call, and it is recorded here so the next stack decision does not
+repeat it.
+
+This plan reverses the reversal. The three checks in §5 are ported from
+`src/higgsfield_lint.py` to a compiled Rust binary, proven byte-identical to the Python via
+a differential parity harness (`rust/tests/parity.rs`, 319 distinct inputs, zero
+divergences) rather than by hand-ported assertions.
+
+What Rust actually buys the current shape, stated narrowly so it cannot be inflated later:
+
+- **A single binary with no runtime interpreter dependency.** The Python hook depends on
+  `python3` existing on `PATH` at the moment `PreToolUse` fires. Rust does not remove the
+  failure mode that follows from that dependency breaking; it changes what triggers it.
+  See §12.1.
+
+What it costs, equally plainly:
+
+- Two crate dependencies (`serde_json`, `regex`) where Python needed none.
+- A build step (`cargo build --release`) that did not exist before.
+- A new silent-failure mode, in §12.1.
+
+Startup drops from roughly 40ms (`python3` interpreter boot) to about 1ms (native binary
+exec). That is 0.1% of a generation call and is explicitly **not** a reason this port
+happened.
+
+### 12.1 New failure mode: stale or missing binary
+
+The hook now runs `$CLAUDE_PROJECT_DIR/target/release/higgsfield-lint` directly. If that
+file is missing, or was built against an older source tree, the hook exits 127 or runs
+stale logic. `PreToolUse` treats a non-zero exit as non-blocking, the same way it treats
+§7's fail-silent exit 0: the generation call proceeds either way, but the two outcomes are
+not the same. Exit 127 means the lint did not run at all, and nothing distinguishes that
+from "the lint ran and found nothing." Nothing in the current setup surfaces the
+difference.
+
+Consequence: **`cargo build --release` is a required setup step**, not a one-time
+convenience. It must be rerun whenever `rust/src/*.rs` changes, and confirmed before the
+binary is relied on for the first time.
+
+### 12.2 `src/higgsfield_lint.py` after the port
+
+`src/higgsfield_lint.py` is retained as the parity oracle: the fixed point that
+`rust/tests/parity.rs` compares the Rust binary against. It is not a runtime fallback.
+Nothing in the hook path calls it if the Rust binary fails; the Rust binary's own
+fail-silent behaviour (§7) is what runs on any internal error, not the Python.
+
+Deleting it is a separate, later decision, gated on the Rust binary having run against
+real production traffic for a period the human decides. It is not part of this plan.
+
+### 12.3 Known divergence: compound `index` values
+
+`index` in a batch request is schema-typed as an integer. If a caller passes a JSON array
+or object as `index` anyway, which only happens on a malformed call, the Python oracle's
+`str()` renders it in Python repr form (`[1, 2]` with a space, `{'a': 1}` with single
+quotes), while the Rust port's `serde_json` `Display` renders `[1,2]` and `{"a":1}`, with no
+spaces and double quotes. This is a deliberate, accepted divergence, not a bug: emulating
+Python's `repr()` for arbitrarily nested JSON in Rust, to cover a case that only arises from
+a malformed call, would make the port look like parity without being it.
+`rust/tests/parity.rs` deliberately generates scalar indices only, for this reason; see the
+comment at `format_index` in `rust/src/lint.rs`.
+
+## 13. What would bring the big design back
 
 The archived design is not wrong in general, it is wrong at this volume and this billing
 model. It becomes correct again if any of these hold:
