@@ -560,7 +560,6 @@ fn extra_edge_sweep() -> Vec<(String, Vec<u8>)> {
     .collect()
 }
 
-
 // =============================================================================================
 // Golden expectations
 // =============================================================================================
@@ -640,15 +639,36 @@ fn compare(label: &str, input: &[u8], rust_out: &Outcome, golden: Option<&Golden
         ));
     }
 
+    // Computed regardless of whether a golden entry exists: a "missing golden entry"
+    // report is far more useful with the actual output attached, so whoever adds this
+    // label to expectations.json can see exactly what to paste in rather than having to
+    // re-run the binary by hand to find out.
+    let rust_empty = rust_out.stdout.is_empty();
+    let actual_value: Option<Value> = if rust_empty {
+        None
+    } else {
+        match serde_json::from_slice::<Value>(&rust_out.stdout) {
+            Ok(v) => Some(v),
+            Err(e) => {
+                problems.push(format!(
+                    "rust stdout did not parse as JSON: {e}; raw stdout={:?}",
+                    String::from_utf8_lossy(&rust_out.stdout)
+                ));
+                None
+            }
+        }
+    };
+
     let Some(golden) = golden else {
-        problems.push(
+        problems.push(format!(
             "no golden expectation recorded for this label - this is a NEW input, not a \
              flip; add it deliberately to rust/tests/golden/expectations.json (see that \
-             file's README/note on how it was captured)"
-                .to_string(),
-        );
+             file's README/note on how it was captured)\n    actual output: {}",
+            render_expectation(actual_value.as_ref()),
+        ));
         return Some(format!(
-            "MISSING GOLDEN ENTRY [{label}]\n  {}",
+            "MISSING GOLDEN ENTRY [{label}]\n  stdin: {}\n  {}",
+            truncated_lossy(input, 2000),
             problems.join("\n  ")
         ));
     };
@@ -671,23 +691,7 @@ fn compare(label: &str, input: &[u8], rust_out: &Outcome, golden: Option<&Golden
         ));
     }
 
-    let rust_empty = rust_out.stdout.is_empty();
     let expected_empty = golden.output.is_none();
-    let actual_value: Option<Value> = if rust_empty {
-        None
-    } else {
-        match serde_json::from_slice::<Value>(&rust_out.stdout) {
-            Ok(v) => Some(v),
-            Err(e) => {
-                problems.push(format!(
-                    "rust stdout did not parse as JSON: {e}; raw stdout={:?}",
-                    String::from_utf8_lossy(&rust_out.stdout)
-                ));
-                None
-            }
-        }
-    };
-
     if rust_empty != expected_empty {
         problems.push(format!(
             "stdout emptiness differs from the golden expectation: expected_empty={expected_empty}, \
