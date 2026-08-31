@@ -26,6 +26,26 @@
 
 **The Python oracle is retired; the Rust becomes the specification.** `src/higgsfield_lint.py` existed to verify the port, and it did: 320 differential inputs with zero divergences, plus 4,200 randomized inputs from an independent reviewer. Keeping it would mean implementing every rule change twice and re-deriving parity each time. Task 1 retires it deliberately and records why, rather than letting it rot into a stale second implementation nobody updates.
 
+## Model policy (set by the human, 2026-08-31)
+
+| Role | Model | Applies to |
+|---|---|---|
+| Implementation | `claude-sonnet-5` | Tasks 1-6 |
+| Code review | `claude-opus-5` | every task review, every scoped re-review, the final whole-branch review |
+| Documentation | `claude-haiku-4-5` | Task 7 only |
+
+**Boundary:** the `SPEC.md` edits *inside* Tasks 2-6 belong to the implementer, not to the
+documentation role. This plan's discipline is spec-first-then-code, so the specification change
+and the rule change are one unit; splitting them would let code land without its justification.
+Task 7 is pure reconciliation and is the documentation role's whole scope.
+
+Rationale, from ~30 dispatches on the predecessor plans: model tier mattered far more for review
+than for implementation. Where a plan specified the code, Sonnet transcribed it faithfully.
+Where the job was adversarial verification — is this test real, is this claim true — nearly every
+serious finding came from Opus reviewers doing things the cheaper reviewers did not: building an
+independent 4,200-input fuzzer, reintroducing a bug to prove a guard was non-discriminating, and
+re-pulling primary data to refute the plan's own empirical claims.
+
 ## Global Constraints
 
 Unchanged from the shipped contract:
