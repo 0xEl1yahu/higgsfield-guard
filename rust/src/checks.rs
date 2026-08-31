@@ -1,12 +1,16 @@
 //! Port of the lint checks in `src/higgsfield_lint.py` (the READ-ONLY oracle for this
-//! port; never edit that file). This module currently ports lines 20-108: the boundary
-//! scan helpers (`has_term`, `find_original_case`) and `check_resolution_claim`. The
-//! negation checks (lines 111-200) and the `lint`/`render` orchestration (lines 203+)
-//! are later tasks and are not wired up here yet, so some items in this file are not
-//! called from anywhere but their own tests.
+//! port; never edit that file). This module now ports lines 20-200: the boundary scan
+//! helpers (`has_term`, `find_original_case`), `check_resolution_claim`, and the two
+//! negation checks (`check_prompt_negative_conflict`, `check_negation_placement`) plus
+//! their shared helpers (`strip_negations`, `is_placement_noise`). The `lint`/`render`
+//! orchestration (lines 203+) is a later task and is not wired up here yet, so these
+//! checks are not called from anywhere but their own tests.
 #![allow(dead_code)]
 
+use regex::Regex;
 use serde_json::Value;
+use std::collections::HashSet;
+use std::sync::LazyLock;
 
 use crate::lint::Finding;
 
@@ -226,10 +230,151 @@ pub fn check_resolution_claim(params: &Value) -> Option<Finding> {
     })
 }
 
+// Directive phrases worth comparing across the two prompt fields. A curated list,
+// because ordinary words legitimately appear in both and would drown the signal.
+const CONFLICT_PHRASES: &[&str] = &[
+    "slow motion",
+    "slow-mo",
+    "motion blur",
+    "static",
+    "blurred",
+    "blurry",
+    "sharp",
+    "text",
+    "close-up",
+    "wide shot",
+    "zoom",
+    "pan",
+    "handheld",
+    "grain",
+];
+
+// "no text", "without a logo", "avoid harsh shadows" - up to three trailing words.
+// Feeds strip_negations (via check_prompt_negative_conflict): "not blurry" must still read
+// as a negation there, or it looks like a request for blur. `not` stays in this pattern.
+static NEGATION_RE: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(?i)\b(?:no|without|avoid|not)\s+(?:[a-z-]+\s+){0,2}[a-z-]+").unwrap()
+});
+
+// SPEC §5.3 names exactly three directive forms: "no X", "without X", "avoid X". `not` is
+// not one of them - "the sun has not yet risen" and "does not move" are ordinary narrative
+// negation, not an instruction to move anything into negative_prompt. check_negation_placement
+// uses this narrower pattern instead of NEGATION_RE so it stops firing on plain English.
+static PLACEMENT_NEGATION_RE: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(?i)\b(?:no|without|avoid)\s+(?:[a-z-]+\s+){0,2}[a-z-]+").unwrap()
+});
+
+// Quantifier idioms where "no" modifies a comparative or adverb rather than introducing an
+// excluded noun - "no more than three [people]" is a count, not a directive, and moving
+// "more than three" into negative_prompt is meaningless. Keep this list small; add an entry
+// only when a real false positive demonstrates the idiom.
+const PLACEMENT_STOPWORDS: &[(&str, &str)] = &[("no", "more"), ("no", "longer"), ("no", "matter")];
+
+/// Port of `_is_placement_noise`.
+pub fn is_placement_noise(match_text: &str) -> bool {
+    let lower = match_text.to_lowercase();
+    let words: Vec<&str> = lower.split_whitespace().collect();
+    if words.len() >= 2 && PLACEMENT_STOPWORDS.contains(&(words[0], words[1])) {
+        return true;
+    }
+    // The distinguishing feature here is the negator, not the gerund. "without moving"
+    // is a manner adverbial - "sitting without moving" describes how the subject
+    // behaves, not an object to exclude from the shot. "no flickering", "no warping",
+    // and "avoid flickering" name an artifact to exclude and must still fire; they
+    // happen to end in "-ing" too, so the gerund suffix alone can't be the test. Only
+    // a bare two-word "without + gerund" span is manner-adverbial noise; the same
+    // shape after "no" or "avoid" is a directive naming a defect, so it is left alone.
+    if words.len() == 2 && words[0] == "without" && words[1].ends_with("ing") {
+        return true;
+    }
+    false
+}
+
+/// Remove negated spans so a negated term does not read as a positive request. Port of
+/// `strip_negations`.
+pub fn strip_negations(text: &str) -> String {
+    NEGATION_RE.replace_all(text, " ").into_owned()
+}
+
+/// Port of `check_prompt_negative_conflict` (higgsfield_lint.py lines 157-172).
+pub fn check_prompt_negative_conflict(params: &Value) -> Option<Finding> {
+    let prompt = params.get("prompt").and_then(Value::as_str)?;
+    let negative = params.get("negative_prompt").and_then(Value::as_str)?;
+    // `has_term` (Task 2) is deliberately case-sensitive, matching the oracle's
+    // `_has_term`. The oracle's `check_prompt_negative_conflict` compensates by
+    // lowercasing BOTH arguments before ever calling it (oracle lines 162-163); these
+    // two `.lower()`/`to_lowercase()` calls are that compensation, replicated
+    // explicitly rather than folded into `has_term` itself.
+    let positive = strip_negations(prompt).to_lowercase();
+    let negative_low = negative.to_lowercase();
+    let hits: Vec<&str> = CONFLICT_PHRASES
+        .iter()
+        .filter(|p| has_term(&positive, p) && has_term(&negative_low, p))
+        .copied()
+        .collect();
+    if hits.is_empty() {
+        return None;
+    }
+    let listed = hits
+        .iter()
+        .map(|h| format!("\"{}\"", h))
+        .collect::<Vec<_>>()
+        .join(", ");
+    let verb = if hits.len() == 1 { "appears" } else { "appear" };
+    Some(Finding {
+        check_id: "prompt_negative_conflict".to_string(),
+        message: format!(
+            "{} {} in both prompt and negative_prompt. Keep each term in one.",
+            listed, verb
+        ),
+    })
+}
+
+/// Port of `check_negation_placement` (higgsfield_lint.py lines 175-200).
+pub fn check_negation_placement(params: &Value, models: &HashSet<String>) -> Option<Finding> {
+    let prompt = params.get("prompt").and_then(Value::as_str)?;
+    let model = params.get("model").and_then(Value::as_str);
+    let negative = params.get("negative_prompt").and_then(Value::as_str);
+    let supports = negative.is_some_and(|n| !n.trim().is_empty())
+        || model.is_some_and(|m| models.contains(m));
+    if !supports {
+        return None;
+    }
+    let negations: Vec<String> = PLACEMENT_NEGATION_RE
+        .find_iter(prompt)
+        .map(|m| m.as_str().trim().to_string())
+        .filter(|s| !is_placement_noise(s))
+        .collect();
+    if negations.is_empty() {
+        return None;
+    }
+    let shown = negations
+        .iter()
+        .take(3)
+        .map(|n| format!("\"{}\"", n))
+        .collect::<Vec<_>>()
+        .join(", ");
+    let more = if negations.len() > 3 {
+        format!(" and {} more", negations.len() - 3)
+    } else {
+        String::new()
+    };
+    let verb = if negations.len() == 1 { "sits" } else { "sit" };
+    Some(Finding {
+        check_id: "negation_placement".to_string(),
+        message: format!(
+            "{}{} {} in the positive prompt while this model accepts negative_prompt. \
+             Move them there; models follow negation poorly in the prompt.",
+            shown, more, verb
+        ),
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use serde_json::json;
+    use std::collections::HashSet;
 
     #[test]
     fn has_term_respects_alphanumeric_boundaries() {
@@ -409,5 +554,188 @@ mod tests {
             "resolution": "1080p"
         });
         assert!(check_resolution_claim(&params).is_none());
+    }
+
+    // --- Task 3: negation checks -------------------------------------------------
+
+    fn empty_models() -> HashSet<String> {
+        HashSet::new()
+    }
+
+    fn model_set(names: &[&str]) -> HashSet<String> {
+        names.iter().map(|s| s.to_string()).collect()
+    }
+
+    // check_negation_placement must stay SILENT on ordinary narrative negation and on
+    // quantifier idioms - the false-positive class a full fix wave closed in the Python.
+    #[test]
+    fn negation_placement_silent_on_not_as_narrative_negation() {
+        let params = json!({
+            "prompt": "a lighthouse at dawn, the sun has not yet risen over the water",
+            "negative_prompt": "blurry"
+        });
+        assert!(check_negation_placement(&params, &empty_models()).is_none());
+    }
+
+    #[test]
+    fn negation_placement_silent_on_no_more_than_quantifier_idiom() {
+        let params = json!({
+            "prompt": "a busy street with no more than three people visible",
+            "negative_prompt": "blurry"
+        });
+        assert!(check_negation_placement(&params, &empty_models()).is_none());
+    }
+
+    #[test]
+    fn negation_placement_silent_on_without_gerund_manner_adverbial() {
+        let params = json!({
+            "prompt": "a monk sitting without moving, breathing slowly",
+            "negative_prompt": "blurry"
+        });
+        assert!(check_negation_placement(&params, &empty_models()).is_none());
+    }
+
+    // check_negation_placement must FIRE on directive negations naming an artifact to
+    // exclude, including "-ing" directives that are not manner adverbials.
+    #[test]
+    fn negation_placement_fires_on_directive_negations() {
+        for prompt in [
+            "no text",
+            "no logos",
+            "no clutter",
+            "without a watermark",
+            "no lettering",
+            "no flickering",
+            "no warping",
+            "avoid flickering",
+        ] {
+            let params = json!({"prompt": prompt, "negative_prompt": "blurry"});
+            assert!(
+                check_negation_placement(&params, &empty_models()).is_some(),
+                "should fire on: {prompt}"
+            );
+        }
+    }
+
+    #[test]
+    fn negation_placement_requires_negative_prompt_support_or_model_support() {
+        // Neither a non-empty negative_prompt nor a model in `models` -> silent, even
+        // though the prompt itself contains a directive negation.
+        let params = json!({"prompt": "no text"});
+        assert!(check_negation_placement(&params, &empty_models()).is_none());
+
+        let params_blank_negative = json!({"prompt": "no text", "negative_prompt": "   "});
+        assert!(check_negation_placement(&params_blank_negative, &empty_models()).is_none());
+
+        // A model present in `models` is sufficient even with no negative_prompt field.
+        let params_model = json!({"prompt": "no text", "model": "kling2_6"});
+        assert!(check_negation_placement(&params_model, &model_set(&["kling2_6"])).is_some());
+    }
+
+    #[test]
+    fn negation_placement_pluralises_the_verb() {
+        let one = json!({"prompt": "no text", "negative_prompt": "blurry"});
+        let finding_one = check_negation_placement(&one, &empty_models()).expect("fires");
+        assert!(finding_one.message.contains(" sits in the positive prompt"));
+
+        let two = json!({"prompt": "no text, no clutter", "negative_prompt": "blurry"});
+        let finding_two = check_negation_placement(&two, &empty_models()).expect("fires");
+        assert!(finding_two.message.contains(" sit in the positive prompt"));
+    }
+
+    #[test]
+    fn negation_placement_lists_at_most_three_and_counts_the_rest() {
+        let params = json!({
+            "prompt": "no text, no logos, no clutter, no watermark, no flickering",
+            "negative_prompt": "blurry"
+        });
+        let finding = check_negation_placement(&params, &empty_models()).expect("fires");
+        assert!(finding.message.contains("and 2 more"));
+    }
+
+    // check_prompt_negative_conflict: agreement (a term negated in the prompt but
+    // present in negative_prompt) is not a conflict; the same term un-negated in both
+    // fields is.
+    #[test]
+    fn prompt_negative_conflict_fires_on_slow_motion_in_both_fields() {
+        let params = json!({
+            "prompt": "dynamic scene, slow motion, cinematic",
+            "negative_prompt": "blurry, slow motion"
+        });
+        let finding = check_prompt_negative_conflict(&params).expect("should fire");
+        assert_eq!(finding.check_id, "prompt_negative_conflict");
+        assert!(finding.message.contains("\"slow motion\""));
+        assert!(finding.message.contains("appears in both prompt and negative_prompt"));
+    }
+
+    #[test]
+    fn prompt_negative_conflict_silent_when_prompt_negates_the_shared_term() {
+        // "no text" in the prompt strips "text" from the positive reading, so its
+        // appearance in negative_prompt is agreement, not conflict.
+        let params = json!({
+            "prompt": "no text, cat on a windowsill",
+            "negative_prompt": "random text"
+        });
+        assert!(check_prompt_negative_conflict(&params).is_none());
+    }
+
+    #[test]
+    fn prompt_negative_conflict_is_case_insensitive_via_explicit_lower() {
+        // Regression guard for the .lower() calls: has_term itself is case-sensitive
+        // (Task 2), so check_prompt_negative_conflict must lowercase both arguments
+        // itself before comparing.
+        let params = json!({
+            "prompt": "Slow Motion hero shot, cinematic",
+            "negative_prompt": "Blurry, Slow Motion"
+        });
+        let finding = check_prompt_negative_conflict(&params).expect("should fire despite mixed case");
+        assert!(finding.message.contains("\"slow motion\""));
+    }
+
+    #[test]
+    fn prompt_negative_conflict_pluralises_the_verb_for_three_hits() {
+        let params = json!({
+            "prompt": "sharp, static, grain, cinematic scene",
+            "negative_prompt": "sharp, static, grain"
+        });
+        let finding = check_prompt_negative_conflict(&params).expect("should fire");
+        assert!(finding.message.contains(" appear in both prompt and negative_prompt"));
+    }
+
+    #[test]
+    fn prompt_negative_conflict_silent_when_either_field_missing_or_not_string() {
+        assert!(check_prompt_negative_conflict(&json!({"prompt": "slow motion"})).is_none());
+        assert!(check_prompt_negative_conflict(
+            &json!({"prompt": 1, "negative_prompt": "slow motion"})
+        )
+        .is_none());
+    }
+
+    #[test]
+    fn strip_negations_removes_no_without_avoid_and_not_spans() {
+        // The pattern's middle group is greedy, so it consumes up to its full 3-word
+        // span when the text supports it - "no text here" is entirely swallowed (no,
+        // text, here), matching the oracle's `NEGATION_RE.sub(" ", ...)` exactly.
+        assert_eq!(strip_negations("no text here").trim(), "");
+        assert_eq!(strip_negations("not blurry").trim(), "");
+        assert_eq!(strip_negations("without a watermark").trim(), "");
+        assert_eq!(strip_negations("avoid harsh shadows").trim(), "");
+        // A trailing word beyond the pattern's 3-word reach survives untouched.
+        assert_eq!(strip_negations("no text please").trim(), "");
+        assert_eq!(strip_negations("no clutter, cat on a windowsill").trim(), ", cat on a windowsill");
+    }
+
+    #[test]
+    fn is_placement_noise_flags_quantifier_idioms_and_without_gerund_only() {
+        assert!(is_placement_noise("no more than three"));
+        assert!(is_placement_noise("no longer visible"));
+        assert!(is_placement_noise("no matter what"));
+        assert!(is_placement_noise("without moving"));
+        // Not noise: "no" + gerund is a directive, not a manner adverbial.
+        assert!(!is_placement_noise("no flickering"));
+        assert!(!is_placement_noise("avoid flickering"));
+        // Not noise: "without" + gerund + a third word is no longer the bare two-word
+        // manner-adverbial shape.
+        assert!(!is_placement_noise("without a watermark"));
     }
 }
