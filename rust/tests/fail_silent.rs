@@ -59,3 +59,31 @@ fn an_internal_panic_is_still_silent_and_zero() {
     assert!(err.is_empty());
     let _ = out;
 }
+
+#[test]
+fn argument_dispatch_does_not_change_the_hook_path() {
+    // Every pathological payload must behave identically when the binary is invoked
+    // with no arguments, exactly as before `doctor` existed.
+    let payload = br#"{"tool_input": {"params": {"prompt": "shot in 4k", "width": 1376, "height": 768}}}"#;
+    let (code, out, err) = run(payload);
+    assert_eq!(code, 0);
+    assert!(err.is_empty());
+    assert!(!out.is_empty(), "the hook path must still emit findings");
+}
+
+#[test]
+fn an_unrecognised_argument_still_behaves_as_the_hook() {
+    // PreToolUse invokes the command with no arguments. If anything ever passes a stray
+    // argument, the safe behaviour is the hook path, never a diagnostic dump on stdout
+    // that Claude Code would read as `additionalContext`.
+    let exe = env!("CARGO_BIN_EXE_higgsfield-lint");
+    let mut child = std::process::Command::new(exe).arg("--nonsense")
+        .stdin(std::process::Stdio::piped()).stdout(std::process::Stdio::piped())
+        .stderr(std::process::Stdio::piped()).spawn().expect("spawn");
+    use std::io::Write;
+    child.stdin.as_mut().unwrap()
+        .write_all(br#"{"tool_input": {"params": {"prompt": "x"}}}"#).ok();
+    let out = child.wait_with_output().expect("wait");
+    assert_eq!(out.status.code().unwrap_or(-1), 0);
+    assert!(out.stderr.is_empty());
+}

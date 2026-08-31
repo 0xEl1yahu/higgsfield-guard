@@ -2,6 +2,7 @@ use std::io::{Read, Write};
 use std::panic;
 
 mod checks;
+mod doctor;
 mod lint;
 mod models;
 
@@ -44,6 +45,18 @@ fn run() -> Option<String> {
 }
 
 fn main() {
+    // Dispatch BEFORE stdin is ever touched. `PreToolUse` always invokes this
+    // binary with no arguments, so that path is `None` here and falls straight
+    // through to the unchanged hook logic below. `doctor` is the one deliberate,
+    // human-invoked exception permitted to exit non-zero / write to stderr; any
+    // other argument (including unrecognised ones) must NOT be treated as a
+    // request for diagnostics - it falls through to the hook path too, so a
+    // stray argument can never make this binary dump output that Claude Code
+    // would read as `additionalContext`.
+    if std::env::args().nth(1).as_deref() == Some("doctor") {
+        std::process::exit(doctor::run());
+    }
+
     // SPEC 7: the hook must be invisible when it fails. A default panic hook would
     // print to stderr, which on PreToolUse is a blocking signal. Silence it first,
     // then swallow the unwind.

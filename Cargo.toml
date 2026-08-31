@@ -15,6 +15,10 @@ path = "rust/tests/fail_silent.rs"
 name = "parity"
 path = "rust/tests/parity.rs"
 
+[[test]]
+name = "doctor"
+path = "rust/tests/doctor.rs"
+
 [dependencies]
 serde_json = "1"
 regex = "1"
