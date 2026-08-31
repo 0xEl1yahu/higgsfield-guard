@@ -1,24 +1,38 @@
-//! Differential parity harness.
+//! Golden-output regression corpus.
 //!
-//! `src/higgsfield_lint.py` is the READ-ONLY oracle for this port - it is never edited,
-//! including to make a comparison here pass. Every previous task's unit/integration tests
-//! prove the Rust matches what the porter *believed* the Python does; this harness proves
-//! it matches what the Python *actually does*, by running both implementations against an
-//! identical corpus of stdin payloads and diffing the results. A single divergence fails
-//! the whole test; if that happens the Rust is what changes, not the oracle.
+//! This harness used to be a differential parity harness against `src/higgsfield_lint.py`,
+//! a hand-written Python port of the original design. That job is finished: the Rust was
+//! proven output-equivalent to the Python at 320 distinct inputs / 0 divergences, plus
+//! 4,200 independently-fuzzed inputs from a separate reviewer. The Python oracle is now
+//! archived, read-only, at `docs/archive/verified-port/` - see its README there for the
+//! full history and the exact commit that was true at.
 //!
-//! Comparison rules (task-5-brief.md Step 2):
-//!   - both processes must exit 0,
-//!   - both stderr streams must be empty,
-//!   - stdout must either be empty on BOTH sides, or parse as JSON on BOTH sides and be
-//!     equal AS PARSED VALUES - never as raw bytes. Python's `json.dump` emits
-//!     `{"a": 1}` (space after `:` and `,`); `serde_json::to_string` emits `{"a":1}`. A
-//!     byte-for-byte comparison would fail on every single non-empty output for a reason
-//!     that has nothing to do with correctness, so both outputs are parsed back into
-//!     `serde_json::Value` and compared structurally instead.
+//! The Rust is now the specification. This file keeps the same corpus - the real fixtures,
+//! the pathological-input set, and the generated sweep across every lexicon entry,
+//! dimension pair, and negation form - but compares the compiled binary's output against
+//! **recorded expectations** in `rust/tests/golden/expectations.json` instead of against a
+//! second live process. Those expectations are today's verified behaviour, captured before
+//! the oracle was retired (see that file's `note` field and the commit it names).
+//!
+//! Every subsequent rule change in this project's plan deliberately flips some of these
+//! expectations. That is expected and healthy - a flip is a reviewed behaviour change, not
+//! a bug - but it must be a *conscious* edit to `expectations.json`, never a silent one:
+//! there is no mechanism here that regenerates the file automatically, on purpose.
+//!
+//! Comparison rules (unchanged in spirit from the retired differential version):
+//!   - the binary must exit 0 and write nothing to stderr (the hook-path contract, checked
+//!     here as well as in `fail_silent.rs`, since every input in this corpus exercises it),
+//!   - stdout must be empty exactly when the recorded expectation is `null`, or parse as
+//!     JSON and be structurally equal to the recorded expectation - never compared as raw
+//!     bytes, since `serde_json::to_string`'s separator whitespace and key ordering are not
+//!     part of the contract.
+//!   - the exact input bytes generated for a label must still hash to what was recorded at
+//!     capture time. A hash mismatch means the corpus-generation code changed what a label
+//!     produces without anyone re-capturing it - a silent drift in what is being tested,
+//!     not a rule-behaviour change, and it is reported as its own failure category.
 
 use serde_json::{json, Value};
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::io::Write;
 use std::path::PathBuf;
 use std::process::{Command, Stdio};
@@ -59,19 +73,25 @@ fn run_rust(input: &[u8]) -> Outcome {
     run(Command::new(exe), input)
 }
 
-fn run_python(input: &[u8]) -> Outcome {
-    // CARGO_MANIFEST_DIR is the directory containing the Cargo.toml that declares this
-    // `[[test]]` target - the repo root - so this resolves regardless of the cwd `cargo
-    // test` happens to be invoked from.
-    let script = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("src/higgsfield_lint.py");
-    let mut cmd = Command::new("python3");
-    cmd.arg(script);
-    run(cmd, input)
+/// FNV-1a, 64-bit. Chosen over `std::collections::hash_map::DefaultHasher` deliberately:
+/// this hash is persisted in a checked-in file and compared across separate `cargo test`
+/// invocations (possibly different machines, different Rust versions), and the standard
+/// library documents `DefaultHasher`'s exact algorithm as an implementation detail that is
+/// free to change between releases. FNV-1a is a fixed, fully specified algorithm with no
+/// such caveat, and is trivial to implement from stdlib alone.
+fn fnv1a64(bytes: &[u8]) -> u64 {
+    let mut hash: u64 = 0xcbf29ce484222325;
+    for &b in bytes {
+        hash ^= b as u64;
+        hash = hash.wrapping_mul(0x0000_0100_0000_01b3);
+    }
+    hash
 }
 
 // =============================================================================================
-// Shared corpus-building vocabulary (mirrors the oracle's lexicons - see
-// src/higgsfield_lint.py lines 21-133 and rust/src/checks.rs lines 21-271)
+// Shared corpus-building vocabulary (mirrors the specification's lexicons - see
+// rust/src/checks.rs lines 21-271. This section is unchanged from the retired differential
+// harness: the corpus itself is not what changed in this task.)
 // =============================================================================================
 
 const RESOLUTION_TERMS: &[&str] = &["8k", "4k", "uhd", "1080p", "full hd", "720p", "480p"];
@@ -540,53 +560,146 @@ fn extra_edge_sweep() -> Vec<(String, Vec<u8>)> {
     .collect()
 }
 
+
+// =============================================================================================
+// Golden expectations
+// =============================================================================================
+
+/// One recorded expectation: the label it was captured under, the length and FNV-1a hash of
+/// the exact input bytes the corpus generator produced for that label at capture time, and
+/// the expected output (`None` means the hook must be silent - empty stdout).
+struct GoldenEntry {
+    input_len: usize,
+    input_hash: String,
+    output: Option<Value>,
+}
+
+/// Loads `rust/tests/golden/expectations.json` into a label -> entry map. Panics (not a
+/// soft failure) on a malformed golden file or a duplicate label - both mean the file was
+/// hand-edited into an inconsistent state, which is a setup bug, not a rule-behaviour
+/// question the divergence report should have to explain.
+fn load_golden() -> HashMap<String, GoldenEntry> {
+    let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("rust/tests/golden/expectations.json");
+    let text = std::fs::read_to_string(&path)
+        .unwrap_or_else(|e| panic!("could not read {}: {e}", path.display()));
+    let doc: Value = serde_json::from_str(&text)
+        .unwrap_or_else(|e| panic!("{} is not valid JSON: {e}", path.display()));
+    let entries = doc
+        .get("entries")
+        .and_then(Value::as_array)
+        .unwrap_or_else(|| panic!("{} has no top-level \"entries\" array", path.display()));
+
+    let mut map = HashMap::with_capacity(entries.len());
+    for entry in entries {
+        let label = entry
+            .get("label")
+            .and_then(Value::as_str)
+            .unwrap_or_else(|| panic!("a golden entry is missing its \"label\" string: {entry}"))
+            .to_string();
+        let input_len = entry
+            .get("input_len")
+            .and_then(Value::as_u64)
+            .unwrap_or_else(|| panic!("golden entry {label:?} is missing \"input_len\""))
+            as usize;
+        let input_hash = entry
+            .get("input_fnv1a64")
+            .and_then(Value::as_str)
+            .unwrap_or_else(|| panic!("golden entry {label:?} is missing \"input_fnv1a64\""))
+            .to_string();
+        let output = entry
+            .get("output")
+            .cloned()
+            .filter(|v| !v.is_null());
+        let prior = map.insert(label.clone(), GoldenEntry { input_len, input_hash, output });
+        assert!(prior.is_none(), "duplicate golden label {label:?} in {}", path.display());
+    }
+    map
+}
+
 // =============================================================================================
 // Comparison
 // =============================================================================================
 
-fn compare(rust_out: &Outcome, py_out: &Outcome, label: &str, input: &[u8]) -> Option<String> {
+/// Compares one corpus input's actual behaviour against its recorded golden expectation.
+/// Returns `None` when everything matches, or a `Some(String)` naming the input and showing
+/// expected vs. actual - callers accumulate these across the whole corpus rather than
+/// failing on the first one, so a single test run reports every offending input at once.
+fn compare(label: &str, input: &[u8], rust_out: &Outcome, golden: Option<&GoldenEntry>) -> Option<String> {
     let mut problems = Vec::new();
 
+    // The hook-path contract applies to every input in this corpus, golden entry or not:
+    // never a non-zero exit, never stderr. Checked here in addition to `fail_silent.rs`
+    // because this corpus's sweep covers far more shapes than that file's fixed list.
     if rust_out.code != 0 {
         problems.push(format!("rust exited {} (expected 0)", rust_out.code));
     }
-    if py_out.code != 0 {
-        problems.push(format!("python exited {} (expected 0)", py_out.code));
-    }
     if !rust_out.stderr.is_empty() {
-        problems.push(format!("rust stderr was non-empty: {:?}", String::from_utf8_lossy(&rust_out.stderr)));
+        problems.push(format!(
+            "rust stderr was non-empty: {:?}",
+            String::from_utf8_lossy(&rust_out.stderr)
+        ));
     }
-    if !py_out.stderr.is_empty() {
-        problems.push(format!("python stderr was non-empty: {:?}", String::from_utf8_lossy(&py_out.stderr)));
+
+    let Some(golden) = golden else {
+        problems.push(
+            "no golden expectation recorded for this label - this is a NEW input, not a \
+             flip; add it deliberately to rust/tests/golden/expectations.json (see that \
+             file's README/note on how it was captured)"
+                .to_string(),
+        );
+        return Some(format!(
+            "MISSING GOLDEN ENTRY [{label}]\n  {}",
+            problems.join("\n  ")
+        ));
+    };
+
+    // Corpus-drift check: did the generator actually build the same bytes for this label
+    // that were recorded at capture time? This is orthogonal to whether the *behaviour*
+    // changed - it catches someone editing a sweep function (e.g. changing a prompt
+    // string) without recapturing, which would otherwise silently compare the new bytes'
+    // output against the OLD bytes' recorded expectation.
+    let actual_hash = format!("{:016x}", fnv1a64(input));
+    if actual_hash != golden.input_hash || input.len() != golden.input_len {
+        problems.push(format!(
+            "input bytes for this label no longer match what was captured (len {} -> {}, \
+             hash {} -> {}) - the corpus generator changed what this label produces; \
+             recapture deliberately if that was intended",
+            golden.input_len,
+            input.len(),
+            golden.input_hash,
+            actual_hash
+        ));
     }
 
     let rust_empty = rust_out.stdout.is_empty();
-    let py_empty = py_out.stdout.is_empty();
-    if rust_empty != py_empty {
-        problems.push(format!(
-            "stdout emptiness differs: rust_empty={rust_empty} (len {}), python_empty={py_empty} (len {})",
-            rust_out.stdout.len(),
-            py_out.stdout.len()
-        ));
-    } else if !rust_empty {
-        let rust_json: Result<Value, _> = serde_json::from_slice(&rust_out.stdout);
-        let py_json: Result<Value, _> = serde_json::from_slice(&py_out.stdout);
-        match (rust_json, py_json) {
-            (Ok(rv), Ok(pv)) => {
-                if rv != pv {
-                    problems.push(format!("parsed JSON differs:\n    rust:   {rv}\n    python: {pv}"));
-                }
-            }
-            (rr, pr) => {
+    let expected_empty = golden.output.is_none();
+    let actual_value: Option<Value> = if rust_empty {
+        None
+    } else {
+        match serde_json::from_slice::<Value>(&rust_out.stdout) {
+            Ok(v) => Some(v),
+            Err(e) => {
                 problems.push(format!(
-                    "stdout did not parse as JSON on both sides (rust_parsed_ok={}, python_parsed_ok={}); \
-                     rust stdout={:?} python stdout={:?}",
-                    rr.is_ok(),
-                    pr.is_ok(),
-                    String::from_utf8_lossy(&rust_out.stdout),
-                    String::from_utf8_lossy(&py_out.stdout)
+                    "rust stdout did not parse as JSON: {e}; raw stdout={:?}",
+                    String::from_utf8_lossy(&rust_out.stdout)
                 ));
+                None
             }
+        }
+    };
+
+    if rust_empty != expected_empty {
+        problems.push(format!(
+            "stdout emptiness differs from the golden expectation: expected_empty={expected_empty}, \
+             actual_empty={rust_empty}\n    expected: {}\n    actual:   {}",
+            render_expectation(golden.output.as_ref()),
+            render_expectation(actual_value.as_ref()),
+        ));
+    } else if let (Some(expected_v), Some(actual_v)) = (&golden.output, &actual_value) {
+        if expected_v != actual_v {
+            problems.push(format!(
+                "parsed JSON differs from the golden expectation:\n    expected: {expected_v}\n    actual:   {actual_v}"
+            ));
         }
     }
 
@@ -594,10 +707,32 @@ fn compare(rust_out: &Outcome, py_out: &Outcome, label: &str, input: &[u8]) -> O
         None
     } else {
         Some(format!(
-            "DIVERGENCE [{label}]\n  stdin: {}\n  {}",
-            String::from_utf8_lossy(input),
+            "GOLDEN MISMATCH [{label}]\n  stdin: {}\n  {}",
+            truncated_lossy(input, 2000),
             problems.join("\n  ")
         ))
+    }
+}
+
+fn render_expectation(v: Option<&Value>) -> String {
+    match v {
+        None => "<no output (silent)>".to_string(),
+        Some(v) => v.to_string(),
+    }
+}
+
+/// Echoes stdin in a failure message, capped so a divergence on one of the pathological
+/// multi-megabyte inputs (`huge_prompt`, `deeply_nested_array`) can't turn one test failure
+/// into megabytes of terminal output.
+fn truncated_lossy(input: &[u8], max_bytes: usize) -> String {
+    if input.len() <= max_bytes {
+        String::from_utf8_lossy(input).to_string()
+    } else {
+        format!(
+            "{}... [truncated, {} bytes total]",
+            String::from_utf8_lossy(&input[..max_bytes]),
+            input.len()
+        )
     }
 }
 
@@ -606,7 +741,7 @@ fn compare(rust_out: &Outcome, py_out: &Outcome, label: &str, input: &[u8]) -> O
 // =============================================================================================
 
 #[test]
-fn rust_matches_python_oracle_across_the_corpus() {
+fn rust_matches_recorded_golden_expectations() {
     let known = known_model();
 
     let mut all: Vec<(String, Vec<u8>)> = Vec::new();
@@ -639,24 +774,41 @@ fn rust_matches_python_oracle_across_the_corpus() {
         corpus.len()
     );
 
+    let golden = load_golden();
+
     let mut divergences: Vec<String> = Vec::new();
+    let mut seen_labels: HashSet<String> = HashSet::new();
     for (label, input) in &corpus {
+        seen_labels.insert(label.clone());
         let rust_out = run_rust(input);
-        let py_out = run_python(input);
-        if let Some(problem) = compare(&rust_out, &py_out, label, input) {
+        if let Some(problem) = compare(label, input, &rust_out, golden.get(label)) {
             divergences.push(problem);
         }
     }
 
+    // The reverse of "missing golden entry": a label the golden file still records that the
+    // corpus no longer generates at all. Left unreported, `expectations.json` would quietly
+    // accumulate dead entries for inputs nothing exercises any more.
+    let mut orphaned: Vec<&String> = golden.keys().filter(|l| !seen_labels.contains(*l)).collect();
+    orphaned.sort();
+    for label in &orphaned {
+        divergences.push(format!(
+            "ORPHANED GOLDEN ENTRY [{label}]\n  recorded in expectations.json but the corpus \
+             no longer generates this label - either the corpus generator changed or this \
+             entry is stale and should be removed"
+        ));
+    }
+
     println!(
-        "parity harness: compared {} distinct inputs against the Python oracle - {} divergence(s)",
+        "golden corpus: compared {} distinct inputs against {} recorded expectations - {} divergence(s)",
         corpus.len(),
+        golden.len(),
         divergences.len()
     );
 
     assert!(
         divergences.is_empty(),
-        "{} divergence(s) found between the Rust port and the Python oracle:\n\n{}",
+        "{} divergence(s) found between the Rust binary and the recorded golden expectations:\n\n{}",
         divergences.len(),
         divergences.join("\n\n")
     );

@@ -1,0 +1,2704 @@
+{
+  "captured_from_commit": "77df1603e072731a46b7036e8155008e5880d136",
+  "count": 320,
+  "entries": [
+    {
+      "input_fnv1a64": "94b520152b340f40",
+      "input_len": 152,
+      "label": "batch:empty_requests_falls_back_to_top_level",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but width 1280 x height 720 gives a 720px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "297c2994ac9f59bd",
+      "input_len": 173,
+      "label": "batch:index=\"req-alpha\"",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request req-alpha: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "d5a049f9515d478a",
+      "input_len": 164,
+      "label": "batch:index=-3",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request -3: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "f94f056bd806a1d6",
+      "input_len": 163,
+      "label": "batch:index=0",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 0: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "a8615b0b375fc359",
+      "input_len": 165,
+      "label": "batch:index=2.5",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 2.5: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "91cffb2b029ebc5b",
+      "input_len": 163,
+      "label": "batch:index=7",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 7: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "c9d958cb09c9880d",
+      "input_len": 167,
+      "label": "batch:index=false",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request False: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "4f3be369ba308bef",
+      "input_len": 166,
+      "label": "batch:index=null",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request None: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "a39226c75da2511e",
+      "input_len": 166,
+      "label": "batch:index=true",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request True: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "88539f3eb2beb3e6",
+      "input_len": 377,
+      "label": "batch:mixed_entries",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 2 findings\n- resolution_claim: request req-a: prompt says \"4k\" but width 1280 x height 720 gives a 720px short side. Raise resolution, or drop the claim from the prompt.\n- negation_placement: request 3: \"no logos\", \"no clutter\" sit in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "ce0c387bf76bcad7",
+      "input_len": 175,
+      "label": "batch:non_empty_requests_never_falls_back",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "4c8c4fe9a4b7902a",
+      "input_len": 224,
+      "label": "batch:positional_fallback",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 1: prompt says \"4k\" but width 1280 x height 720 gives a 720px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "603d4d0b157601de",
+      "input_len": 173,
+      "label": "combined:neg=None:model=None:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "ed7f62bb9152a32e",
+      "input_len": 183,
+      "label": "combined:neg=None:model=None:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "9a4a53bb21e4060b",
+      "input_len": 192,
+      "label": "combined:neg=None:model=Some(\"kling2_6\"):obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 2 findings\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.\n- negation_placement: \"no text\", \"no logos\" sit in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "07ca8f278cef80d7",
+      "input_len": 206,
+      "label": "combined:neg=None:model=Some(\"kling2_6\"):str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 2 findings\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.\n- negation_placement: \"no text\", \"no logos\" sit in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "2dca6d3f3c4dd153",
+      "input_len": 204,
+      "label": "combined:neg=None:model=Some(\"not_a_real_model_xyz\"):obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "8e47a8528b1ce6e3",
+      "input_len": 218,
+      "label": "combined:neg=None:model=Some(\"not_a_real_model_xyz\"):str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "99a00f6d3d9bbdf9",
+      "input_len": 220,
+      "label": "combined:neg=Some(\"slow motion, sharp, blurry\"):model=None:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 3 findings\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: \"slow motion\", \"sharp\" appear in both prompt and negative_prompt. Keep each term in one.\n- negation_placement: \"no text\", \"no logos\" sit in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "778179c747f31751",
+      "input_len": 234,
+      "label": "combined:neg=Some(\"slow motion, sharp, blurry\"):model=None:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 3 findings\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: \"slow motion\", \"sharp\" appear in both prompt and negative_prompt. Keep each term in one.\n- negation_placement: \"no text\", \"no logos\" sit in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "32d452793177ecba",
+      "input_len": 239,
+      "label": "combined:neg=Some(\"slow motion, sharp, blurry\"):model=Some(\"kling2_6\"):obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 3 findings\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: \"slow motion\", \"sharp\" appear in both prompt and negative_prompt. Keep each term in one.\n- negation_placement: \"no text\", \"no logos\" sit in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "7d2e4620636e87f6",
+      "input_len": 257,
+      "label": "combined:neg=Some(\"slow motion, sharp, blurry\"):model=Some(\"kling2_6\"):str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 3 findings\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: \"slow motion\", \"sharp\" appear in both prompt and negative_prompt. Keep each term in one.\n- negation_placement: \"no text\", \"no logos\" sit in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "e1d48a6ccb20da22",
+      "input_len": 251,
+      "label": "combined:neg=Some(\"slow motion, sharp, blurry\"):model=Some(\"not_a_real_model_xyz\"):obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 3 findings\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: \"slow motion\", \"sharp\" appear in both prompt and negative_prompt. Keep each term in one.\n- negation_placement: \"no text\", \"no logos\" sit in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "fd731ecd723bbf72",
+      "input_len": 269,
+      "label": "combined:neg=Some(\"slow motion, sharp, blurry\"):model=Some(\"not_a_real_model_xyz\"):str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 3 findings\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: \"slow motion\", \"sharp\" appear in both prompt and negative_prompt. Keep each term in one.\n- negation_placement: \"no text\", \"no logos\" sit in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "c7f914802f314441",
+      "input_len": 174,
+      "label": "conflict:blurred:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"blurred\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "7ef5ed53c1657c29",
+      "input_len": 184,
+      "label": "conflict:blurred:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"blurred\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "9d1997f6f1398cdb",
+      "input_len": 172,
+      "label": "conflict:blurry:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"blurry\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "781d9a20ac62b2b7",
+      "input_len": 182,
+      "label": "conflict:blurry:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"blurry\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "8e39da4f822702eb",
+      "input_len": 176,
+      "label": "conflict:close-up:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"close-up\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "78372ac76020ccdf",
+      "input_len": 186,
+      "label": "conflict:close-up:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"close-up\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "c9bbe1d7517ea301",
+      "input_len": 170,
+      "label": "conflict:grain:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"grain\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "6ca29db4cd055575",
+      "input_len": 180,
+      "label": "conflict:grain:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"grain\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "5c0f96c5f28b0c07",
+      "input_len": 176,
+      "label": "conflict:handheld:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"handheld\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "516016f7472ce363",
+      "input_len": 186,
+      "label": "conflict:handheld:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"handheld\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "4b3a6d48ddba5e31",
+      "input_len": 182,
+      "label": "conflict:motion blur:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"motion blur\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "957946430e13aaf5",
+      "input_len": 192,
+      "label": "conflict:motion blur:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"motion blur\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "4ba173727a3eb2d1",
+      "input_len": 166,
+      "label": "conflict:pan:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"pan\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "c39e1f129cbe6875",
+      "input_len": 176,
+      "label": "conflict:pan:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"pan\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "d90c8cb1971e60bd",
+      "input_len": 170,
+      "label": "conflict:sharp:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"sharp\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "47e9d27cea5bf03d",
+      "input_len": 180,
+      "label": "conflict:sharp:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"sharp\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "bd793d20facf4f75",
+      "input_len": 182,
+      "label": "conflict:slow motion:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "9ae3f5d6bb984571",
+      "input_len": 192,
+      "label": "conflict:slow motion:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "197dd3c56f3bbc15",
+      "input_len": 174,
+      "label": "conflict:slow-mo:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow-mo\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "ec64e66504faa395",
+      "input_len": 184,
+      "label": "conflict:slow-mo:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow-mo\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "a44e135643190f7f",
+      "input_len": 172,
+      "label": "conflict:static:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"static\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "e272d3b3ef86b5f3",
+      "input_len": 182,
+      "label": "conflict:static:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"static\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "f1b741c93d79cf99",
+      "input_len": 168,
+      "label": "conflict:text:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"text\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "b1303bd0bea0fd3d",
+      "input_len": 178,
+      "label": "conflict:text:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"text\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "9664dcba5ce3d609",
+      "input_len": 178,
+      "label": "conflict:wide shot:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"wide shot\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "55a51b8258e6d26d",
+      "input_len": 188,
+      "label": "conflict:wide shot:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"wide shot\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "f5beb86c1f5d46b5",
+      "input_len": 168,
+      "label": "conflict:zoom:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"zoom\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "5fc5000e6942f461",
+      "input_len": 178,
+      "label": "conflict:zoom:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"zoom\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "cadc9bc9b33f4a97",
+      "input_len": 157,
+      "label": "conflict_agreement:blurred",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"no blurred\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "5200f7dce6798f2f",
+      "input_len": 155,
+      "label": "conflict_agreement:blurry",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"no blurry\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "184329bdc7aed0bb",
+      "input_len": 159,
+      "label": "conflict_agreement:close-up",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"no close-up\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "d5694d6356919055",
+      "input_len": 153,
+      "label": "conflict_agreement:grain",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"no grain\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "3fcd0086a0f29283",
+      "input_len": 159,
+      "label": "conflict_agreement:handheld",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"no handheld\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "d3cd91d43ac408dd",
+      "input_len": 165,
+      "label": "conflict_agreement:motion blur",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"no motion blur\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "b6a63c0d757b6f09",
+      "input_len": 149,
+      "label": "conflict_agreement:pan",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"no pan\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "da27a20271c4dc8b",
+      "input_len": 153,
+      "label": "conflict_agreement:sharp",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"no sharp\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "e0baddde92f5fdb5",
+      "input_len": 165,
+      "label": "conflict_agreement:slow motion",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"no slow motion\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "e5204b70f94213ab",
+      "input_len": 157,
+      "label": "conflict_agreement:slow-mo",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"no slow-mo\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "f857579b657dd11f",
+      "input_len": 155,
+      "label": "conflict_agreement:static",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"no static\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "1f4427c2873bc69f",
+      "input_len": 151,
+      "label": "conflict_agreement:text",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"no text\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "b867a88828cd4f3d",
+      "input_len": 161,
+      "label": "conflict_agreement:wide shot",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"no wide shot\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "0f91812cd1a0e03b",
+      "input_len": 151,
+      "label": "conflict_agreement:zoom",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"no zoom\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "1c71f2f83c49a5e1",
+      "input_len": 141,
+      "label": "dims:1376x768:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8k\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "e40914c3b3cf6345",
+      "input_len": 151,
+      "label": "dims:1376x768:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8k\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "c0c58897b75eebf3",
+      "input_len": 137,
+      "label": "dims:16x9:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "2ffd97f35be588e7",
+      "input_len": 147,
+      "label": "dims:16x9:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "28093419323e5c22",
+      "input_len": 141,
+      "label": "dims:1920x100:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8k\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "f40e11e6208f48a0",
+      "input_len": 151,
+      "label": "dims:1920x100:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8k\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "fbe9c1d9afc08673",
+      "input_len": 142,
+      "label": "dims:3840x2160:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8k\" but width 3840 x height 2160 gives a 2160px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "aaddad3ee3bd53e7",
+      "input_len": 152,
+      "label": "dims:3840x2160:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8k\" but width 3840 x height 2160 gives a 2160px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "15b2434a9951483d",
+      "input_len": 138,
+      "label": "dims:64x64:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "66d3d007d46f2365",
+      "input_len": 148,
+      "label": "dims:64x64:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "4ce01770137fb0ab",
+      "input_len": 122,
+      "label": "dims:asymmetric_bool",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "316bb15d430201f5",
+      "input_len": 143,
+      "label": "dims:floats_excluded",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "68b782bd0e91bb25",
+      "input_len": 141,
+      "label": "dims:true_true",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "8e81b39ce3e7fbc6",
+      "input_len": 103,
+      "label": "edge:model_non_string",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "e20ea585da89667d",
+      "input_len": 114,
+      "label": "edge:negative_prompt_non_string",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "c5648af01c173561",
+      "input_len": 116,
+      "label": "edge:negative_prompt_whitespace_only",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "6f35c1901c0633d4",
+      "input_len": 98,
+      "label": "edge:no_prompt_at_all",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "1c5e1592b18b2c27",
+      "input_len": 113,
+      "label": "edge:prompt_non_string",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "39df21fd33d087bb",
+      "input_len": 110,
+      "label": "edge:resolution_non_string",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "046493d5cfbdb946",
+      "input_len": 113,
+      "label": "edge:resolution_null",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "1d71587930dbc12f",
+      "input_len": 158,
+      "label": "edge:unicode_prompt",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but width 1280 x height 1280 gives a 1280px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "08aa48f2b8232bf7",
+      "input_len": 126,
+      "label": "edge:width_as_string_number",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "1769562a7077e280",
+      "input_len": 124,
+      "label": "edge:width_negative",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "f798f613aa347100",
+      "input_len": 599,
+      "label": "fixture:kling2_6_4k_slowmo.json:batch",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 3 findings\n- resolution_claim: request 0: prompt says \"4K\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: request 0: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.\n- negation_placement: request 0: \"no text\", \"no logos\", \"no clutter\" sit in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "d164ba5aa7565b35",
+      "input_len": 568,
+      "label": "fixture:kling2_6_4k_slowmo.json:single",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 3 findings\n- resolution_claim: prompt says \"4K\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.\n- negation_placement: \"no text\", \"no logos\", \"no clutter\" sit in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "fa0979a44d1aa0bb",
+      "input_len": 553,
+      "label": "fixture:seedance_tree_clean.json:batch",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "a084cae6af5a4cc2",
+      "input_len": 522,
+      "label": "fixture:seedance_tree_clean.json:single",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "43998d52e1779552",
+      "input_len": 148,
+      "label": "gerund_directive:avoid flickering:model=None",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"avoid flickering\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "f55c8ede77e8266f",
+      "input_len": 167,
+      "label": "gerund_directive:avoid flickering:model=Some(\"kling2_6\")",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"avoid flickering\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "4b1badd2252b59e5",
+      "input_len": 148,
+      "label": "gerund_directive:avoid shimmering:model=None",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"avoid shimmering\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "b17f7ca55f850580",
+      "input_len": 167,
+      "label": "gerund_directive:avoid shimmering:model=Some(\"kling2_6\")",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"avoid shimmering\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "55745a62ffc54470",
+      "input_len": 145,
+      "label": "gerund_directive:no flickering:model=None",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"no flickering\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "a958f9adff39bb3b",
+      "input_len": 164,
+      "label": "gerund_directive:no flickering:model=Some(\"kling2_6\")",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"no flickering\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "91d9bdd7684d508c",
+      "input_len": 142,
+      "label": "gerund_directive:no warping:model=None",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"no warping\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "df6b0587aff0d069",
+      "input_len": 161,
+      "label": "gerund_directive:no warping:model=Some(\"kling2_6\")",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"no warping\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "1360cce16fff5839",
+      "input_len": 161,
+      "label": "gerund_noise:without blinking:model=None",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "f7124b0ae186738a",
+      "input_len": 180,
+      "label": "gerund_noise:without blinking:model=Some(\"kling2_6\")",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "74f4c894433c9c1b",
+      "input_len": 162,
+      "label": "gerund_noise:without breathing:model=None",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "fd595f54174a344e",
+      "input_len": 181,
+      "label": "gerund_noise:without breathing:model=Some(\"kling2_6\")",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "5c62a6f8fa0af32d",
+      "input_len": 159,
+      "label": "gerund_noise:without moving:model=None",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "278c936f580cc2c6",
+      "input_len": 178,
+      "label": "gerund_noise:without moving:model=Some(\"kling2_6\")",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "b2c800913f05717f",
+      "input_len": 98,
+      "label": "negation_form:avoid:neg=None:model=None",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "525f8d2d6675400a",
+      "input_len": 117,
+      "label": "negation_form:avoid:neg=None:model=Some(\"kling2_6\")",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"avoid clutter\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "d6ce53943a7906b6",
+      "input_len": 129,
+      "label": "negation_form:avoid:neg=None:model=Some(\"not_a_real_model_xyz\")",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "4cd8e4ec14732dc9",
+      "input_len": 125,
+      "label": "negation_form:avoid:neg=Some(\"blurry\"):model=None",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"avoid clutter\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "26a93af9be016762",
+      "input_len": 144,
+      "label": "negation_form:avoid:neg=Some(\"blurry\"):model=Some(\"kling2_6\")",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"avoid clutter\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "ca865424e1a8843e",
+      "input_len": 156,
+      "label": "negation_form:avoid:neg=Some(\"blurry\"):model=Some(\"not_a_real_model_xyz\")",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"avoid clutter\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "ed50e5edd50a9dcd",
+      "input_len": 135,
+      "label": "negation_form:avoid:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"avoid clutter\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "036527d165f77753",
+      "input_len": 95,
+      "label": "negation_form:no:neg=None:model=None",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "237821d2b2485bf4",
+      "input_len": 114,
+      "label": "negation_form:no:neg=None:model=Some(\"kling2_6\")",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"no clutter\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "bab42e2341e59540",
+      "input_len": 126,
+      "label": "negation_form:no:neg=None:model=Some(\"not_a_real_model_xyz\")",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "593589db70116d69",
+      "input_len": 122,
+      "label": "negation_form:no:neg=Some(\"blurry\"):model=None",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"no clutter\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "66adf05976b58dfc",
+      "input_len": 141,
+      "label": "negation_form:no:neg=Some(\"blurry\"):model=Some(\"kling2_6\")",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"no clutter\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "5af569651f065c38",
+      "input_len": 153,
+      "label": "negation_form:no:neg=Some(\"blurry\"):model=Some(\"not_a_real_model_xyz\")",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"no clutter\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "11e6a8d49a2f422d",
+      "input_len": 132,
+      "label": "negation_form:no:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"no clutter\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "e2785ec2c3e858d3",
+      "input_len": 96,
+      "label": "negation_form:not:neg=None:model=None",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "6bed7ec05b50aa46",
+      "input_len": 115,
+      "label": "negation_form:not:neg=None:model=Some(\"kling2_6\")",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "183029d43ce17c12",
+      "input_len": 127,
+      "label": "negation_form:not:neg=None:model=Some(\"not_a_real_model_xyz\")",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "c7f9853f66f1d01d",
+      "input_len": 123,
+      "label": "negation_form:not:neg=Some(\"blurry\"):model=None",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "46fad83d71600d9e",
+      "input_len": 142,
+      "label": "negation_form:not:neg=Some(\"blurry\"):model=Some(\"kling2_6\")",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "81ad60c90188457a",
+      "input_len": 154,
+      "label": "negation_form:not:neg=Some(\"blurry\"):model=Some(\"not_a_real_model_xyz\")",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "3a740b88b335a349",
+      "input_len": 133,
+      "label": "negation_form:not:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "fe8f5448d8924f52",
+      "input_len": 100,
+      "label": "negation_form:without:neg=None:model=None",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "b63f7968b6882b5b",
+      "input_len": 119,
+      "label": "negation_form:without:neg=None:model=Some(\"kling2_6\")",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"without clutter\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "81dec542cf0b0f77",
+      "input_len": 131,
+      "label": "negation_form:without:neg=None:model=Some(\"not_a_real_model_xyz\")",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "4a063aed6ff26404",
+      "input_len": 127,
+      "label": "negation_form:without:neg=Some(\"blurry\"):model=None",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"without clutter\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "6b7bbf5d1879f5e3",
+      "input_len": 146,
+      "label": "negation_form:without:neg=Some(\"blurry\"):model=Some(\"kling2_6\")",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"without clutter\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "d4eea01313a05a4f",
+      "input_len": 158,
+      "label": "negation_form:without:neg=Some(\"blurry\"):model=Some(\"not_a_real_model_xyz\")",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"without clutter\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "94871ee572085914",
+      "input_len": 137,
+      "label": "negation_form:without:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"without clutter\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "b9248e9c13660f85",
+      "input_len": 100000,
+      "label": "pathological:deeply_nested_array",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "cbf29ce484222325",
+      "input_len": 0,
+      "label": "pathological:empty",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "08f44b07b5901a25",
+      "input_len": 2,
+      "label": "pathological:empty_object",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "5cf74153161a1a88",
+      "input_len": 8,
+      "label": "pathological:garbage",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "4c8e7b64b91631b2",
+      "input_len": 5000039,
+      "label": "pathological:huge_prompt",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "8fe36f65389c3ae3",
+      "input_len": 4,
+      "label": "pathological:invalid_utf8",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "6f5af89e4fe09421",
+      "input_len": 47,
+      "label": "pathological:magic_panic_key",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "2d47441d95911928",
+      "input_len": 43,
+      "label": "pathological:params_bare_string",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "ac0eca7d3e2e2ab6",
+      "input_len": 30,
+      "label": "pathological:params_non_dict_list",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "eb23c3e5c7cd6f98",
+      "input_len": 44,
+      "label": "pathological:requests_junk_entries",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "6629824db349c05c",
+      "input_len": 42,
+      "label": "pathological:requests_not_a_list",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "69cba3445cc28a95",
+      "input_len": 20,
+      "label": "pathological:tool_input_null",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "1fddb8089cd445ae",
+      "input_len": 26,
+      "label": "pathological:tool_input_string",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "50f4b40ac6164b80",
+      "input_len": 155,
+      "label": "resolution:1080P:1376x768:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"1080P\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "18bc9ed739400288",
+      "input_len": 165,
+      "label": "resolution:1080P:1376x768:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"1080P\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "f37840047eb6f2a2",
+      "input_len": 151,
+      "label": "resolution:1080P:16x9:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "acdf5dac82b6a7f2",
+      "input_len": 161,
+      "label": "resolution:1080P:16x9:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "551cce4dbe7cf2a7",
+      "input_len": 155,
+      "label": "resolution:1080P:1920x100:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"1080P\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "a7a4faba3fa27a15",
+      "input_len": 165,
+      "label": "resolution:1080P:1920x100:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"1080P\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "45e4236787c17046",
+      "input_len": 156,
+      "label": "resolution:1080P:3840x2160:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "6862181568b9f2be",
+      "input_len": 166,
+      "label": "resolution:1080P:3840x2160:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "36c213c0d3a87848",
+      "input_len": 152,
+      "label": "resolution:1080P:64x64:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "b76680e42c83a8e8",
+      "input_len": 162,
+      "label": "resolution:1080P:64x64:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "43a6146a4242b400",
+      "input_len": 156,
+      "label": "resolution:1080P:bool_dims",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "4b7af8316482fca0",
+      "input_len": 155,
+      "label": "resolution:1080p:1376x768:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"1080p\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "a20d8e725e9fcee8",
+      "input_len": 165,
+      "label": "resolution:1080p:1376x768:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"1080p\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "8945a944d2407742",
+      "input_len": 151,
+      "label": "resolution:1080p:16x9:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "cabc87cacdab8d12",
+      "input_len": 161,
+      "label": "resolution:1080p:16x9:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "1c85e229d17a6507",
+      "input_len": 155,
+      "label": "resolution:1080p:1920x100:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"1080p\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "2d046c812b3d9275",
+      "input_len": 165,
+      "label": "resolution:1080p:1920x100:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"1080p\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "9522ce63130cd8e6",
+      "input_len": 156,
+      "label": "resolution:1080p:3840x2160:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "35dab98bebac695e",
+      "input_len": 166,
+      "label": "resolution:1080p:3840x2160:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "8771a6755b00ec68",
+      "input_len": 152,
+      "label": "resolution:1080p:64x64:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "81e8378a5fe0fac8",
+      "input_len": 162,
+      "label": "resolution:1080p:64x64:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "0343847aad7c2d60",
+      "input_len": 156,
+      "label": "resolution:1080p:bool_dims",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "7e6c3268323708d5",
+      "input_len": 154,
+      "label": "resolution:480P:1376x768:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "a20b0882f8e86ea5",
+      "input_len": 164,
+      "label": "resolution:480P:1376x768:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "f55f4b6c1ce3ccef",
+      "input_len": 150,
+      "label": "resolution:480P:16x9:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "35c82bd1716a5e57",
+      "input_len": 160,
+      "label": "resolution:480P:16x9:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "941a91e04cbeb616",
+      "input_len": 154,
+      "label": "resolution:480P:1920x100:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"480P\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "abf4af234ba6ee70",
+      "input_len": 164,
+      "label": "resolution:480P:1920x100:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"480P\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "4e4b1fd4983ad97f",
+      "input_len": 155,
+      "label": "resolution:480P:3840x2160:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "9cd1d68fed07acd7",
+      "input_len": 165,
+      "label": "resolution:480P:3840x2160:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "09bc30bcd3e52f13",
+      "input_len": 151,
+      "label": "resolution:480P:64x64:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "72d4566323dd550f",
+      "input_len": 161,
+      "label": "resolution:480P:64x64:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "47c2b624a9586387",
+      "input_len": 155,
+      "label": "resolution:480P:bool_dims",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "3f7ce1bc7339c575",
+      "input_len": 154,
+      "label": "resolution:480p:1376x768:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "db418a2d53c97b85",
+      "input_len": 164,
+      "label": "resolution:480p:1376x768:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "507a8d7d3e29a28f",
+      "input_len": 150,
+      "label": "resolution:480p:16x9:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "ad5b1ca6fbcef7f7",
+      "input_len": 160,
+      "label": "resolution:480p:16x9:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "5eec625db6c57976",
+      "input_len": 154,
+      "label": "resolution:480p:1920x100:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"480p\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "ddcda05c28ee4cd0",
+      "input_len": 164,
+      "label": "resolution:480p:1920x100:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"480p\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "15cb77eac1ddea1f",
+      "input_len": 155,
+      "label": "resolution:480p:3840x2160:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "ae912e5052dbea77",
+      "input_len": 165,
+      "label": "resolution:480p:3840x2160:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "b03a808ed523c673",
+      "input_len": 151,
+      "label": "resolution:480p:64x64:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "f48e50933026262f",
+      "input_len": 161,
+      "label": "resolution:480p:64x64:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "ea27db0a22d7a9e7",
+      "input_len": 155,
+      "label": "resolution:480p:bool_dims",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "979207501b51ac44",
+      "input_len": 152,
+      "label": "resolution:4K:1376x768:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "63170cfaa83b651c",
+      "input_len": 162,
+      "label": "resolution:4K:1376x768:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "caea2f02387fddde",
+      "input_len": 148,
+      "label": "resolution:4K:16x9:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "a0f9d05218b3b8ce",
+      "input_len": 158,
+      "label": "resolution:4K:16x9:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "518df90b2b8940bb",
+      "input_len": 152,
+      "label": "resolution:4K:1920x100:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "b9375e40d1106a39",
+      "input_len": 162,
+      "label": "resolution:4K:1920x100:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "e75e71409da8e992",
+      "input_len": 153,
+      "label": "resolution:4K:3840x2160:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "db6ee0624821b2fa",
+      "input_len": 163,
+      "label": "resolution:4K:3840x2160:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "2b7e25733bfa3216",
+      "input_len": 149,
+      "label": "resolution:4K:64x64:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "6c444c482f9967a2",
+      "input_len": 159,
+      "label": "resolution:4K:64x64:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "8e0e9409b32fc78e",
+      "input_len": 153,
+      "label": "resolution:4K:bool_dims",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "657c0c8af9a09e64",
+      "input_len": 152,
+      "label": "resolution:4k:1376x768:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "6a292e8acd946a3c",
+      "input_len": 162,
+      "label": "resolution:4k:1376x768:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "b4c20494c24d433e",
+      "input_len": 148,
+      "label": "resolution:4k:16x9:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "ae1c296d48eb4b6e",
+      "input_len": 158,
+      "label": "resolution:4k:16x9:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "bedf0baa5c0c641b",
+      "input_len": 152,
+      "label": "resolution:4k:1920x100:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "2014bb7548a6bd99",
+      "input_len": 162,
+      "label": "resolution:4k:1920x100:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "c7fc80b2778222f2",
+      "input_len": 153,
+      "label": "resolution:4k:3840x2160:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "396eb8b2a746079a",
+      "input_len": 163,
+      "label": "resolution:4k:3840x2160:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "c90ee01082712d36",
+      "input_len": 149,
+      "label": "resolution:4k:64x64:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "25d7faa7ed9903c2",
+      "input_len": 159,
+      "label": "resolution:4k:64x64:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "36414ce62ad9262e",
+      "input_len": 153,
+      "label": "resolution:4k:bool_dims",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "dc4651551ee95cd4",
+      "input_len": 154,
+      "label": "resolution:720P:1376x768:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "58e3482cd68ddc70",
+      "input_len": 164,
+      "label": "resolution:720P:1376x768:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "f3f2574d5d935b5e",
+      "input_len": 150,
+      "label": "resolution:720P:16x9:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "c0fe0be3cedc4d9a",
+      "input_len": 160,
+      "label": "resolution:720P:16x9:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "22cac54fe66769db",
+      "input_len": 154,
+      "label": "resolution:720P:1920x100:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"720P\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "5206aed2e681564d",
+      "input_len": 164,
+      "label": "resolution:720P:1920x100:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"720P\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "12362f87469f3b12",
+      "input_len": 155,
+      "label": "resolution:720P:3840x2160:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "ab4db26175dbdd76",
+      "input_len": 165,
+      "label": "resolution:720P:3840x2160:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "490ddbb1b781cf6e",
+      "input_len": 151,
+      "label": "resolution:720P:64x64:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "1378caa853e58c5a",
+      "input_len": 161,
+      "label": "resolution:720P:64x64:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "082a32d658532fa2",
+      "input_len": 155,
+      "label": "resolution:720P:bool_dims",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "48eb49689f6abc34",
+      "input_len": 154,
+      "label": "resolution:720p:1376x768:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "1e94f6a0a304cc50",
+      "input_len": 164,
+      "label": "resolution:720p:1376x768:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "ddca2cdfe760c0be",
+      "input_len": 150,
+      "label": "resolution:720p:16x9:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "9ffd277bb0427dfa",
+      "input_len": 160,
+      "label": "resolution:720p:16x9:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "b36ffdf37f38147b",
+      "input_len": 154,
+      "label": "resolution:720p:1920x100:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"720p\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "805005118a81982d",
+      "input_len": 164,
+      "label": "resolution:720p:1920x100:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"720p\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "f2d43ef920787472",
+      "input_len": 155,
+      "label": "resolution:720p:3840x2160:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "7a2295d5c89d5f56",
+      "input_len": 165,
+      "label": "resolution:720p:3840x2160:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "b10fd962cff8158e",
+      "input_len": 151,
+      "label": "resolution:720p:64x64:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "cbda31a8f54e577a",
+      "input_len": 161,
+      "label": "resolution:720p:64x64:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "87ced376ac944582",
+      "input_len": 155,
+      "label": "resolution:720p:bool_dims",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "b53e8386d15ace30",
+      "input_len": 152,
+      "label": "resolution:8K:1376x768:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8K\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "62f94b7f8c967e38",
+      "input_len": 162,
+      "label": "resolution:8K:1376x768:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8K\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "94159b55d5aa8752",
+      "input_len": 148,
+      "label": "resolution:8K:16x9:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "1194ab893c5d0de2",
+      "input_len": 158,
+      "label": "resolution:8K:16x9:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "91d448f8945a3977",
+      "input_len": 152,
+      "label": "resolution:8K:1920x100:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8K\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "067208e92203bca5",
+      "input_len": 162,
+      "label": "resolution:8K:1920x100:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8K\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "fbd9a32bd83d0df6",
+      "input_len": 153,
+      "label": "resolution:8K:3840x2160:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8K\" but width 3840 x height 2160 gives a 2160px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "a7a5164708da72ee",
+      "input_len": 163,
+      "label": "resolution:8K:3840x2160:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8K\" but width 3840 x height 2160 gives a 2160px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "f819f58f9974145a",
+      "input_len": 149,
+      "label": "resolution:8K:64x64:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "ba883ac0211ba7ce",
+      "input_len": 159,
+      "label": "resolution:8K:64x64:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "707d70041fb5fbc2",
+      "input_len": 153,
+      "label": "resolution:8K:bool_dims",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "15876f5910b02b10",
+      "input_len": 152,
+      "label": "resolution:8k:1376x768:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8k\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "754dba338b08f398",
+      "input_len": 162,
+      "label": "resolution:8k:1376x768:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8k\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "fc2e0344a4b4f472",
+      "input_len": 148,
+      "label": "resolution:8k:16x9:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "736e970b884099c2",
+      "input_len": 158,
+      "label": "resolution:8k:16x9:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "451e185575db05d7",
+      "input_len": 152,
+      "label": "resolution:8k:1920x100:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8k\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "f4db3bef2edaf545",
+      "input_len": 162,
+      "label": "resolution:8k:1920x100:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8k\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "a3c79247dae22116",
+      "input_len": 153,
+      "label": "resolution:8k:3840x2160:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8k\" but width 3840 x height 2160 gives a 2160px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "5e5a3408f288984e",
+      "input_len": 163,
+      "label": "resolution:8k:3840x2160:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8k\" but width 3840 x height 2160 gives a 2160px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "b569e47e1f33853a",
+      "input_len": 149,
+      "label": "resolution:8k:64x64:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "0d653afb085091ae",
+      "input_len": 159,
+      "label": "resolution:8k:64x64:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "43f6caa893bdcae2",
+      "input_len": 153,
+      "label": "resolution:8k:bool_dims",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "87cf991524697f58",
+      "input_len": 157,
+      "label": "resolution:FULL HD:1376x768:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"FULL HD\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "73fe57256eae8634",
+      "input_len": 167,
+      "label": "resolution:FULL HD:1376x768:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"FULL HD\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "ea7ad11716e1c85a",
+      "input_len": 153,
+      "label": "resolution:FULL HD:16x9:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "92d403ea07707a36",
+      "input_len": 163,
+      "label": "resolution:FULL HD:16x9:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "fd2d2eb0d35896af",
+      "input_len": 157,
+      "label": "resolution:FULL HD:1920x100:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"FULL HD\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "fd43c6b45b42d011",
+      "input_len": 167,
+      "label": "resolution:FULL HD:1920x100:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"FULL HD\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "4bc5899e316870ee",
+      "input_len": 158,
+      "label": "resolution:FULL HD:3840x2160:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "58cf97e9dd06e332",
+      "input_len": 168,
+      "label": "resolution:FULL HD:3840x2160:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "4ecb7dfa86edb468",
+      "input_len": 154,
+      "label": "resolution:FULL HD:64x64:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "9be1ef39bbecab08",
+      "input_len": 164,
+      "label": "resolution:FULL HD:64x64:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "82c7937bb17d734c",
+      "input_len": 158,
+      "label": "resolution:FULL HD:bool_dims",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "9363fef1611789a0",
+      "input_len": 153,
+      "label": "resolution:UHD:1376x768:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"UHD\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "c4842565ef2a6518",
+      "input_len": 163,
+      "label": "resolution:UHD:1376x768:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"UHD\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "218f046fd28e86e2",
+      "input_len": 149,
+      "label": "resolution:UHD:16x9:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "063f250b4fb506e2",
+      "input_len": 159,
+      "label": "resolution:UHD:16x9:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "00aa2cfe221700e7",
+      "input_len": 153,
+      "label": "resolution:UHD:1920x100:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"UHD\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "0a1ca5fd3f300fc5",
+      "input_len": 163,
+      "label": "resolution:UHD:1920x100:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"UHD\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "150a8e944e98ef86",
+      "input_len": 154,
+      "label": "resolution:UHD:3840x2160:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "651dad938a6f85ee",
+      "input_len": 164,
+      "label": "resolution:UHD:3840x2160:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "0f68d1d3f05a3350",
+      "input_len": 150,
+      "label": "resolution:UHD:64x64:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "02f2f33e30b51540",
+      "input_len": 160,
+      "label": "resolution:UHD:64x64:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "18a8ba9fc03afd38",
+      "input_len": 154,
+      "label": "resolution:UHD:bool_dims",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "e72f8fcda3c20898",
+      "input_len": 157,
+      "label": "resolution:full hd:1376x768:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"full hd\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "02b839ec495f28b4",
+      "input_len": 167,
+      "label": "resolution:full hd:1376x768:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"full hd\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "3fd519127446e89a",
+      "input_len": 153,
+      "label": "resolution:full hd:16x9:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "3e620c8631970776",
+      "input_len": 163,
+      "label": "resolution:full hd:16x9:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "f09fbcaf1f0fddef",
+      "input_len": 157,
+      "label": "resolution:full hd:1920x100:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"full hd\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "32572e96671c7411",
+      "input_len": 167,
+      "label": "resolution:full hd:1920x100:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"full hd\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "52ff157a4c21262e",
+      "input_len": 158,
+      "label": "resolution:full hd:3840x2160:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "bf1039552ab2c472",
+      "input_len": 168,
+      "label": "resolution:full hd:3840x2160:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "25f18a8d0c107528",
+      "input_len": 154,
+      "label": "resolution:full hd:64x64:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "af347d0a6a7a6e08",
+      "input_len": 164,
+      "label": "resolution:full hd:64x64:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "2f7e2cb5a38733cc",
+      "input_len": 158,
+      "label": "resolution:full hd:bool_dims",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "cd9683b7d0a19040",
+      "input_len": 153,
+      "label": "resolution:uhd:1376x768:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"uhd\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "8704ddb06b029ff8",
+      "input_len": 163,
+      "label": "resolution:uhd:1376x768:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"uhd\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "81841ee2f144ef02",
+      "input_len": 149,
+      "label": "resolution:uhd:16x9:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "5afcae1ac02f9142",
+      "input_len": 159,
+      "label": "resolution:uhd:16x9:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "2062c5c59a2d11c7",
+      "input_len": 153,
+      "label": "resolution:uhd:1920x100:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"uhd\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "d842429ed59b9265",
+      "input_len": 163,
+      "label": "resolution:uhd:1920x100:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"uhd\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "ae834bb730f4dda6",
+      "input_len": 154,
+      "label": "resolution:uhd:3840x2160:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "36fc779030f7edce",
+      "input_len": 164,
+      "label": "resolution:uhd:3840x2160:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "a457589ebd344b70",
+      "input_len": 150,
+      "label": "resolution:uhd:64x64:obj",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "51add9c989ee1da0",
+      "input_len": 160,
+      "label": "resolution:uhd:64x64:str",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "2edf183dff655318",
+      "input_len": 154,
+      "label": "resolution:uhd:bool_dims",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "869297dbb5570934",
+      "input_len": 145,
+      "label": "resolution_param:1080p",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but the call produces a 1080px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "9a27ad65a9338ccd",
+      "input_len": 142,
+      "label": "resolution_param:1k",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "449073b24c026116",
+      "input_len": 142,
+      "label": "resolution_param:2k",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "7d8d76b138962991",
+      "input_len": 144,
+      "label": "resolution_param:480p",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but the call produces a 480px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "d6370398040fc2f8",
+      "input_len": 142,
+      "label": "resolution_param:4k",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "e9b5b569eddf820c",
+      "input_len": 144,
+      "label": "resolution_param:720p",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but the call produces a 720px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "fb2c99e176e74c45",
+      "input_len": 161,
+      "label": "stopword:no_longer:mixed_with_directive",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"no clutter\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "631e295d845bcb4f",
+      "input_len": 149,
+      "label": "stopword:no_longer:model=None",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "589ad4bbde5c94e0",
+      "input_len": 168,
+      "label": "stopword:no_longer:model=Some(\"kling2_6\")",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "627d8553a0ea8a84",
+      "input_len": 180,
+      "label": "stopword:no_longer:model=Some(\"not_a_real_model_xyz\")",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "0aba9d054c2553d2",
+      "input_len": 164,
+      "label": "stopword:no_matter:mixed_with_directive",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"no clutter\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "0dc6187f0958c45c",
+      "input_len": 152,
+      "label": "stopword:no_matter:model=None",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "0744795866094dbd",
+      "input_len": 171,
+      "label": "stopword:no_matter:model=Some(\"kling2_6\")",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "398885b1f8baed79",
+      "input_len": 183,
+      "label": "stopword:no_matter:model=Some(\"not_a_real_model_xyz\")",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "121974d5d83fb014",
+      "input_len": 176,
+      "label": "stopword:no_more:mixed_with_directive",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- negation_placement: \"no clutter\" sits in the positive prompt while this model accepts negative_prompt. Move them there; models follow negation poorly in the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "6366d7340dad1cae",
+      "input_len": 164,
+      "label": "stopword:no_more:model=None",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "f0c61ce833fe0a33",
+      "input_len": 183,
+      "label": "stopword:no_more:model=Some(\"kling2_6\")",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "875d2a81589ca607",
+      "input_len": 195,
+      "label": "stopword:no_more:model=Some(\"not_a_real_model_xyz\")",
+      "output": null
+    }
+  ],
+  "generated_by": "rust/tests/parity.rs corpus generators, captured against the verified Rust binary",
+  "note": "Historical snapshot of verified behaviour: this exact corpus matched the retired Python oracle at 320/0 divergences (plus 4,200 independently-fuzzed inputs) as of the captured commit. A future mismatch here is a deliberate behaviour change under review, not a bug to silence by editing this file to match.",
+  "schema_version": 1
+}
