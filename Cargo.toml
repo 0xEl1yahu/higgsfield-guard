@@ -1,0 +1,21 @@
+[package]
+name = "higgsfield-lint"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "higgsfield-lint"
+path = "rust/src/main.rs"
+
+[[test]]
+name = "fail_silent"
+path = "rust/tests/fail_silent.rs"
+
+[dependencies]
+serde_json = "1"
+regex = "1"
+
+[profile.release]
+# MUST be unwind: an abort profile makes panics uncatchable, and an uncaught
+# panic writes to stderr and exits 101, violating two global constraints.
+panic = "unwind"
