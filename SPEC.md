@@ -109,20 +109,33 @@ would make this unusable.
 Seed list: `slow motion`, `slow-mo`, `static`, `blurred`, `blurry`, `sharp`, `text`,
 `motion blur`, `close-up`, `wide shot`, `zoom`, `pan`, `handheld`, `grain`.
 
-### 5.3 Negation belongs in negative_prompt
+### 5.3 negation_placement — disabled
 
-Fires when the positive prompt contains a negation (`no X`, `without X`, `avoid X`) **and**
-the model is known to accept a `negative_prompt`. Only these three forms count as a
-directive; ordinary narrative negation (`"has not yet risen"`), quantifier idioms
-(`"no more than three"`, `"no longer"`, `"no matter"`), and a bare gerund right after the
-negator (`"without moving"`) are not treated as a misplaced directive, since moving any of
-those into `negative_prompt` would do nothing or damage the shot.
+This rule fired when the positive prompt contained a negation (`no X`, `without X`,
+`avoid X`) and the model was treated as accepting a `negative_prompt` (the field already
+present and non-empty in this call, or the model listed in
+`data/negative_prompt_models.json`, seeded as `["kling2_6"]`). It fired on 7 of 9
+historical calls, which §2 read as signal.
 
-Known-accepts is evidence-seeded, not inferred: a model qualifies when `negative_prompt` is
-already present in this call **and non-empty**, or when it appears in
-`data/negative_prompt_models.json`, which starts as `["kling2_6"]` because that is what the
-generation history proves. The catalog does not publish negative-prompt support, so
-guessing would produce false findings on models that silently ignore the field.
+`HIGGSFIELD_PROMPT_RESEARCH.md` §6 shows the opposite. Higgsfield's own help centre tells
+users to keep exclusions **in the positive prompt**; its Seedance 2.5 testing writeup
+calls inline exclusion the highest-yield part of a prompt; and no model across the
+~63-entry catalog declares a `negative_prompt` parameter at all. The rule's gate — "the
+caller supplied the field, or the model is on a seed list" — was never evidence that the
+field does anything, and its remedy sentence asserted a mechanism Higgsfield's own
+testing contradicts. Research §8.3 audits five confirmed false-positive classes on this
+rule, including Higgsfield's own published style header; all five are now permanent
+negative controls in `rust/tests/golden/expectations.json`.
+
+The rule is disabled, not deleted: `check_negation_placement` is gone from
+`rust/src/checks.rs`, but `PLACEMENT_NEGATION_RE`, its noise filter, and its stoplist
+stay in place, unused, because research §10 (**HFR-006**) reuses that exact filter
+unchanged in a volume-based replacement — counting how many exclusions a prompt carries,
+rather than judging where they sit. That replacement is out of scope here; its
+thresholds still need calibrating against the corpus before it ships.
+
+`data/negative_prompt_models.json`, the evidence-seeded model list this rule's gate
+depended on, is retired along with it — nothing reads it any more.
 
 ## 6. Output contract
 
@@ -212,7 +225,7 @@ README.md                            setup/build steps
 Cargo.toml, Cargo.lock               Rust package manifest (serde_json, regex)
 rust/src/*.rs                        the hook, compiled to a Rust binary (§12)
 target/release/higgsfield-lint       the built hook; PreToolUse runs this directly (§12.1)
-data/negative_prompt_models.json     evidence-seeded model list
+data/.gitkeep                        placeholder; negative_prompt_models.json retired here (§5.3)
 tests/fixtures/*.json                real captured tool inputs
 rust/tests/parity.rs                 golden-output regression corpus, the port's real verification (§9)
 rust/tests/golden/expectations.json  recorded expectations rust/tests/parity.rs checks against (§9)

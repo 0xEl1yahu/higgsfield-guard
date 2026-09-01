@@ -1,6 +1,11 @@
 //! Loads the negative-prompt model lexicon from `data/negative_prompt_models.json`. This
 //! file is the specification for that load path - there is no second implementation to
 //! port against any more (see `SPEC.md` §9 and §12.2).
+//!
+//! The data file itself was retired (SPEC.md §5.3; HIGGSFIELD_PROMPT_RESEARCH.md §6,
+//! §8.3) along with `check_negation_placement`, its only reader - `load_models` now
+//! always returns an empty set, via the same not-found path it always used for a missing
+//! file, and is left as-is rather than special-cased for that.
 
 use std::collections::HashSet;
 use std::fs;
@@ -51,8 +56,13 @@ mod tests {
     use super::*;
 
     #[test]
-    fn load_models_reads_the_real_data_file() {
+    fn load_models_returns_empty_now_that_the_data_file_is_retired() {
+        // Was `load_models_reads_the_real_data_file`, asserting `models.contains("kling2_6")`.
+        // data/negative_prompt_models.json no longer exists (SPEC.md §5.3), so this now
+        // exercises the same not-found fallback `locate_data_file` always had - proving
+        // retirement fails open here rather than panicking or reading a stale file left
+        // over on disk.
         let models = load_models();
-        assert!(models.contains("kling2_6"));
+        assert!(models.is_empty());
     }
 }

@@ -1,8 +1,14 @@
 //! The lint checks: the boundary scan helpers (`has_term`, `find_original_case`),
-//! `check_resolution_claim`, and the two negation checks
-//! (`check_prompt_negative_conflict`, `check_negation_placement`) plus their shared
-//! helpers (`strip_negations`, `is_placement_noise`). The `lint`/`render` orchestration
-//! lives in `lint.rs`, which calls these checks from `lint_params`.
+//! `check_resolution_claim`, and `check_prompt_negative_conflict`, plus its shared
+//! helper `strip_negations`. The `lint`/`render` orchestration lives in `lint.rs`,
+//! which calls these checks from `lint_params`.
+//!
+//! `check_negation_placement` was disabled (SPEC.md §5.3; HIGGSFIELD_PROMPT_RESEARCH.md
+//! §6, §8.3) - contradicted by first-party guidance, with five confirmed false-positive
+//! classes, now permanent negative controls in `rust/tests/golden/expectations.json`.
+//! Its noise filter (`PLACEMENT_NEGATION_RE`, `is_placement_noise`, the stoplist) stays
+//! below, unused, because HFR-006 (research §10) reuses it unchanged in a volume-based
+//! replacement.
 //!
 //! This file is the specification - there is no second implementation to port against
 //! or stay in parity with any more (see `SPEC.md` §9 and §12.2). A rule-behaviour change
@@ -11,7 +17,6 @@
 
 use regex::Regex;
 use serde_json::Value;
-use std::collections::HashSet;
 use std::sync::LazyLock;
 
 use crate::lint::Finding;
@@ -48,14 +53,15 @@ const MIN_SANE_DIMENSION: i64 = 128;
 
 /// Case-SENSITIVE "does `term` occur in `text` as a standalone token" check.
 ///
-/// Python's oracle (`_has_term`) is `re.search(rf"(?<![a-z0-9]){escaped}(?![a-z0-9])",
-/// text)` - **no** `re.IGNORECASE`. Both the literal and the `[a-z0-9]` boundary class are
-/// case-sensitive, so an uppercase neighbour is not in the class and does not block a
-/// match, and the literal itself only matches text with the exact same case as `term`.
-/// This is deliberately different from `find_original_case` below, which folds case in
-/// both the literal and the boundary class (Python passes `re.IGNORECASE` there). Do not
-/// unify them: this is a parity port, and the oracle treats these two functions
-/// differently on purpose.
+/// The archived Python oracle's `_has_term` (`docs/archive/verified-port/higgsfield_lint.py`)
+/// was `re.search(rf"(?<![a-z0-9]){escaped}(?![a-z0-9])", text)` - **no** `re.IGNORECASE`.
+/// Both the literal and the `[a-z0-9]` boundary class are case-sensitive, so an uppercase
+/// neighbour is not in the class and does not block a match, and the literal itself only
+/// matches text with the exact same case as `term`. This is deliberately different from
+/// `find_original_case` below, which folds case in both the literal and the boundary class
+/// (the oracle passed `re.IGNORECASE` there). Do not unify them: the archived oracle kept
+/// these two functions different on purpose, and this file - now the specification in its
+/// own right (see the header above) - preserves that distinction.
 ///
 /// In practice this case-sensitivity is currently unreachable: the only production call
 /// site (`check_prompt_negative_conflict`, oracle line 164) always pre-lowercases both
@@ -227,7 +233,8 @@ fn actual_short_side(params: &Value) -> Option<Actual> {
     None
 }
 
-/// Port of `check_resolution_claim` (higgsfield_lint.py lines 89-108).
+/// Port of `check_resolution_claim` (archived Python oracle,
+/// `docs/archive/verified-port/higgsfield_lint.py` lines 89-108).
 pub fn check_resolution_claim(params: &Value) -> Option<Finding> {
     let prompt = params.get("prompt").and_then(Value::as_str)?;
     let (claim_text, claim_px) = claimed_short_side(prompt)?;
@@ -279,21 +286,35 @@ static NEGATION_RE: LazyLock<Regex> = LazyLock::new(|| {
     Regex::new(r"(?i)\b(?:no|without|avoid|not)\s+(?:[a-z-]+\s+){0,2}[a-z-]+").unwrap()
 });
 
-// SPEC §5.3 names exactly three directive forms: "no X", "without X", "avoid X". `not` is
-// not one of them - "the sun has not yet risen" and "does not move" are ordinary narrative
-// negation, not an instruction to move anything into negative_prompt. check_negation_placement
-// uses this narrower pattern instead of NEGATION_RE so it stops firing on plain English.
+// SPEC §5.3 named exactly three directive forms: "no X", "without X", "avoid X" - `not`
+// was deliberately excluded, since "the sun has not yet risen" and "does not move" are
+// ordinary narrative negation, not an instruction to move anything into negative_prompt.
+// `check_negation_placement`, which used this narrower pattern instead of NEGATION_RE so
+// it would stop firing on plain English, was disabled (SPEC.md §5.3;
+// HIGGSFIELD_PROMPT_RESEARCH.md §6, §8.3: contradicted by first-party guidance, five
+// confirmed false-positive classes). This regex, the stoplist below, and
+// `is_placement_noise` are kept, unused, because HFR-006 (research §10) - a volume-based
+// replacement that counts exclusions instead of judging their placement - reuses this
+// exact noise filter unchanged; research's "Keep" section is explicit these filters are
+// correct and carry over. `#[allow(dead_code)]` is deliberate, not an oversight: nothing
+// calls these until HFR-006 lands.
+#[allow(dead_code)]
 static PLACEMENT_NEGATION_RE: LazyLock<Regex> = LazyLock::new(|| {
     Regex::new(r"(?i)\b(?:no|without|avoid)\s+(?:[a-z-]+\s+){0,2}[a-z-]+").unwrap()
 });
 
 // Quantifier idioms where "no" modifies a comparative or adverb rather than introducing an
 // excluded noun - "no more than three [people]" is a count, not a directive, and moving
-// "more than three" into negative_prompt is meaningless. Keep this list small; add an entry
-// only when a real false positive demonstrates the idiom.
+// "more than three" into negative_prompt is meaningless. Kept for HFR-006 (see the comment
+// on `PLACEMENT_NEGATION_RE` above); add an entry only when a real false positive
+// demonstrates the idiom.
+#[allow(dead_code)]
 const PLACEMENT_STOPWORDS: &[(&str, &str)] = &[("no", "more"), ("no", "longer"), ("no", "matter")];
 
-/// Port of `_is_placement_noise`.
+/// Was `check_negation_placement`'s noise filter (port of `_is_placement_noise`, archived
+/// Python oracle `docs/archive/verified-port/higgsfield_lint.py`). Kept unused for
+/// HFR-006 - see the comment on `PLACEMENT_NEGATION_RE` above.
+#[allow(dead_code)]
 pub fn is_placement_noise(match_text: &str) -> bool {
     let lower = match_text.to_lowercase();
     let words: Vec<&str> = lower.split_whitespace().collect();
@@ -319,7 +340,8 @@ pub fn strip_negations(text: &str) -> String {
     NEGATION_RE.replace_all(text, " ").into_owned()
 }
 
-/// Port of `check_prompt_negative_conflict` (higgsfield_lint.py lines 157-172).
+/// Port of `check_prompt_negative_conflict` (archived Python oracle,
+/// `docs/archive/verified-port/higgsfield_lint.py` lines 157-172).
 pub fn check_prompt_negative_conflict(params: &Value) -> Option<Finding> {
     let prompt = params.get("prompt").and_then(Value::as_str)?;
     let negative = params.get("negative_prompt").and_then(Value::as_str)?;
@@ -353,51 +375,10 @@ pub fn check_prompt_negative_conflict(params: &Value) -> Option<Finding> {
     })
 }
 
-/// Port of `check_negation_placement` (higgsfield_lint.py lines 175-200).
-pub fn check_negation_placement(params: &Value, models: &HashSet<String>) -> Option<Finding> {
-    let prompt = params.get("prompt").and_then(Value::as_str)?;
-    let model = params.get("model").and_then(Value::as_str);
-    let negative = params.get("negative_prompt").and_then(Value::as_str);
-    let supports = negative.is_some_and(|n| !n.trim().is_empty())
-        || model.is_some_and(|m| models.contains(m));
-    if !supports {
-        return None;
-    }
-    let negations: Vec<String> = PLACEMENT_NEGATION_RE
-        .find_iter(prompt)
-        .map(|m| m.as_str().trim().to_string())
-        .filter(|s| !is_placement_noise(s))
-        .collect();
-    if negations.is_empty() {
-        return None;
-    }
-    let shown = negations
-        .iter()
-        .take(3)
-        .map(|n| format!("\"{}\"", n))
-        .collect::<Vec<_>>()
-        .join(", ");
-    let more = if negations.len() > 3 {
-        format!(" and {} more", negations.len() - 3)
-    } else {
-        String::new()
-    };
-    let verb = if negations.len() == 1 { "sits" } else { "sit" };
-    Some(Finding {
-        check_id: "negation_placement".to_string(),
-        message: format!(
-            "{}{} {} in the positive prompt while this model accepts negative_prompt. \
-             Move them there; models follow negation poorly in the prompt.",
-            shown, more, verb
-        ),
-    })
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
     use serde_json::json;
-    use std::collections::HashSet;
 
     #[test]
     fn has_term_respects_alphanumeric_boundaries() {
@@ -594,101 +575,11 @@ mod tests {
     }
 
     // --- Task 3: negation checks -------------------------------------------------
-
-    fn empty_models() -> HashSet<String> {
-        HashSet::new()
-    }
-
-    fn model_set(names: &[&str]) -> HashSet<String> {
-        names.iter().map(|s| s.to_string()).collect()
-    }
-
-    // check_negation_placement must stay SILENT on ordinary narrative negation and on
-    // quantifier idioms - the false-positive class a full fix wave closed in the Python.
-    #[test]
-    fn negation_placement_silent_on_not_as_narrative_negation() {
-        let params = json!({
-            "prompt": "a lighthouse at dawn, the sun has not yet risen over the water",
-            "negative_prompt": "blurry"
-        });
-        assert!(check_negation_placement(&params, &empty_models()).is_none());
-    }
-
-    #[test]
-    fn negation_placement_silent_on_no_more_than_quantifier_idiom() {
-        let params = json!({
-            "prompt": "a busy street with no more than three people visible",
-            "negative_prompt": "blurry"
-        });
-        assert!(check_negation_placement(&params, &empty_models()).is_none());
-    }
-
-    #[test]
-    fn negation_placement_silent_on_without_gerund_manner_adverbial() {
-        let params = json!({
-            "prompt": "a monk sitting without moving, breathing slowly",
-            "negative_prompt": "blurry"
-        });
-        assert!(check_negation_placement(&params, &empty_models()).is_none());
-    }
-
-    // check_negation_placement must FIRE on directive negations naming an artifact to
-    // exclude, including "-ing" directives that are not manner adverbials.
-    #[test]
-    fn negation_placement_fires_on_directive_negations() {
-        for prompt in [
-            "no text",
-            "no logos",
-            "no clutter",
-            "without a watermark",
-            "no lettering",
-            "no flickering",
-            "no warping",
-            "avoid flickering",
-        ] {
-            let params = json!({"prompt": prompt, "negative_prompt": "blurry"});
-            assert!(
-                check_negation_placement(&params, &empty_models()).is_some(),
-                "should fire on: {prompt}"
-            );
-        }
-    }
-
-    #[test]
-    fn negation_placement_requires_negative_prompt_support_or_model_support() {
-        // Neither a non-empty negative_prompt nor a model in `models` -> silent, even
-        // though the prompt itself contains a directive negation.
-        let params = json!({"prompt": "no text"});
-        assert!(check_negation_placement(&params, &empty_models()).is_none());
-
-        let params_blank_negative = json!({"prompt": "no text", "negative_prompt": "   "});
-        assert!(check_negation_placement(&params_blank_negative, &empty_models()).is_none());
-
-        // A model present in `models` is sufficient even with no negative_prompt field.
-        let params_model = json!({"prompt": "no text", "model": "kling2_6"});
-        assert!(check_negation_placement(&params_model, &model_set(&["kling2_6"])).is_some());
-    }
-
-    #[test]
-    fn negation_placement_pluralises_the_verb() {
-        let one = json!({"prompt": "no text", "negative_prompt": "blurry"});
-        let finding_one = check_negation_placement(&one, &empty_models()).expect("fires");
-        assert!(finding_one.message.contains(" sits in the positive prompt"));
-
-        let two = json!({"prompt": "no text, no clutter", "negative_prompt": "blurry"});
-        let finding_two = check_negation_placement(&two, &empty_models()).expect("fires");
-        assert!(finding_two.message.contains(" sit in the positive prompt"));
-    }
-
-    #[test]
-    fn negation_placement_lists_at_most_three_and_counts_the_rest() {
-        let params = json!({
-            "prompt": "no text, no logos, no clutter, no watermark, no flickering",
-            "negative_prompt": "blurry"
-        });
-        let finding = check_negation_placement(&params, &empty_models()).expect("fires");
-        assert!(finding.message.contains("and 2 more"));
-    }
+    //
+    // `check_negation_placement`'s own tests lived here. That check was disabled
+    // (SPEC.md §5.3; see the comment on `PLACEMENT_NEGATION_RE` above) and deleted along
+    // with them; `is_placement_noise` (below, kept for HFR-006) still has its own direct
+    // test, `is_placement_noise_flags_quantifier_idioms_and_without_gerund_only`.
 
     // check_prompt_negative_conflict: agreement (a term negated in the prompt but
     // present in negative_prompt) is not a conflict; the same term un-negated in both

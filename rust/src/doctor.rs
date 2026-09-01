@@ -53,8 +53,9 @@ fn collect_checks() -> Vec<Check> {
             root.display()
         )),
         None => Check::Fail(format!(
-            "binary location: no ancestor directory of {} contains a data/ directory; \
-             load_models() will find nothing and every model-aware check will run silently blind",
+            "binary location: no ancestor directory of {} contains a data/ directory - \
+             the landmark load_models() and any future repo-relative data file depend on \
+             to find their way back to it",
             exe.display()
         )),
     });
@@ -112,39 +113,26 @@ fn find_repo_root(exe: &Path) -> Option<PathBuf> {
     None
 }
 
-/// Check 2: `data/negative_prompt_models.json` exists, parses as JSON, and is
-/// specifically a JSON array of strings (the shape `load_models` requires -
-/// anything else and its `and_then` chain fails silently to an empty set).
+/// Check 2: `data/negative_prompt_models.json` was retired together with
+/// `check_negation_placement`, the only thing that ever read it (SPEC.md §5.3;
+/// HIGGSFIELD_PROMPT_RESEARCH.md §6, §8.3). This check now guards the retirement itself
+/// rather than the file's shape: it passes when the file is absent, and fails if it has
+/// reappeared, since its presence would mean something started reading unsupported
+/// model-acceptance data again without doctor noticing. Repoint this check to a
+/// replacement data file instead, if HFR-006 or a later rule ever introduces one.
 fn check_data_file(repo_root: &Path) -> Check {
     let path = repo_root.join("data").join("negative_prompt_models.json");
-    let contents = match fs::read_to_string(&path) {
-        Ok(c) => c,
-        Err(err) => {
-            return Check::Fail(format!(
-                "data file: missing or unreadable at {}: {err}",
-                path.display()
-            ))
-        }
-    };
-    let value: Value = match serde_json::from_str(&contents) {
-        Ok(v) => v,
-        Err(err) => {
-            return Check::Fail(format!(
-                "data file: {} is not valid JSON: {err}",
-                path.display()
-            ))
-        }
-    };
-    match value {
-        Value::Array(items) if items.iter().all(Value::is_string) => Check::Pass(format!(
-            "data file: {} is a JSON array of {} string(s)",
-            path.display(),
-            items.len()
-        )),
-        _ => Check::Fail(format!(
-            "data file: {} is valid JSON but not an array of strings",
+    if path.is_file() {
+        Check::Fail(format!(
+            "data file: {} still exists but was retired in SPEC.md §5.3 - delete it, or \
+             repoint this check if a replacement data file has taken its place",
             path.display()
-        )),
+        ))
+    } else {
+        Check::Pass(format!(
+            "data file: {} is absent, as expected since its retirement (SPEC.md §5.3)",
+            path.display()
+        ))
     }
 }
 
@@ -478,8 +466,11 @@ fn check_matcher_correctness(repo_root: &Path, project_dir: &Path, exe: &Path, p
     ))
 }
 
-const SELF_TEST_EXPECTED_CHECK_IDS: [&str; 3] =
-    ["resolution_claim", "prompt_negative_conflict", "negation_placement"];
+// `negation_placement` dropped out of this list when `check_negation_placement` was
+// disabled (SPEC.md §5.3; HIGGSFIELD_PROMPT_RESEARCH.md §6, §8.3) - the payload below
+// still contains "no logos" deliberately, so this self-test also proves that disabled
+// check stays silent on real input, not just that nothing here calls it any more.
+const SELF_TEST_EXPECTED_CHECK_IDS: [&str; 2] = ["resolution_claim", "prompt_negative_conflict"];
 
 /// Pure comparison used by check 7, factored out so it can be exercised with
 /// fabricated `check_id` lists independent of whether the real lint pipeline
@@ -500,7 +491,7 @@ fn evaluate_self_test(ids: &[&str]) -> Check {
 
 /// Check 7: lint a known-offending payload in-process (using the real,
 /// currently-running `lint`/`models` code, not a mock) and confirm exactly the
-/// three expected `check_id`s come back, in order.
+/// two expected `check_id`s come back, in order.
 fn check_self_test() -> Check {
     let tool_input = serde_json::json!({
         "params": {
@@ -626,36 +617,28 @@ mod tests {
         assert_eq!(find_repo_root(&exe), None);
     }
 
-    // --- check 2: data file -------------------------------------------------------------
+    // --- check 2: data file (retired, SPEC.md §5.3) --------------------------------------
 
     #[test]
-    fn data_file_passes_for_a_valid_array_of_strings() {
-        let repo = TestRepo::new("data-pass");
-        repo.write("data/negative_prompt_models.json", r#"["kling2_6"]"#);
-        assert_pass(&check_data_file(repo.path()), "valid array of strings");
-    }
-
-    #[test]
-    fn data_file_fails_when_missing() {
-        let repo = TestRepo::new("data-fail-missing");
-        assert_fail(&check_data_file(repo.path()), "missing data file");
-    }
-
-    #[test]
-    fn data_file_fails_for_valid_json_with_the_wrong_shape() {
-        let repo = TestRepo::new("data-fail-shape");
-        repo.write("data/negative_prompt_models.json", r#"{"a":1}"#);
-        assert_fail(
+    fn data_file_passes_when_absent() {
+        let repo = TestRepo::new("data-pass-absent");
+        assert_pass(
             &check_data_file(repo.path()),
-            "valid JSON that isn't an array of strings",
+            "data file correctly absent after its SPEC.md §5.3 retirement",
         );
     }
 
     #[test]
-    fn data_file_fails_for_unparseable_json() {
-        let repo = TestRepo::new("data-fail-parse");
-        repo.write("data/negative_prompt_models.json", "not json at all");
-        assert_fail(&check_data_file(repo.path()), "unparseable JSON");
+    fn data_file_fails_when_still_present() {
+        let repo = TestRepo::new("data-fail-present");
+        // Content doesn't matter any more - the check no longer parses it, only checks
+        // for existence - but a real-shaped payload is closer to what an accidental
+        // resurrection would actually look like.
+        repo.write("data/negative_prompt_models.json", r#"["kling2_6"]"#);
+        assert_fail(
+            &check_data_file(repo.path()),
+            "data file present despite being retired",
+        );
     }
 
     // --- check 3: binary freshness ------------------------------------------------------
@@ -987,7 +970,7 @@ mod tests {
     #[test]
     fn self_test_evaluation_passes_for_the_expected_ids() {
         assert_pass(
-            &evaluate_self_test(&["resolution_claim", "prompt_negative_conflict", "negation_placement"]),
+            &evaluate_self_test(&["resolution_claim", "prompt_negative_conflict"]),
             "exactly the expected check_ids",
         );
     }
@@ -1000,8 +983,13 @@ mod tests {
         );
         assert_fail(&evaluate_self_test(&[]), "no findings at all");
         assert_fail(
-            &evaluate_self_test(&["resolution_claim", "prompt_negative_conflict", "negation_placement", "extra"]),
+            &evaluate_self_test(&["resolution_claim", "prompt_negative_conflict", "extra"]),
             "an extra unexpected finding",
+        );
+        assert_fail(
+            &evaluate_self_test(&["resolution_claim", "prompt_negative_conflict", "negation_placement"]),
+            "the retired check_id reappearing would mean check_negation_placement (or \
+             something like it) is running again without SPEC.md being updated",
         );
     }
 

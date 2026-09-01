@@ -128,17 +128,19 @@ const UNKNOWN_MODEL: &str = "not_a_real_model_xyz";
 const TOOL_SINGLE: &str = "mcp__higgsfield__generate_video";
 const TOOL_BATCH: &str = "mcp__higgsfield__generate_video_batch";
 
-/// The one model `check_negation_placement` treats as negative_prompt-capable, read from
-/// the real data file rather than hardcoded, so this keeps working if the list changes.
+/// Historically, the one model `check_negation_placement` treated as
+/// negative_prompt-capable, read from `data/negative_prompt_models.json` rather than
+/// hardcoded so the corpus kept working if the list changed. That check and its data
+/// file were both retired (SPEC.md §5.3; HIGGSFIELD_PROMPT_RESEARCH.md §6, §8.3) - no
+/// check reads a `model` field at all any more, so there is no live list to read here.
+/// The literal is kept unchanged rather than deleted: this function still feeds every
+/// sweep below that varies a `model` field, and hardcoding the same value keeps those
+/// sweeps generating byte-identical input to what they always have (recorded
+/// `input_len`/`input_fnv1a64` in `rust/tests/golden/expectations.json` are unaffected) -
+/// only the *expected outputs* for the cases that used to trigger
+/// `check_negation_placement` changed when the check was disabled.
 fn known_model() -> String {
-    let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("data/negative_prompt_models.json");
-    let text = std::fs::read_to_string(&path)
-        .unwrap_or_else(|e| panic!("could not read {}: {e}", path.display()));
-    let list: Vec<String> =
-        serde_json::from_str(&text).expect("data/negative_prompt_models.json must be a JSON list");
-    list.into_iter()
-        .next()
-        .expect("data/negative_prompt_models.json must be non-empty")
+    "kling2_6".to_string()
 }
 
 fn wrap(tool_name: &str, tool_input: Value) -> Vec<u8> {
