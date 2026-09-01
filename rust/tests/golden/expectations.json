@@ -1,5 +1,5 @@
 {
-  "captured_from_commit": "77df1603e072731a46b7036e8155008e5880d136",
+  "captured_from_commit": "38cdd194799612efa515f8aa8e4677c18c043743",
   "count": 325,
   "entries": [
     {
@@ -2529,6 +2529,6 @@
     }
   ],
   "generated_by": "rust/tests/parity.rs corpus generators, captured against the verified Rust binary",
-  "note": "Historical snapshot of verified behaviour: this exact corpus matched the retired Python oracle at 320/0 divergences (plus 4,200 independently-fuzzed inputs) as of the captured commit. A future mismatch here is a deliberate behaviour change under review, not a bug to silence by editing this file to match.",
+  "note": "Historical snapshot of verified behaviour, now diverging by design: originally matched the retired Python oracle at 320/0 divergences (plus 4,200 independently-fuzzed inputs). Since the oracle was archived, 51 entries were deliberately moved away from oracle behaviour (negation_placement removal) and 5 entries added that no oracle ever saw. A mismatch here is a deliberate behaviour change under review, not a bug to silence by editing this file to match.",
   "schema_version": 1
 }

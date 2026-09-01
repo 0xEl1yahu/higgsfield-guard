@@ -532,18 +532,12 @@ fn combined_sweep(known: &str) -> Vec<(String, Vec<u8>)> {
     out
 }
 
-/// Type-confusion and other edges not otherwise covered: wrong-typed fields, whitespace-only
-/// negative_prompt, non-string resolution, negative/string-encoded dimensions, missing
-/// prompt, and a non-ASCII prompt (exercises the char-based, not byte-based, boundary scan).
 /// Permanent negative controls for the five false-positive classes that
 /// `negation_placement` was confirmed to fire on (HIGGSFIELD_PROMPT_RESEARCH.md §8.3).
-///
-/// The rule is gone, so every one of these is silent today. They exist so it cannot come
-/// back — including via HFR-006, the volume-based replacement, which reuses the same
-/// negation regex and noise filter. Each was a *real* firing against the shipped binary,
-/// not a hypothetical: FP1 quotes Higgsfield's own published style header, and FP4 is the
-/// span-spill case where the <=3-word window crossed a clause boundary and quoted
-/// "no logos a beautiful", a phrase nobody wrote.
+/// Each is a *real* firing against the shipped binary, not hypothetical: FP1 quotes
+/// Higgsfield's own published style header, and FP4 is the span-spill case where the
+/// <=3-word window crossed a clause boundary and quoted "no logos a beautiful", a phrase
+/// nobody wrote. They exist to guard against the original rule returning unchanged.
 fn negation_placement_fp_controls() -> Vec<(String, Vec<u8>)> {
     vec![
         // FP1 - Higgsfield house style. Every quoted span is copied from their own ad-guide
@@ -597,6 +591,9 @@ fn negation_placement_fp_controls() -> Vec<(String, Vec<u8>)> {
     .collect()
 }
 
+/// Type-confusion and other edges not otherwise covered: wrong-typed fields, whitespace-only
+/// negative_prompt, non-string resolution, negative/string-encoded dimensions, missing
+/// prompt, and a non-ASCII prompt (exercises the char-based, not byte-based, boundary scan).
 fn extra_edge_sweep() -> Vec<(String, Vec<u8>)> {
     vec![
         ("edge:negative_prompt_non_string", json!({"prompt": "no text", "negative_prompt": 123})),

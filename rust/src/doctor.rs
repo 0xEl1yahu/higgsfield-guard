@@ -162,7 +162,7 @@ fn check_binary_freshness(repo_root: &Path, exe_mtime: SystemTime) -> Check {
     if newer.is_empty() {
         Check::Pass(
             "binary freshness: binary is newer than every tracked source \
-             (rust/src/*.rs, Cargo.toml, data/*.json)"
+             (rust/src/*.rs, Cargo.toml)"
                 .to_string(),
         )
     } else {
