@@ -1,4 +1,6 @@
-//! Port of `load_models` (`src/higgsfield_lint.py` lines ~18, ~195-198).
+//! Loads the negative-prompt model lexicon from `data/negative_prompt_models.json`. This
+//! file is the specification for that load path - there is no second implementation to
+//! port against any more (see `SPEC.md` §9 and §12.2).
 
 use std::collections::HashSet;
 use std::fs;

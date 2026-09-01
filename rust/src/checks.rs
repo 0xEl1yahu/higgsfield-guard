@@ -1,10 +1,13 @@
-//! Port of the lint checks in `src/higgsfield_lint.py` (the READ-ONLY oracle for this
-//! port; never edit that file). This module ports lines 20-200: the boundary scan
-//! helpers (`has_term`, `find_original_case`), `check_resolution_claim`, and the two
-//! negation checks (`check_prompt_negative_conflict`, `check_negation_placement`) plus
-//! their shared helpers (`strip_negations`, `is_placement_noise`). The `lint`/`render`
-//! orchestration (lines 203+) lives in `lint.rs`, which calls these checks from
-//! `lint_params`.
+//! The lint checks: the boundary scan helpers (`has_term`, `find_original_case`),
+//! `check_resolution_claim`, and the two negation checks
+//! (`check_prompt_negative_conflict`, `check_negation_placement`) plus their shared
+//! helpers (`strip_negations`, `is_placement_noise`). The `lint`/`render` orchestration
+//! lives in `lint.rs`, which calls these checks from `lint_params`.
+//!
+//! This file is the specification - there is no second implementation to port against
+//! or stay in parity with any more (see `SPEC.md` §9 and §12.2). A rule-behaviour change
+//! here must update `SPEC.md` first, then `rust/tests/golden/expectations.json`
+//! deliberately (see `rust/tests/golden/README.md` for the procedure).
 
 use regex::Regex;
 use serde_json::Value;
