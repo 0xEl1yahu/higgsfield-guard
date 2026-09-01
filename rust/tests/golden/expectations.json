@@ -1,6 +1,6 @@
 {
   "captured_from_commit": "38cdd194799612efa515f8aa8e4677c18c043743",
-  "count": 332,
+  "count": 344,
   "entries": [
     {
       "input_fnv1a64": "94b520152b340f40",
@@ -201,7 +201,7 @@
       "label": "combined:neg=Some(\"slow motion, sharp, blurry\"):model=None:obj",
       "output": {
         "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 2 findings\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: \"slow motion\", \"sharp\" appear in both prompt and negative_prompt. Keep each term in one.",
+          "additionalContext": "higgsfield-lint: 2 findings\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
           "hookEventName": "PreToolUse"
         }
       }
@@ -212,7 +212,7 @@
       "label": "combined:neg=Some(\"slow motion, sharp, blurry\"):model=None:str",
       "output": {
         "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 2 findings\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: \"slow motion\", \"sharp\" appear in both prompt and negative_prompt. Keep each term in one.",
+          "additionalContext": "higgsfield-lint: 2 findings\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
           "hookEventName": "PreToolUse"
         }
       }
@@ -223,7 +223,7 @@
       "label": "combined:neg=Some(\"slow motion, sharp, blurry\"):model=Some(\"kling2_6\"):obj",
       "output": {
         "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 2 findings\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: \"slow motion\", \"sharp\" appear in both prompt and negative_prompt. Keep each term in one.",
+          "additionalContext": "higgsfield-lint: 2 findings\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
           "hookEventName": "PreToolUse"
         }
       }
@@ -234,7 +234,7 @@
       "label": "combined:neg=Some(\"slow motion, sharp, blurry\"):model=Some(\"kling2_6\"):str",
       "output": {
         "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 2 findings\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: \"slow motion\", \"sharp\" appear in both prompt and negative_prompt. Keep each term in one.",
+          "additionalContext": "higgsfield-lint: 2 findings\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
           "hookEventName": "PreToolUse"
         }
       }
@@ -245,7 +245,7 @@
       "label": "combined:neg=Some(\"slow motion, sharp, blurry\"):model=Some(\"not_a_real_model_xyz\"):obj",
       "output": {
         "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 2 findings\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: \"slow motion\", \"sharp\" appear in both prompt and negative_prompt. Keep each term in one.",
+          "additionalContext": "higgsfield-lint: 2 findings\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
           "hookEventName": "PreToolUse"
         }
       }
@@ -256,7 +256,7 @@
       "label": "combined:neg=Some(\"slow motion, sharp, blurry\"):model=Some(\"not_a_real_model_xyz\"):str",
       "output": {
         "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 2 findings\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: \"slow motion\", \"sharp\" appear in both prompt and negative_prompt. Keep each term in one.",
+          "additionalContext": "higgsfield-lint: 2 findings\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
           "hookEventName": "PreToolUse"
         }
       }
@@ -328,28 +328,6 @@
       }
     },
     {
-      "input_fnv1a64": "c9bbe1d7517ea301",
-      "input_len": 170,
-      "label": "conflict:grain:obj",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"grain\" appears in both prompt and negative_prompt. Keep each term in one.",
-          "hookEventName": "PreToolUse"
-        }
-      }
-    },
-    {
-      "input_fnv1a64": "6ca29db4cd055575",
-      "input_len": 180,
-      "label": "conflict:grain:str",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"grain\" appears in both prompt and negative_prompt. Keep each term in one.",
-          "hookEventName": "PreToolUse"
-        }
-      }
-    },
-    {
       "input_fnv1a64": "5c0f96c5f28b0c07",
       "input_len": 176,
       "label": "conflict:handheld:obj",
@@ -389,50 +367,6 @@
       "output": {
         "hookSpecificOutput": {
           "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"motion blur\" appears in both prompt and negative_prompt. Keep each term in one.",
-          "hookEventName": "PreToolUse"
-        }
-      }
-    },
-    {
-      "input_fnv1a64": "4ba173727a3eb2d1",
-      "input_len": 166,
-      "label": "conflict:pan:obj",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"pan\" appears in both prompt and negative_prompt. Keep each term in one.",
-          "hookEventName": "PreToolUse"
-        }
-      }
-    },
-    {
-      "input_fnv1a64": "c39e1f129cbe6875",
-      "input_len": 176,
-      "label": "conflict:pan:str",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"pan\" appears in both prompt and negative_prompt. Keep each term in one.",
-          "hookEventName": "PreToolUse"
-        }
-      }
-    },
-    {
-      "input_fnv1a64": "d90c8cb1971e60bd",
-      "input_len": 170,
-      "label": "conflict:sharp:obj",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"sharp\" appears in both prompt and negative_prompt. Keep each term in one.",
-          "hookEventName": "PreToolUse"
-        }
-      }
-    },
-    {
-      "input_fnv1a64": "47e9d27cea5bf03d",
-      "input_len": 180,
-      "label": "conflict:sharp:str",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"sharp\" appears in both prompt and negative_prompt. Keep each term in one.",
           "hookEventName": "PreToolUse"
         }
       }
@@ -482,50 +416,6 @@
       }
     },
     {
-      "input_fnv1a64": "a44e135643190f7f",
-      "input_len": 172,
-      "label": "conflict:static:obj",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"static\" appears in both prompt and negative_prompt. Keep each term in one.",
-          "hookEventName": "PreToolUse"
-        }
-      }
-    },
-    {
-      "input_fnv1a64": "e272d3b3ef86b5f3",
-      "input_len": 182,
-      "label": "conflict:static:str",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"static\" appears in both prompt and negative_prompt. Keep each term in one.",
-          "hookEventName": "PreToolUse"
-        }
-      }
-    },
-    {
-      "input_fnv1a64": "f1b741c93d79cf99",
-      "input_len": 168,
-      "label": "conflict:text:obj",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"text\" appears in both prompt and negative_prompt. Keep each term in one.",
-          "hookEventName": "PreToolUse"
-        }
-      }
-    },
-    {
-      "input_fnv1a64": "b1303bd0bea0fd3d",
-      "input_len": 178,
-      "label": "conflict:text:str",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"text\" appears in both prompt and negative_prompt. Keep each term in one.",
-          "hookEventName": "PreToolUse"
-        }
-      }
-    },
-    {
       "input_fnv1a64": "9664dcba5ce3d609",
       "input_len": 178,
       "label": "conflict:wide shot:obj",
@@ -543,28 +433,6 @@
       "output": {
         "hookSpecificOutput": {
           "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"wide shot\" appears in both prompt and negative_prompt. Keep each term in one.",
-          "hookEventName": "PreToolUse"
-        }
-      }
-    },
-    {
-      "input_fnv1a64": "f5beb86c1f5d46b5",
-      "input_len": 168,
-      "label": "conflict:zoom:obj",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"zoom\" appears in both prompt and negative_prompt. Keep each term in one.",
-          "hookEventName": "PreToolUse"
-        }
-      }
-    },
-    {
-      "input_fnv1a64": "5fc5000e6942f461",
-      "input_len": 178,
-      "label": "conflict:zoom:str",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"zoom\" appears in both prompt and negative_prompt. Keep each term in one.",
           "hookEventName": "PreToolUse"
         }
       }
@@ -588,12 +456,6 @@
       "output": null
     },
     {
-      "input_fnv1a64": "d5694d6356919055",
-      "input_len": 153,
-      "label": "conflict_agreement:grain",
-      "output": null
-    },
-    {
       "input_fnv1a64": "3fcd0086a0f29283",
       "input_len": 159,
       "label": "conflict_agreement:handheld",
@@ -603,18 +465,6 @@
       "input_fnv1a64": "d3cd91d43ac408dd",
       "input_len": 165,
       "label": "conflict_agreement:motion blur",
-      "output": null
-    },
-    {
-      "input_fnv1a64": "b6a63c0d757b6f09",
-      "input_len": 149,
-      "label": "conflict_agreement:pan",
-      "output": null
-    },
-    {
-      "input_fnv1a64": "da27a20271c4dc8b",
-      "input_len": 153,
-      "label": "conflict_agreement:sharp",
       "output": null
     },
     {
@@ -630,27 +480,9 @@
       "output": null
     },
     {
-      "input_fnv1a64": "f857579b657dd11f",
-      "input_len": 155,
-      "label": "conflict_agreement:static",
-      "output": null
-    },
-    {
-      "input_fnv1a64": "1f4427c2873bc69f",
-      "input_len": 151,
-      "label": "conflict_agreement:text",
-      "output": null
-    },
-    {
       "input_fnv1a64": "b867a88828cd4f3d",
       "input_len": 161,
       "label": "conflict_agreement:wide shot",
-      "output": null
-    },
-    {
-      "input_fnv1a64": "0f91812cd1a0e03b",
-      "input_len": 151,
-      "label": "conflict_agreement:zoom",
       "output": null
     },
     {
@@ -2568,9 +2400,289 @@
       "input_len": 166,
       "label": "fp_control:prompt_negative_conflict:whitespace_only_negative_prompt",
       "output": null
+    },
+    {
+      "input_fnv1a64": "92847e7bda6b4133",
+      "input_len": 180,
+      "label": "conflict:camera pan:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"camera pan\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "993c147048f21a27",
+      "input_len": 190,
+      "label": "conflict:camera pan:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"camera pan\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "7d32deede5b056b7",
+      "input_len": 163,
+      "label": "conflict_agreement:camera pan",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "726d490519c58b41",
+      "input_len": 176,
+      "label": "conflict:whip pan:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"whip pan\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "a8ff06b0d3c4dee5",
+      "input_len": 186,
+      "label": "conflict:whip pan:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"whip pan\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "3b9227f31a534667",
+      "input_len": 159,
+      "label": "conflict_agreement:whip pan",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "d1383d121ad455dd",
+      "input_len": 178,
+      "label": "conflict:slow zoom:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow zoom\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "c26d0402da5d979d",
+      "input_len": 188,
+      "label": "conflict:slow zoom:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow zoom\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "723f8e0442cf14db",
+      "input_len": 161,
+      "label": "conflict_agreement:slow zoom",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "3a424ce200984ce9",
+      "input_len": 188,
+      "label": "conflict:on-screen text:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"on-screen text\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "3a04a8beb87cbddd",
+      "input_len": 198,
+      "label": "conflict:on-screen text:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"on-screen text\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "afc239084f7c4523",
+      "input_len": 171,
+      "label": "conflict_agreement:on-screen text",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "997baa0e80d44a79",
+      "input_len": 180,
+      "label": "conflict:film grain:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"film grain\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "c7cbf6215d09381d",
+      "input_len": 190,
+      "label": "conflict:film grain:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"film grain\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "cec2e4accdd98073",
+      "input_len": 163,
+      "label": "conflict_agreement:film grain",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "e84c32b7cbe93e9d",
+      "input_len": 182,
+      "label": "conflict:static shot:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"static shot\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "7c1a3a25dc43961d",
+      "input_len": 192,
+      "label": "conflict:static shot:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"static shot\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "794e637062fedd57",
+      "input_len": 165,
+      "label": "conflict_agreement:static shot",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "ab8d64df28f36927",
+      "input_len": 180,
+      "label": "conflict:lens flare:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"lens flare\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "4a1164ba6970637b",
+      "input_len": 190,
+      "label": "conflict:lens flare:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"lens flare\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "48a1930656ddc2af",
+      "input_len": 163,
+      "label": "conflict_agreement:lens flare",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "e576253d509138f9",
+      "input_len": 178,
+      "label": "conflict:letterbox:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"letterbox\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "7b22c9dd83a82a3d",
+      "input_len": 188,
+      "label": "conflict:letterbox:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"letterbox\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "ef815263463ff85d",
+      "input_len": 161,
+      "label": "conflict_agreement:letterbox",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "e151e5a9f3a8ca9d",
+      "input_len": 178,
+      "label": "conflict:watermark:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"watermark\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "9c4f90446514010d",
+      "input_len": 188,
+      "label": "conflict:watermark:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"watermark\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "245924da430c3f77",
+      "input_len": 161,
+      "label": "conflict_agreement:watermark",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "07b1420ccf50cfe1",
+      "input_len": 178,
+      "label": "conflict:subtitles:obj",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"subtitles\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "e88cdfe66da9f655",
+      "input_len": 188,
+      "label": "conflict:subtitles:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"subtitles\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "467b376384dfa385",
+      "input_len": 161,
+      "label": "conflict_agreement:subtitles",
+      "output": null
     }
   ],
   "generated_by": "rust/tests/parity.rs corpus generators, captured against the verified Rust binary",
-  "note": "Historical snapshot of verified behaviour, now diverging by design: originally matched the retired Python oracle at 320/0 divergences (plus 4,200 independently-fuzzed inputs). Since the oracle was archived, 51 entries were deliberately moved away from oracle behaviour (negation_placement removal) and 5 entries added that no oracle ever saw. A mismatch here is a deliberate behaviour change under review, not a bug to silence by editing this file to match.",
+  "note": "Historical snapshot of verified behaviour, now diverging by design: originally matched the retired Python oracle at 320/0 divergences (plus 4,200 independently-fuzzed inputs). Since the oracle was archived: task 2 (negation_placement removal) moved 51 entries away from oracle behaviour and added 5 negative-control entries no oracle ever saw; task 3 (prompt_negative_conflict recalibration, SPEC.md \u00a75.2) added 7 negative-control entries (5 of them real false-positive regressions against the pre-recalibration binary, all now silent by design), removed 18 entries for the dropped bare pan/text/sharp/static/zoom/grain lexicon tokens, added 30 entries for the new camera pan/whip pan/slow zoom/on-screen text/film grain/static shot/lens flare/letterbox/watermark/subtitles entries, and updated 6 entries whose expected output named a hit on the now-dropped \"sharp\". A mismatch here is a deliberate behaviour change under review, not a bug to silence by editing this file to match.",
   "schema_version": 1
 }
