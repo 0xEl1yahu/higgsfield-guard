@@ -106,8 +106,44 @@ Fires when a phrase from a curated directive list appears in both fields. Restri
 phrase list rather than free tokens, because common words in both fields are normal and
 would make this unusable.
 
-Seed list: `slow motion`, `slow-mo`, `static`, `blurred`, `blurry`, `sharp`, `text`,
-`motion blur`, `close-up`, `wide shot`, `zoom`, `pan`, `handheld`, `grain`.
+**Recalibrated** (`HIGGSFIELD_PROMPT_RESEARCH.md` §10, "Rule 5.2 recalibration") after
+three confirmed false positives (research §8.2), each verified against the shipped
+binary:
+
+- `{"prompt":"A cast-iron pan sizzles on the stove.","negative_prompt":"pan, zoom, camera movement"}`
+  fired on `pan` — a common-noun homograph, not a camera directive.
+- `{"prompt":"A poster with the text \"OPEN\" in bold.","negative_prompt":"misspelled text, distorted letters"}`
+  fired on `text` — but quoting a literal in the prompt and suppressing typography
+  artifacts in `negative_prompt` is exactly the pairing Nano Banana's own help article
+  recommends. This is content, not conflict.
+- `{"prompt":"sharp focus on the blade","negative_prompt":"soft focus, not sharp"}` fired
+  on `sharp` — but `not sharp` in the negative field is *agreement* with the prompt, not a
+  conflict with it. Negations were being stripped from the prompt only.
+
+Four changes fix these without weakening genuine detections:
+
+1. **Strip negations from both fields**, not just the prompt. `not sharp` in
+   `negative_prompt` is a double negative and must not count as a hit.
+2. **Exclude occurrences inside matched double quotes in the prompt.** A quoted literal
+   (`The poster reads "OPEN"`) is Higgsfield-recommended content, not direction.
+3. **Require a phrase to be ≥2 tokens, or a member of a strict, unambiguous single-token
+   set with a 4-character minimum.** No stemming or fuzzy matching — an inflectional
+   match (`blur` vs `blurry`) is exactly where a curated list turns into a fuzzy matcher,
+   so that class of miss is an accepted cost.
+4. **Drop the bare single-token entries with a confirmed or obvious homograph** — `pan`,
+   `text`, `sharp`, `static`, `zoom`, `grain` — since a common-noun sense of each collides
+   with normal prompt language. Where the directive sense still matters, a bigram takes
+   its place instead.
+
+Recalibrated list (multi-token entries kept from the seed list, plus the bigram
+replacements and new entries):
+
+`slow motion`, `slow-mo`, `motion blur`, `close-up`, `wide shot`, `handheld`, `blurred`,
+`blurry`, `camera pan`, `whip pan`, `slow zoom`, `on-screen text`, `film grain`, `static
+shot`, `lens flare`, `letterbox`, `watermark`, `subtitles`.
+
+The rule's one confirmed genuine historical hit, `slow motion`, is two tokens and
+survives unchanged.
 
 ### 5.3 negation_placement — disabled
 
