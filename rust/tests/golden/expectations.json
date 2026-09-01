@@ -1,6 +1,6 @@
 {
   "captured_from_commit": "38cdd194799612efa515f8aa8e4677c18c043743",
-  "count": 325,
+  "count": 332,
   "entries": [
     {
       "input_fnv1a64": "94b520152b340f40",
@@ -2525,6 +2525,48 @@
       "input_fnv1a64": "878bc54f8ceccb1e",
       "input_len": 152,
       "label": "fp_control:negation_placement:seed_list_only_no_negative_prompt",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "51c2db272b067522",
+      "input_len": 169,
+      "label": "fp_control:prompt_negative_conflict:cast_iron_pan",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "7f945f4e8dd2ded1",
+      "input_len": 180,
+      "label": "fp_control:prompt_negative_conflict:quoted_literal_text",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "0b27792e25c47bfc",
+      "input_len": 151,
+      "label": "fp_control:prompt_negative_conflict:sharp_focus_soft_focus",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "dca8f00855da141b",
+      "input_len": 177,
+      "label": "fp_control:prompt_negative_conflict:not_sharp_leading_in_negative",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "7d586d28220638ee",
+      "input_len": 187,
+      "label": "fp_control:prompt_negative_conflict:quoted_survivor_term",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "ae557d8a88b51860",
+      "input_len": 174,
+      "label": "fp_control:prompt_negative_conflict:empty_negative_prompt",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "19b5500a2b2ba507",
+      "input_len": 166,
+      "label": "fp_control:prompt_negative_conflict:whitespace_only_negative_prompt",
       "output": null
     }
   ],

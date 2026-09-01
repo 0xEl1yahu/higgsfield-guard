@@ -591,6 +591,97 @@ fn negation_placement_fp_controls() -> Vec<(String, Vec<u8>)> {
     .collect()
 }
 
+/// Permanent negative controls for `prompt_negative_conflict`'s recalibration
+/// (HIGGSFIELD_PROMPT_RESEARCH.md §8.2, §10; SPEC.md §5.2). Each of the first three is a
+/// *real* firing against the shipped pre-recalibration binary, not hypothetical - the
+/// audit ran them and recorded the actual output. They must all be silent once the four
+/// changes from research §10 land:
+///   - a common-noun homograph (`pan` the cookware vs `pan` the camera move),
+///   - a quoted literal the prompt is supposed to contain per Nano Banana's own guidance
+///     (`text` inside `"OPEN"` vs `misspelled text` as a thing to avoid),
+///   - agreement rather than conflict (`sharp` in the prompt vs `not sharp` in
+///     `negative_prompt` - both fields want the same thing once negations are stripped
+///     from both, not just the prompt).
+/// The fourth exercises the negation-in-negative-field strip specifically with a minimal
+/// `negative_prompt` value, and the fifth and sixth are the `""` / whitespace-only
+/// `negative_prompt` edge cases research §8.2's "Benchmark additions" row calls for.
+/// `whitespace_only_negative_prompt` deliberately uses different prompt text from
+/// `extra_edge_sweep`'s `edge:negative_prompt_whitespace_only` case - identical stdin
+/// bytes under two labels would be silently dropped by the corpus's de-duplication guard
+/// (see the collision check in `rust_matches_recorded_golden_expectations` below).
+fn prompt_negative_conflict_fp_controls() -> Vec<(String, Vec<u8>)> {
+    vec![
+        // FP1 - common-noun homograph. Research §8.2: confirmed firing on the shipped
+        // binary before recalibration.
+        (
+            "fp_control:prompt_negative_conflict:cast_iron_pan",
+            json!({
+                "prompt": "A cast-iron pan sizzles on the stove.",
+                "negative_prompt": "pan, zoom, camera movement"
+            }),
+        ),
+        // FP2 - quoted literal text, exactly the pairing Nano Banana's own help article
+        // recommends: quote the literal, suppress typography artifacts in the negative.
+        (
+            "fp_control:prompt_negative_conflict:quoted_literal_text",
+            json!({
+                "prompt": "A poster with the text \"OPEN\" in bold.",
+                "negative_prompt": "misspelled text, distorted letters"
+            }),
+        ),
+        // FP3 - agreement, not conflict. "not sharp" in negative_prompt already says the
+        // same thing "soft focus" does; negations were stripped from the prompt only.
+        (
+            "fp_control:prompt_negative_conflict:sharp_focus_soft_focus",
+            json!({
+                "prompt": "sharp focus on the blade",
+                "negative_prompt": "soft focus, not sharp"
+            }),
+        ),
+        // "not sharp" in the negative field specifically, isolated from FP3's longer
+        // string and phrased so the negation sits at the very start of the field.
+        (
+            "fp_control:prompt_negative_conflict:not_sharp_leading_in_negative",
+            json!({
+                "prompt": "a knife with a sharp edge on the counter",
+                "negative_prompt": "not sharp, oversaturated colors"
+            }),
+        ),
+        // A quoted occurrence of a term that SURVIVES the recalibrated lexicon
+        // (`close-up` is kept, per SPEC.md §5.2) - proves the quote-exclusion helper does
+        // real work here, rather than the case only passing because the term itself was
+        // dropped as a homograph (as FP2's `text` is).
+        (
+            "fp_control:prompt_negative_conflict:quoted_survivor_term",
+            json!({
+                "prompt": "The subtitle card reads \"close-up\" as the scene direction.",
+                "negative_prompt": "close-up, motion blur"
+            }),
+        ),
+        // negative_prompt of "" - no term can match an empty string.
+        (
+            "fp_control:prompt_negative_conflict:empty_negative_prompt",
+            json!({
+                "prompt": "a scene with sharp focus, slow motion, camera pan across the skyline",
+                "negative_prompt": ""
+            }),
+        ),
+        // negative_prompt of whitespace only - distinct prompt text from
+        // extra_edge_sweep's edge:negative_prompt_whitespace_only to avoid a byte
+        // collision (see the doc comment above).
+        (
+            "fp_control:prompt_negative_conflict:whitespace_only_negative_prompt",
+            json!({
+                "prompt": "slow motion establishing shot, panning across the skyline",
+                "negative_prompt": "   "
+            }),
+        ),
+    ]
+    .into_iter()
+    .map(|(name, params)| (name.to_string(), wrap(TOOL_SINGLE, single(params))))
+    .collect()
+}
+
 /// Type-confusion and other edges not otherwise covered: wrong-typed fields, whitespace-only
 /// negative_prompt, non-string resolution, negative/string-encoded dimensions, missing
 /// prompt, and a non-ASCII prompt (exercises the char-based, not byte-based, boundary scan).
@@ -822,6 +913,7 @@ fn rust_matches_recorded_golden_expectations() {
     all.extend(combined_sweep(&known));
     all.extend(extra_edge_sweep());
     all.extend(negation_placement_fp_controls());
+    all.extend(prompt_negative_conflict_fp_controls());
 
     // De-duplicate by exact stdin byte content. Different sweep groups can legitimately
     // land on the same bytes (e.g. two groups both happening to build an identical params
