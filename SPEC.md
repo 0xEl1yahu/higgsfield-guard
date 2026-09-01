@@ -198,7 +198,11 @@ read-only, at `docs/archive/verified-port/`. The Rust binary is verified two way
   a change to `rust/src/checks.rs` deliberately flips a finding, the corresponding
   entries in `expectations.json` are updated in that same change, individually, never
   bulk-regenerated to turn a red diff green. Run it with `cargo test --release --test
-  parity`.
+  parity`. Each entry carries four fields - `label`, `input_len`, `input_fnv1a64`, and
+  `output` - and there is deliberately no tool that writes them for you, so a change to
+  behaviour is never a rubber stamp. `rust/tests/golden/README.md` has the full mechanism;
+  in short, add a placeholder entry, run the test once, and copy the correct
+  `input_len`/`input_fnv1a64`/actual output straight out of the failure message.
 
 ## 10. Repository layout
 
@@ -212,6 +216,7 @@ data/negative_prompt_models.json     evidence-seeded model list
 tests/fixtures/*.json                real captured tool inputs
 rust/tests/parity.rs                 golden-output regression corpus, the port's real verification (§9)
 rust/tests/golden/expectations.json  recorded expectations rust/tests/parity.rs checks against (§9)
+rust/tests/golden/README.md          how to add/change a golden entry (§9)
 rust/tests/fail_silent.rs            pathological-input and panic-silence tests
 docs/archive/                        the rejected design, its pseudocode, and the retired Python port
 docs/archive/verified-port/          archived Python port + pytest suite - historical record (§12.2)
