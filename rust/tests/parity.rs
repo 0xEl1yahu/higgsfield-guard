@@ -90,8 +90,9 @@ fn fnv1a64(bytes: &[u8]) -> u64 {
 
 // =============================================================================================
 // Shared corpus-building vocabulary (mirrors the specification's lexicons - see
-// rust/src/checks.rs lines 21-271. This section is unchanged from the retired differential
-// harness: the corpus itself is not what changed in this task.)
+// rust/src/checks.rs lines 21-271. CONFLICT_PHRASES below was updated in task 3 to mirror
+// checks.rs's recalibrated list (SPEC.md §5.2; HIGGSFIELD_PROMPT_RESEARCH.md §10) -
+// everywhere else in this section is unchanged from the retired differential harness.)
 // =============================================================================================
 
 const RESOLUTION_TERMS: &[&str] = &["8k", "4k", "uhd", "1080p", "full hd", "720p", "480p"];
@@ -100,17 +101,21 @@ const CONFLICT_PHRASES: &[&str] = &[
     "slow motion",
     "slow-mo",
     "motion blur",
-    "static",
-    "blurred",
-    "blurry",
-    "sharp",
-    "text",
     "close-up",
     "wide shot",
-    "zoom",
-    "pan",
     "handheld",
-    "grain",
+    "blurred",
+    "blurry",
+    "camera pan",
+    "whip pan",
+    "slow zoom",
+    "on-screen text",
+    "film grain",
+    "static shot",
+    "lens flare",
+    "letterbox",
+    "watermark",
+    "subtitles",
 ];
 
 const NEGATION_FORMS: &[&str] = &["no", "without", "avoid", "not"];

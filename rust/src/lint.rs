@@ -292,10 +292,14 @@ mod tests {
         // check_negation_placement (SPEC.md §5.3, now disabled) alongside the two checks
         // below, and this asserts that disabled check really does stay silent on it now,
         // not just that this test stopped exercising it.
+        //
+        // "handheld" (not the original "sharp") since task 3's recalibration dropped
+        // "sharp" as a confirmed homograph (SPEC.md §5.2; HIGGSFIELD_PROMPT_RESEARCH.md
+        // §8.2, §10) - "handheld" is a single-token entry that survived it.
         let tool_input = json!({
             "params": {
-                "prompt": "shot in 4k, no logos, sharp focus",
-                "negative_prompt": "sharp, blurry",
+                "prompt": "shot in 4k, no logos, handheld camera",
+                "negative_prompt": "handheld, blurry",
                 "width": 1280,
                 "height": 720
             }

@@ -1,7 +1,7 @@
-//! The lint checks: the boundary scan helpers (`has_term`, `find_original_case`),
-//! `check_resolution_claim`, and `check_prompt_negative_conflict`, plus its shared
-//! helper `strip_negations`. The `lint`/`render` orchestration lives in `lint.rs`,
-//! which calls these checks from `lint_params`.
+//! The lint checks: the boundary scan helpers (`has_term`, `find_original_case`,
+//! `has_term_excluding`), `check_resolution_claim`, and `check_prompt_negative_conflict`,
+//! plus its shared helpers `strip_negations` and `quoted_spans`. The `lint`/`render`
+//! orchestration lives in `lint.rs`, which calls these checks from `lint_params`.
 //!
 //! `check_negation_placement` was disabled (SPEC.md §5.3; HIGGSFIELD_PROMPT_RESEARCH.md
 //! §6, §8.3) - contradicted by first-party guidance, with five confirmed false-positive
@@ -9,6 +9,15 @@
 //! Its noise filter (`PLACEMENT_NEGATION_RE`, `is_placement_noise`, the stoplist) stays
 //! below, unused, because HFR-006 (research §10) reuses it unchanged in a volume-based
 //! replacement.
+//!
+//! `check_prompt_negative_conflict` was recalibrated (SPEC.md §5.2;
+//! HIGGSFIELD_PROMPT_RESEARCH.md §8.2, §10) after three confirmed false positives against
+//! the shipped binary: `pan` (common-noun homograph), `text` (a quoted literal Higgsfield
+//! itself recommends pairing with a typography exclusion), and `sharp` (`not sharp` in
+//! `negative_prompt` is agreement, not conflict, once negations are stripped from both
+//! fields rather than the prompt alone). `quoted_spans` is the exclusion primitive that
+//! change needed; it is written to be reused, not reimplemented, by Task 4's resolution
+//! lexicon work.
 //!
 //! This file is the specification - there is no second implementation to port against
 //! or stay in parity with any more (see `SPEC.md` §9 and §12.2). A rule-behaviour change
@@ -79,6 +88,16 @@ pub fn has_term(text: &str, term: &str) -> bool {
     find_term_match(text, term, false).is_some()
 }
 
+/// Same as `has_term`, but a match whose start position falls inside one of `excluded`'s
+/// byte ranges is skipped rather than accepted - scanning continues past it, so a later,
+/// non-excluded occurrence of the same term can still be found. Built for
+/// `check_prompt_negative_conflict`'s quoted-literal exclusion (research §10, SPEC.md
+/// §5.2), and shared - not reimplemented - for Task 4's resolution lexicon; see
+/// `quoted_spans` below for how the ranges themselves are produced.
+pub fn has_term_excluding(text: &str, term: &str, excluded: &[(usize, usize)]) -> bool {
+    find_term_match_excluding(text, term, false, excluded).is_some()
+}
+
 /// Same scan as `has_term`, but case-INSENSITIVE (both the literal and the boundary
 /// class), and returns the matched substring in its ORIGINAL casing from `text` (e.g.
 /// quoting `"4K"` as the user wrote it, not the lowercase lexicon key `"4k"`). Mirrors
@@ -122,6 +141,26 @@ fn is_boundary_char(c: char, ignore_case: bool) -> bool {
 /// is called with), then that probe is discarded. The only heap allocation left is
 /// `term_chars`, sized to the short lexicon term, not the (potentially huge) haystack.
 fn find_term_match(text: &str, term: &str, ignore_case: bool) -> Option<(usize, usize)> {
+    find_term_match_excluding(text, term, ignore_case, &[])
+}
+
+/// Is byte offset `pos` inside any of `excluded`'s `[start, end)` ranges? Linear scan -
+/// `excluded` is `quoted_spans`' output, a handful of ranges per prompt at most, so this
+/// is cheaper than sorting for a binary search.
+fn is_excluded(pos: usize, excluded: &[(usize, usize)]) -> bool {
+    excluded.iter().any(|&(start, end)| pos >= start && pos < end)
+}
+
+/// Same scan as `find_term_match`, with one addition: a match that would otherwise be
+/// valid is skipped - not returned, but not treated as ending the search either - when
+/// its start position falls inside one of `excluded`'s byte ranges. `find_term_match`
+/// is this function called with an empty exclusion slice.
+fn find_term_match_excluding(
+    text: &str,
+    term: &str,
+    ignore_case: bool,
+    excluded: &[(usize, usize)],
+) -> Option<(usize, usize)> {
     let term_chars: Vec<char> = term.chars().collect();
     let m = term_chars.len();
     if m == 0 {
@@ -155,17 +194,42 @@ fn find_term_match(text: &str, term: &str, ignore_case: bool) -> Option<(usize, 
             let after_ok = probe
                 .peek()
                 .is_none_or(|&(_, c)| !is_boundary_char(c, ignore_case));
-            if before_ok && after_ok {
+            if before_ok && after_ok && !is_excluded(start, excluded) {
                 return Some((start, match_end));
             }
         }
-        // Boundary check failed, or the term didn't match here: advance by one char and
-        // keep scanning rather than giving up (e.g. "mp4k 4K" must still match on the
-        // second occurrence).
+        // Boundary check failed, the term didn't match here, or the match was excluded:
+        // advance by one char and keep scanning rather than giving up (e.g. "mp4k 4K"
+        // must still match on the second occurrence; a term with one excluded and one
+        // live occurrence must still find the live one).
         let (_, c0) = positions.next().unwrap();
         before = Some(c0);
     }
     None
+}
+
+/// Byte ranges of `text` that fall inside a MATCHED pair of ASCII double quotes (`"`).
+/// Quotes are paired left-to-right, first with second, third with fourth, and so on; an
+/// odd trailing `"` (an unterminated literal) has no partner and is not paired - nothing
+/// after it is treated as quoted, per research §10 ("matched double quotes" only, not
+/// "everything after the first quote"). Each returned range spans from the opening quote
+/// character through the character immediately after the closing one, so a match whose
+/// start position falls anywhere in `[open, close]` - including on the quote characters
+/// themselves - counts as quoted.
+///
+/// Shared, not reimplemented: this is the one helper `check_prompt_negative_conflict`
+/// (this file) and Task 4's resolution-lexicon work both need for "a quoted literal is
+/// content, not direction" (research §10; SPEC.md §5.2).
+pub fn quoted_spans(text: &str) -> Vec<(usize, usize)> {
+    let mut spans = Vec::new();
+    let mut quotes = text.char_indices().filter(|&(_, c)| c == '"');
+    while let Some((open, _)) = quotes.next() {
+        let Some((close, close_char)) = quotes.next() else {
+            break; // Unterminated - the trailing quote has no partner.
+        };
+        spans.push((open, close + close_char.len_utf8()));
+    }
+    spans
 }
 
 /// Highest resolution claim present in the prompt, as (original_text, pixels). Port of
@@ -262,21 +326,36 @@ pub fn check_resolution_claim(params: &Value) -> Option<Finding> {
 
 // Directive phrases worth comparing across the two prompt fields. A curated list,
 // because ordinary words legitimately appear in both and would drown the signal.
+//
+// Recalibrated (SPEC.md §5.2; HIGGSFIELD_PROMPT_RESEARCH.md §10) after three confirmed
+// false positives: bare `pan`, `text`, and `sharp` each collided with an ordinary-English
+// sense of the same word (a cast-iron pan, a quoted on-screen literal, "not sharp" as
+// agreement rather than conflict). The rule going forward: every entry is either >=2
+// tokens, or a single token from a set judged unambiguous, with a 4-character minimum
+// (enforced by `conflict_phrases_single_token_entries_meet_the_four_char_minimum` below).
+// `static`, `zoom`, and `grain` are dropped for the same homograph reason (a static shot
+// vs static noise, a zoom lens vs a zoom move, wood grain vs film grain) even without a
+// confirmed-in-the-wild hit; where the directive sense matters, a bigram takes the bare
+// token's place instead.
 const CONFLICT_PHRASES: &[&str] = &[
     "slow motion",
     "slow-mo",
     "motion blur",
-    "static",
-    "blurred",
-    "blurry",
-    "sharp",
-    "text",
     "close-up",
     "wide shot",
-    "zoom",
-    "pan",
     "handheld",
-    "grain",
+    "blurred",
+    "blurry",
+    "camera pan",
+    "whip pan",
+    "slow zoom",
+    "on-screen text",
+    "film grain",
+    "static shot",
+    "lens flare",
+    "letterbox",
+    "watermark",
+    "subtitles",
 ];
 
 // "no text", "without a logo", "avoid harsh shadows" - up to three trailing words.
@@ -340,8 +419,9 @@ pub fn strip_negations(text: &str) -> String {
     NEGATION_RE.replace_all(text, " ").into_owned()
 }
 
-/// Port of `check_prompt_negative_conflict` (archived Python oracle,
-/// `docs/archive/verified-port/higgsfield_lint.py` lines 157-172).
+/// Originally a port of `check_prompt_negative_conflict` (archived Python oracle,
+/// `docs/archive/verified-port/higgsfield_lint.py` lines 157-172); recalibrated since -
+/// see the module doc comment, SPEC.md §5.2, and HIGGSFIELD_PROMPT_RESEARCH.md §8.2/§10.
 pub fn check_prompt_negative_conflict(params: &Value) -> Option<Finding> {
     let prompt = params.get("prompt").and_then(Value::as_str)?;
     let negative = params.get("negative_prompt").and_then(Value::as_str)?;
@@ -350,11 +430,22 @@ pub fn check_prompt_negative_conflict(params: &Value) -> Option<Finding> {
     // lowercasing BOTH arguments before ever calling it (oracle lines 162-163); these
     // two `.lower()`/`to_lowercase()` calls are that compensation, replicated
     // explicitly rather than folded into `has_term` itself.
+    //
+    // Recalibration change 1 (research §10): negations are now stripped from BOTH
+    // fields, not the prompt alone. "not sharp" in negative_prompt is a double negative
+    // and must not read as agreement-turned-conflict with "sharp" in the prompt.
     let positive = strip_negations(prompt).to_lowercase();
-    let negative_low = negative.to_lowercase();
+    let negative_low = strip_negations(negative).to_lowercase();
+    // Recalibration change 2: a quoted literal in the prompt is content the user asked
+    // for verbatim (Nano Banana's own guidance), not a directive - so an occurrence
+    // inside a matched `"..."` pair does not count towards a hit. Spans are computed on
+    // `positive` itself (post-negation-strip, post-lowercase) so their byte offsets line
+    // up exactly with the string `has_term_excluding` scans; quote characters are ASCII
+    // and untouched by either transform, so this does not miss or misplace a pair.
+    let quoted = quoted_spans(&positive);
     let hits: Vec<&str> = CONFLICT_PHRASES
         .iter()
-        .filter(|p| has_term(&positive, p) && has_term(&negative_low, p))
+        .filter(|p| has_term_excluding(&positive, p, &quoted) && has_term(&negative_low, p))
         .copied()
         .collect();
     if hits.is_empty() {
@@ -442,6 +533,65 @@ mod tests {
             Some("Full HD")
         );
         assert_eq!(find_original_case("nothing here", "4k"), None);
+    }
+
+    // quoted_spans / has_term_excluding: the shared helper behind recalibration change 2
+    // (SPEC.md §5.2), also earmarked for Task 4's resolution lexicon.
+
+    #[test]
+    fn quoted_spans_pairs_quotes_left_to_right_and_ignores_a_trailing_unpaired_quote() {
+        let text = r#"A sign reads "OPEN" and another reads "CLOSED" past midnight"#;
+        let spans = quoted_spans(text);
+        assert_eq!(spans.len(), 2);
+        assert_eq!(&text[spans[0].0..spans[0].1], "\"OPEN\"");
+        assert_eq!(&text[spans[1].0..spans[1].1], "\"CLOSED\"");
+
+        // An odd number of quotes: the third, trailing quote has no partner and is not
+        // paired - only the first two are excluded.
+        let unterminated = r#"A sign reads "OPEN" but this "one never closes"#;
+        let spans = quoted_spans(unterminated);
+        assert_eq!(spans.len(), 1);
+        assert_eq!(&unterminated[spans[0].0..spans[0].1], "\"OPEN\"");
+    }
+
+    #[test]
+    fn quoted_spans_is_empty_when_there_are_no_quotes() {
+        assert!(quoted_spans("no quotes anywhere in this prompt").is_empty());
+    }
+
+    #[test]
+    fn has_term_excluding_skips_a_quoted_occurrence_but_still_finds_a_live_one() {
+        let quoted_only = r#"the poster reads "close-up" in bold letters"#;
+        let spans = quoted_spans(quoted_only);
+        assert!(!has_term_excluding(quoted_only, "close-up", &spans));
+        // Unexcluded (empty exclusion list), the same text still matches - proves the
+        // exclusion, not some other change, is what suppressed it above.
+        assert!(has_term_excluding(quoted_only, "close-up", &[]));
+
+        // A term appearing once inside quotes and once outside must still be found via
+        // the live, unquoted occurrence - exclusion skips a match, it does not stop the
+        // scan.
+        let mixed = r#"a close-up shot; the caption also reads "close-up" on screen"#;
+        let spans = quoted_spans(mixed);
+        assert!(has_term_excluding(mixed, "close-up", &spans));
+    }
+
+    #[test]
+    fn conflict_phrases_single_token_entries_meet_the_four_char_minimum() {
+        // Recalibration change 3 (SPEC.md §5.2): every CONFLICT_PHRASES entry is either
+        // >=2 tokens (contains a space) or a single token of at least 4 characters. This
+        // does not (and cannot) enforce the "unambiguous" half of that rule - that is a
+        // judgment call recorded in the comment above CONFLICT_PHRASES - but it does
+        // enforce the length floor mechanically, so a future one-off short token cannot
+        // slip back in unnoticed.
+        for phrase in CONFLICT_PHRASES {
+            if !phrase.contains(' ') {
+                assert!(
+                    phrase.chars().count() >= 4,
+                    "single-token entry {phrase:?} is below the 4-character minimum"
+                );
+            }
+        }
     }
 
     #[test]
@@ -598,14 +748,77 @@ mod tests {
 
     #[test]
     fn prompt_negative_conflict_silent_when_prompt_negates_the_shared_term() {
-        // "no text" in the prompt strips "text" from the positive reading, so its
-        // appearance in negative_prompt is agreement, not conflict.
+        // "no blurry" in the prompt strips "blurry" from the positive reading, so its
+        // appearance in negative_prompt is agreement, not conflict. (Was "text" before
+        // the task 3 recalibration dropped that bare token as a homograph - see
+        // prompt_negative_conflict_recalibration_drops_pan_text_and_sharp below for the
+        // regression test that replaced this scenario's original purpose.)
         let params = json!({
-            "prompt": "no text, cat on a windowsill",
-            "negative_prompt": "random text"
+            "prompt": "no blurry, cat on a windowsill",
+            "negative_prompt": "random blurry"
         });
         assert!(check_prompt_negative_conflict(&params).is_none());
     }
+
+    // Recalibration (SPEC.md §5.2; HIGGSFIELD_PROMPT_RESEARCH.md §8.2, §10): three
+    // confirmed false positives against the shipped binary, each now a permanent
+    // regression test as well as a golden-corpus negative control
+    // (rust/tests/parity.rs's prompt_negative_conflict_fp_controls).
+
+    #[test]
+    fn prompt_negative_conflict_recalibration_drops_pan_text_and_sharp() {
+        // FP1: a cast-iron pan is not a camera pan.
+        assert!(check_prompt_negative_conflict(&json!({
+            "prompt": "A cast-iron pan sizzles on the stove.",
+            "negative_prompt": "pan, zoom, camera movement"
+        }))
+        .is_none());
+        // FP2: quoting a literal and suppressing typography artifacts is the pairing
+        // Nano Banana's own guidance recommends, not a conflict.
+        assert!(check_prompt_negative_conflict(&json!({
+            "prompt": "A poster with the text \"OPEN\" in bold.",
+            "negative_prompt": "misspelled text, distorted letters"
+        }))
+        .is_none());
+        // FP3: "not sharp" in negative_prompt agrees with "sharp focus" in the prompt;
+        // it is not a conflict even before considering that "sharp" is dropped outright.
+        assert!(check_prompt_negative_conflict(&json!({
+            "prompt": "sharp focus on the blade",
+            "negative_prompt": "soft focus, not sharp"
+        }))
+        .is_none());
+    }
+
+    #[test]
+    fn prompt_negative_conflict_strips_negation_from_the_negative_field_too() {
+        // Recalibration change 1. Even for a phrase that DID survive the lexicon,
+        // negating it in negative_prompt must read as agreement, not conflict - the
+        // strip has to apply to both fields, not the prompt alone.
+        assert!(check_prompt_negative_conflict(&json!({
+            "prompt": "a handheld tracking shot",
+            "negative_prompt": "not handheld, tripod-mounted only"
+        }))
+        .is_none());
+    }
+
+    #[test]
+    fn prompt_negative_conflict_excludes_a_quoted_occurrence_in_the_prompt() {
+        // Recalibration change 2, exercised with a term that SURVIVES the lexicon
+        // (close-up), so this cannot pass merely because the term was dropped - it
+        // proves the quote-exclusion path itself does the work.
+        assert!(check_prompt_negative_conflict(&json!({
+            "prompt": "The subtitle card reads \"close-up\" as the scene direction.",
+            "negative_prompt": "close-up, motion blur"
+        }))
+        .is_none());
+        // Sanity check the same phrase still fires when it is NOT quoted.
+        assert!(check_prompt_negative_conflict(&json!({
+            "prompt": "a close-up on the actor's eyes",
+            "negative_prompt": "close-up, motion blur"
+        }))
+        .is_some());
+    }
+
 
     #[test]
     fn prompt_negative_conflict_is_case_insensitive_via_explicit_lower() {
@@ -622,11 +835,16 @@ mod tests {
 
     #[test]
     fn prompt_negative_conflict_pluralises_the_verb_for_three_hits() {
+        // Also doubles as the bigram-replacement regression test: each dropped bare
+        // token's directive sense now lives in one of these bigrams.
         let params = json!({
-            "prompt": "sharp, static, grain, cinematic scene",
-            "negative_prompt": "sharp, static, grain"
+            "prompt": "camera pan, film grain, static shot, cinematic scene",
+            "negative_prompt": "camera pan, film grain, static shot"
         });
         let finding = check_prompt_negative_conflict(&params).expect("should fire");
+        assert!(finding.message.contains("\"camera pan\""));
+        assert!(finding.message.contains("\"film grain\""));
+        assert!(finding.message.contains("\"static shot\""));
         assert!(finding.message.contains(" appear in both prompt and negative_prompt"));
     }
 

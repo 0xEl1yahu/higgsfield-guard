@@ -493,10 +493,13 @@ fn evaluate_self_test(ids: &[&str]) -> Check {
 /// currently-running `lint`/`models` code, not a mock) and confirm exactly the
 /// two expected `check_id`s come back, in order.
 fn check_self_test() -> Check {
+    // "handheld" (not the original "sharp") since task 3's recalibration dropped "sharp"
+    // as a confirmed homograph (SPEC.md §5.2; HIGGSFIELD_PROMPT_RESEARCH.md §8.2, §10) -
+    // "handheld" is a single-token entry that survived that recalibration.
     let tool_input = serde_json::json!({
         "params": {
-            "prompt": "shot in 4k, no logos, sharp focus",
-            "negative_prompt": "sharp, blurry",
+            "prompt": "shot in 4k, no logos, handheld camera",
+            "negative_prompt": "handheld, blurry",
             "width": 1280,
             "height": 720
         }
