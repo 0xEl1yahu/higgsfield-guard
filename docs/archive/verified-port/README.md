@@ -25,11 +25,13 @@ Python implementation's checks directly.
   one-time fuzz run performed by an independent Opus-tier reviewer during the Rust
   port's final whole-branch review, alongside panic-injection through both the
   single-call and batch paths and 57 out-of-corpus edge-case probes (13 divergences,
-  all traced to schema-invalid inputs, not real bugs). Documented in
-  `.superpowers/sdd/2026-08-31-rust-port/progress.md`, "Final whole-branch review"
-  section. This fuzzer itself was never checked into the repository, so this 4,200
-  figure is a reported, one-time verification event, not something `cargo test` can
-  re-run.
+  all traced to schema-invalid inputs, not real bugs). The figures in this paragraph are
+  the complete record of that review kept in version control - the reviewing agent's
+  own session notes (`.superpowers/sdd/2026-08-31-rust-port/progress.md`) lived only in
+  its local working directory, which is gitignored and present in no clone, so they are
+  not cited here as a source to go read. This fuzzer itself was never checked into the
+  repository, so this 4,200 figure is a reported, one-time verification event, not
+  something `cargo test` can re-run.
 
 **Commit this was true at:** `a8779c8` (`test(doctor): cover the CLAUDE_PROJECT_DIR
 wiring site with subprocess tests`) is the last commit of the predecessor

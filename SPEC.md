@@ -297,7 +297,7 @@ Consequence: **`cargo build --release` is a required setup step**, not a one-tim
 convenience. It must be rerun whenever `rust/src/*.rs` changes, and confirmed before the
 binary is relied on for the first time.
 
-### 12.2 `src/higgsfield_lint.py` is archived, not deleted
+### 12.2 `docs/archive/verified-port/higgsfield_lint.py` is archived, not deleted
 
 The port was verified: 320 differential inputs / 0 divergences, plus 4,200
 independently-fuzzed inputs from a separate reviewer (`docs/archive/verified-port/
