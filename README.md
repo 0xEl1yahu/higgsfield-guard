@@ -2,10 +2,9 @@
 
 A Claude Code `PreToolUse` hook that lints Higgsfield `generate_*` tool calls before they
 run, and tells the model when the prompt argues with its own parameters (a "4K" claim
-against a 768px-tall render, a phrase repeated in both `prompt` and `negative_prompt`, a
-negation like `"no logos"` sitting in the prompt when the model accepts
-`negative_prompt`). It is advisory only: it never blocks a call, never exits non-zero, and
-never writes to stderr. See `SPEC.md` for the full design and rationale.
+against a 768px-tall render, or a phrase repeated in both `prompt` and `negative_prompt`).
+It is advisory only: it never blocks a call, never exits non-zero, and never writes to
+stderr. See `SPEC.md` for the full design and rationale.
 
 ## Required setup: build the binary
 

@@ -45,9 +45,9 @@ fired on real usage:
 2. **`"slow motion"` in both `prompt` and `negative_prompt`.** The same three calls.
 3. **Negations in the positive prompt** (`"no text"`, `"no logos"`, `"no added text"`,
    `"no text overlays"`) in seven of nine, while `kling2_6` accepts a `negative_prompt`
-   and was being given one at the same time.
+   and was being given one at the same time. *(This pattern was later refuted; see §5.3.)*
 
-Those three are the product. Everything else is cut.
+The first two remain the product. Everything else is cut.
 
 ## 3. Mechanism
 
@@ -135,7 +135,7 @@ rather than judging where they sit. That replacement is out of scope here; its
 thresholds still need calibrating against the corpus before it ships.
 
 `data/negative_prompt_models.json`, the evidence-seeded model list this rule's gate
-depended on, is retired along with it — nothing reads it any more.
+depended on, is retired along with it — nothing acts on it any more (though `models::locate_data_file()` still probes for it on every invocation and would parse it if restored).
 
 ## 6. Output contract
 
@@ -204,7 +204,7 @@ read-only, at `docs/archive/verified-port/`. The Rust binary is verified two way
 - **The golden-output regression corpus** (`rust/tests/parity.rs`), the port's real
   verification instrument now: it runs an identical corpus of stdin payloads (fixtures,
   pathological inputs, and a generated sweep across every lexicon entry, dimension pair,
-  and negation form - 320 distinct inputs at last count) through the compiled binary and
+  and negation form - 325 distinct inputs at last count) through the compiled binary and
   asserts each one's output matches a recorded expectation in
   `rust/tests/golden/expectations.json`, compared as parsed JSON (see §12 on why not as
   raw bytes). A mismatch is a **behaviour change to review**, not a bug to silence: when
@@ -269,7 +269,7 @@ Python was the right call, and it is recorded here so the next stack decision do
 repeat it.
 
 This plan reverses the reversal. The three checks in §5 are ported from
-`src/higgsfield_lint.py` to a compiled Rust binary, proven output-equivalent as parsed
+`docs/archive/verified-port/higgsfield_lint.py` to a compiled Rust binary, proven output-equivalent as parsed
 JSON to the Python via a differential parity harness (`rust/tests/parity.rs`, 320
 distinct inputs, zero divergences) rather than by hand-ported assertions. The two
 implementations are not byte-identical: `serde_json::to_string` and Python's `json.dump`
@@ -317,7 +317,7 @@ independently-fuzzed inputs from a separate reviewer (`docs/archive/verified-por
 README.md` has the full record and the commit it was true at). That job is finished,
 and every rule change from here on would otherwise need implementing twice - once in
 Rust, once in a Python file kept alive for nothing but comparison. So
-`src/higgsfield_lint.py` and its pytest suite (`tests/test_lint.py`) were moved to
+the Python port and its pytest suite were moved to
 `docs/archive/verified-port/`, retained as a **historical record**, not deleted.
 
 It was never a runtime fallback - nothing in the hook path ever called it, and the Rust
