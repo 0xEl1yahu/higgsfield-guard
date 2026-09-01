@@ -764,13 +764,41 @@ fn rust_matches_recorded_golden_expectations() {
     // De-duplicate by exact stdin byte content. Different sweep groups can legitimately
     // land on the same bytes (e.g. two groups both happening to build an identical params
     // object); the harness should report a distinct-input count, not an inflated one.
-    let mut seen: HashSet<Vec<u8>> = HashSet::new();
+    //
+    // Discarding the duplicate *input* is fine; discarding the *label* silently is not. If
+    // a later task adds a case - e.g. a negative control - whose bytes happen to collide
+    // with something already in the corpus, that label would otherwise vanish with no
+    // MISSING report, no ORPHANED report, no count change, and a green test: it would just
+    // never run. So every collision is named here and fails the test up front, before the
+    // golden comparison even starts, rather than disappearing into a `HashSet`.
+    let mut owner: HashMap<Vec<u8>, String> = HashMap::new();
     let mut corpus: Vec<(String, Vec<u8>)> = Vec::new();
+    let mut collisions: Vec<String> = Vec::new();
     for (label, bytes) in all {
-        if seen.insert(bytes.clone()) {
-            corpus.push((label, bytes));
+        match owner.get(&bytes) {
+            Some(existing_label) => {
+                collisions.push(format!(
+                    "  [{label}] was dropped by de-duplication: its stdin bytes are identical to \
+                     [{existing_label}], already in the corpus. If [{label}] is meant to be a distinct \
+                     case, vary its input so it doesn't collide - [{existing_label}] is likely already \
+                     covering what it tests. If the duplication really is intentional, delete one of the \
+                     two labels from the generator instead of leaving both to collide."
+                ));
+            }
+            None => {
+                owner.insert(bytes.clone(), label.clone());
+                corpus.push((label, bytes));
+            }
         }
     }
+
+    assert!(
+        collisions.is_empty(),
+        "{} corpus label(s) were silently dropped by de-duplication because their stdin bytes \
+         collided with an input already generated under a different label:\n\n{}",
+        collisions.len(),
+        collisions.join("\n")
+    );
 
     assert!(
         corpus.len() >= 300,
