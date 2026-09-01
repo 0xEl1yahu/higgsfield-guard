@@ -1,6 +1,6 @@
 {
   "captured_from_commit": "77df1603e072731a46b7036e8155008e5880d136",
-  "count": 320,
+  "count": 325,
   "entries": [
     {
       "input_fnv1a64": "94b520152b340f40",
@@ -2495,6 +2495,36 @@
       "input_fnv1a64": "875d2a81589ca607",
       "input_len": 195,
       "label": "stopword:no_more:model=Some(\"not_a_real_model_xyz\")",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "9f207f68dea9b617",
+      "input_len": 217,
+      "label": "fp_control:negation_placement:higgsfield_style_header",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "6c1c1317699d9dde",
+      "input_len": 158,
+      "label": "fp_control:negation_placement:scene_description",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "6183d11c3600b460",
+      "input_len": 155,
+      "label": "fp_control:negation_placement:quoted_literal",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "70b4d8784a5e7f26",
+      "input_len": 200,
+      "label": "fp_control:negation_placement:span_spill",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "878bc54f8ceccb1e",
+      "input_len": 152,
+      "label": "fp_control:negation_placement:seed_list_only_no_negative_prompt",
       "output": null
     }
   ],

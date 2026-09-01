@@ -535,6 +535,68 @@ fn combined_sweep(known: &str) -> Vec<(String, Vec<u8>)> {
 /// Type-confusion and other edges not otherwise covered: wrong-typed fields, whitespace-only
 /// negative_prompt, non-string resolution, negative/string-encoded dimensions, missing
 /// prompt, and a non-ASCII prompt (exercises the char-based, not byte-based, boundary scan).
+/// Permanent negative controls for the five false-positive classes that
+/// `negation_placement` was confirmed to fire on (HIGGSFIELD_PROMPT_RESEARCH.md §8.3).
+///
+/// The rule is gone, so every one of these is silent today. They exist so it cannot come
+/// back — including via HFR-006, the volume-based replacement, which reuses the same
+/// negation regex and noise filter. Each was a *real* firing against the shipped binary,
+/// not a hypothetical: FP1 quotes Higgsfield's own published style header, and FP4 is the
+/// span-spill case where the <=3-word window crossed a clause boundary and quoted
+/// "no logos a beautiful", a phrase nobody wrote.
+fn negation_placement_fp_controls() -> Vec<(String, Vec<u8>)> {
+    vec![
+        // FP1 - Higgsfield house style. Every quoted span is copied from their own ad-guide
+        // style header, and a negative_prompt is present so the old gate would open.
+        (
+            "fp_control:negation_placement:higgsfield_style_header",
+            json!({
+                "model": "seedance_2_5",
+                "prompt": "Style: 8K IMAX commercial. No jitter, no music, no subtitles, no readable text.",
+                "negative_prompt": "watermark"
+            }),
+        ),
+        // FP2 - scene description. These describe what is in the frame, not an artifact to
+        // suppress; moving them to negative_prompt would remove the subject.
+        (
+            "fp_control:negation_placement:scene_description",
+            json!({
+                "model": "kling2_6",
+                "prompt": "A road with no cars. A man with no hat walks along it."
+            }),
+        ),
+        // FP3 - quoted literal. The text is the subject of the shot.
+        (
+            "fp_control:negation_placement:quoted_literal",
+            json!({
+                "model": "kling2_6",
+                "prompt": "A sign reading \"NO PARKING\" hangs above the door."
+            }),
+        ),
+        // FP4 - span spill. Unpunctuated prose let the window cross a clause boundary.
+        (
+            "fp_control:negation_placement:span_spill",
+            json!({
+                "model": "kling2_6",
+                "prompt": "a wide establishing shot with no logos a beautiful sunlit plaza and no signage anywhere in frame"
+            }),
+        ),
+        // FP5 - the seed-list branch alone. No negative_prompt in the call at all; the rule
+        // fired purely because the model name was on a one-entry list seeded from the field
+        // having once been *sent*, never from evidence it is honoured.
+        (
+            "fp_control:negation_placement:seed_list_only_no_negative_prompt",
+            json!({
+                "model": "kling2_6",
+                "prompt": "a calm harbour at dawn, no text and no watermark"
+            }),
+        ),
+    ]
+    .into_iter()
+    .map(|(name, params)| (name.to_string(), wrap(TOOL_SINGLE, single(params))))
+    .collect()
+}
+
 fn extra_edge_sweep() -> Vec<(String, Vec<u8>)> {
     vec![
         ("edge:negative_prompt_non_string", json!({"prompt": "no text", "negative_prompt": 123})),
@@ -762,6 +824,7 @@ fn rust_matches_recorded_golden_expectations() {
     all.extend(batch_sweep(&known));
     all.extend(combined_sweep(&known));
     all.extend(extra_edge_sweep());
+    all.extend(negation_placement_fp_controls());
 
     // De-duplicate by exact stdin byte content. Different sweep groups can legitimately
     // land on the same bytes (e.g. two groups both happening to build an identical params
