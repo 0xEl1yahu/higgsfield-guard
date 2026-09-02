@@ -85,20 +85,87 @@ authority, because block authority is not on offer.
 
 ### 5.1 Resolution claim contradicts dimensions
 
-Prompt asserts a resolution the call will not produce.
+Prompt asserts a resolution the call will not produce. The concept stays: Higgsfield
+genuinely treats resolution as a setting, changed while the prompt text stays identical
+(`HIGGSFIELD_PROMPT_RESEARCH.md` §7 — the Seedance help article's prototype-at-720p-then-
+run-at-4K workflow, Nano Banana's "start at 1K, scale to 2K or native 4K"). What was
+wrong was the lexicon, not the premise.
 
-Lexicon maps a claim to its minimum short-side pixel count:
+**Re-grounded** (research §7, §8.1, HFR-R1) after two problems in opposite directions,
+both confirmed against the shipped binary:
+
+- **The lexicon fired on Higgsfield's own house style.** Their official ad guide opens
+  *every* scene prompt with `Style: 8K IMAX commercial, 16:9 widescreen. … Technical:
+  24fps smooth motion. 8K detail.` No Higgsfield model outputs 8K — the phrase names a
+  look (research §7's stylistic-register argument), the same job `ARRI ALEXA aesthetic`
+  and `35mm film quality` do elsewhere in the corpus.
+  `{"prompt":"Style: 8K IMAX commercial, 16:9 widescreen. … 8K detail.","resolution":"1080p"}`
+  fired: `prompt says "8K" but the call produces a 1080px short side.`
+- **The rule was dead on every image model.** `RESOLUTION_PARAM` knew only the video
+  vocabulary (`4k`/`1080p`/`720p`/`480p`); image models emit `1k`/`1.5k`/`2k`/`512`/`768`
+  and `minimax` models use their own values, none of them mapped — roughly 88% of real
+  activity where the rule could never fire at all.
+
+Three changes:
+
+1. **Drop `8k`, `uhd`, and `full hd` from the claim lexicon** (HFR-R1). `8k` is the only
+   entry with no attainable Higgsfield target anywhere in the catalog and is Higgsfield's
+   own house style — every firing was therefore either a false positive or a technically
+   true but unactionable claim no model could satisfy. `uhd` and `full hd` appear in no
+   official example prompt and have never fired on real usage; both are dropped for the
+   same reasoning.
+2. **Exclude occurrences inside matched double quotes in the prompt** — the same
+   `quoted_spans` mechanism §5.2 uses, reused rather than reimplemented. A diegetic line —
+   `{"prompt":"The presenter says \"shot in 4K\" to the camera.","width":1920,"height":1080}`
+   — quotes dialogue *about* resolution, not a claim about the render, and must not fire.
+3. **Extend `RESOLUTION_PARAM` to the image and `minimax` vocabularies** (research §7's
+   taxonomy table): `1k`, `1.5k`, `2k`, `512`, `768`, `2160p`.
+
+Remaining claim lexicon — maps a prompt claim to its minimum short-side pixel count:
 
 | Claim | Min short side |
 |---|---|
-| `8k` | 4320 |
-| `4k`, `uhd` | 2160 |
-| `1080p`, `full hd` | 1080 |
+| `4k` | 2160 |
+| `1080p` | 1080 |
 | `720p` | 720 |
 | `480p` | 480 |
 
-Actual is `params.resolution` when present, otherwise `min(width, height)`. Fires when
-claimed exceeds actual. Silent when neither is present.
+`resolution` parameter values this rule reads as the actual short side (video and
+image/`minimax` vocabularies together — `1.5k`'s 1536 mirrors the `soul_2` ceiling
+research §10 (HFR-002) records for that same value):
+
+| `resolution` value | Min short side |
+|---|---|
+| `4k`, `2160p` | 2160 |
+| `2k` | 2048 |
+| `1.5k` | 1536 |
+| `1080p` | 1080 |
+| `1k` | 1024 |
+| `768` | 768 |
+| `720p` | 720 |
+| `512` | 512 |
+| `480p` | 480 |
+
+Actual is `params.resolution` when it matches one of the values above, otherwise
+`min(width, height)`. Fires when claimed exceeds actual. Silent when neither is present.
+
+**Accepted cost:** a prompt genuinely claiming `8k`, `UHD`, or `Full HD` against a call
+that cannot produce it now goes silent too. The same style-register ambiguity that made
+`8k` a false positive on Higgsfield's own header makes it unrecoverable as a claim
+anywhere else — there is no deterministic way to tell "this 8K is a look" from "this 8K
+is a target" from the prompt text alone (research §7, §11's "infer whether a resolution
+word is stylistic or literal from context" rejection). This mirrors the accepted costs
+already recorded in §5.2.
+
+**Message.** "Raise resolution" presumes the model has a `resolution` parameter, which is
+false for `kling2_6`, `wan2_6`, and `kling3_0` (research §8.1's "message accuracy"
+finding) — the only way a call against one of those models reaches this rule at all is
+through raw `width`/`height` passthrough, never a recognized `resolution` value. The
+message is now conditioned on which source produced `actual`: when a recognized
+`resolution` value was read, the advice stays "Raise resolution, or drop the claim from
+the prompt."; when `actual` came from `width`/`height` instead, the advice is "Increase
+the output size, or drop the claim from the prompt." — the same remedy, without asserting
+a named parameter the call may not have.
 
 ### 5.2 Term in both prompt and negative_prompt
 
@@ -217,7 +284,7 @@ output.
 {
   "hookSpecificOutput": {
     "hookEventName": "PreToolUse",
-    "additionalContext": "higgsfield-lint: 2 findings\n- resolution_claim: prompt says \"4K\" but width 1376 x height 768 gives a 768px short side. Set resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep it in one."
+    "additionalContext": "higgsfield-lint: 2 findings\n- resolution_claim: prompt says \"4K\" but width 1376 x height 768 gives a 768px short side. Increase the output size, or drop the claim from the prompt.\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one."
   }
 }
 ```
