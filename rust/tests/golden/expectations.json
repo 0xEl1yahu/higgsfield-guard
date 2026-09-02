@@ -2384,6 +2384,12 @@
       "output": null
     },
     {
+      "input_fnv1a64": "e1a896aee692a203",
+      "input_len": 163,
+      "label": "fp_control:prompt_negative_conflict:handheld_survivor_negation_strip",
+      "output": null
+    },
+    {
       "input_fnv1a64": "7d586d28220638ee",
       "input_len": 187,
       "label": "fp_control:prompt_negative_conflict:quoted_survivor_term",

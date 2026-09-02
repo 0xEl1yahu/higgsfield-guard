@@ -597,23 +597,43 @@ fn negation_placement_fp_controls() -> Vec<(String, Vec<u8>)> {
 }
 
 /// Permanent negative controls for `prompt_negative_conflict`'s recalibration
-/// (HIGGSFIELD_PROMPT_RESEARCH.md §8.2, §10; SPEC.md §5.2). Each of the first three is a
-/// *real* firing against the shipped pre-recalibration binary, not hypothetical - the
-/// audit ran them and recorded the actual output. They must all be silent once the four
-/// changes from research §10 land:
+/// (HIGGSFIELD_PROMPT_RESEARCH.md §8.2, §10; SPEC.md §5.2). The first three are *real*
+/// firings against the shipped pre-recalibration binary, not hypothetical - the audit ran
+/// them and recorded the actual output. They must all be silent once the four changes from
+/// research §10 land:
 ///   - a common-noun homograph (`pan` the cookware vs `pan` the camera move),
 ///   - a quoted literal the prompt is supposed to contain per Nano Banana's own guidance
 ///     (`text` inside `"OPEN"` vs `misspelled text` as a thing to avoid),
 ///   - agreement rather than conflict (`sharp` in the prompt vs `not sharp` in
 ///     `negative_prompt` - both fields want the same thing once negations are stripped
 ///     from both, not just the prompt).
-/// The fourth exercises the negation-in-negative-field strip specifically with a minimal
-/// `negative_prompt` value, and the fifth and sixth are the `""` / whitespace-only
-/// `negative_prompt` edge cases research §8.2's "Benchmark additions" row calls for.
-/// `whitespace_only_negative_prompt` deliberately uses different prompt text from
-/// `extra_edge_sweep`'s `edge:negative_prompt_whitespace_only` case - identical stdin
-/// bytes under two labels would be silently dropped by the corpus's de-duplication guard
-/// (see the collision check in `rust_matches_recorded_golden_expectations` below).
+///
+/// **`sharp_focus_soft_focus` and `not_sharp_leading_in_negative` are confounded and prove
+/// nothing about change 1.** They were written to cover the third bullet above (strip
+/// negations from BOTH fields, not just the prompt), but `sharp` was ALSO dropped from
+/// `CONFLICT_PHRASES` outright, in the very same recalibration commit (change 4: a
+/// confirmed-obvious homograph). A term that is not in the lexicon at all can never fire,
+/// independent of whether negations are stripped from one field or two - so both controls
+/// stay silent for a reason that has nothing to do with change 1. Confirmed by reverting
+/// only `strip_negations(negative)` back to `negative` in a scratch copy of this repo and
+/// re-running the golden suite: it stayed 344/344/0, naming neither control (see the
+/// task-3 fix report, finding F2, for the full before/after). They are kept below because
+/// they still legitimately cover the homograph drop (change 4) for `sharp` specifically -
+/// just relabelled to say so - but `handheld_survivor_negation_strip` is the control that
+/// actually exercises change 1: it uses `handheld`, a term that SURVIVES the recalibrated
+/// lexicon, so reverting change 1 alone has something left to flip. The same reviewer
+/// re-run with change 1 reverted DOES flip `handheld_survivor_negation_strip` (and does not
+/// flip anything else), proving this new control discriminates where the old two did not.
+///
+/// The remaining entries: one more exercises the negation-in-negative-field strip with a
+/// minimal `negative_prompt` value; a quoted-survivor entry covers change 2 (the quote
+/// exclusion) with a term that also survives the lexicon, for the same reason; and the
+/// final two are the `""` / whitespace-only `negative_prompt` edge cases research §8.2's
+/// "Benchmark additions" row calls for. `whitespace_only_negative_prompt` deliberately uses
+/// different prompt text from `extra_edge_sweep`'s `edge:negative_prompt_whitespace_only`
+/// case - identical stdin bytes under two labels would be silently dropped by the corpus's
+/// de-duplication guard (see the collision check in
+/// `rust_matches_recorded_golden_expectations` below).
 fn prompt_negative_conflict_fp_controls() -> Vec<(String, Vec<u8>)> {
     vec![
         // FP1 - common-noun homograph. Research §8.2: confirmed firing on the shipped
@@ -634,8 +654,12 @@ fn prompt_negative_conflict_fp_controls() -> Vec<(String, Vec<u8>)> {
                 "negative_prompt": "misspelled text, distorted letters"
             }),
         ),
-        // FP3 - agreement, not conflict. "not sharp" in negative_prompt already says the
-        // same thing "soft focus" does; negations were stripped from the prompt only.
+        // FP3 - agreement, not conflict, in intent: "not sharp" in negative_prompt already
+        // says the same thing "soft focus" does. BUT: `sharp` was dropped from
+        // CONFLICT_PHRASES entirely (change 4, homograph), so this control is silent for
+        // that reason alone and proves nothing about change 1 (strip negations from both
+        // fields) - see the doc comment above this function. Kept as a homograph-drop
+        // control, not a change-1 control.
         (
             "fp_control:prompt_negative_conflict:sharp_focus_soft_focus",
             json!({
@@ -644,12 +668,28 @@ fn prompt_negative_conflict_fp_controls() -> Vec<(String, Vec<u8>)> {
             }),
         ),
         // "not sharp" in the negative field specifically, isolated from FP3's longer
-        // string and phrased so the negation sits at the very start of the field.
+        // string and phrased so the negation sits at the very start of the field. Same
+        // caveat as FP3: `sharp` is not in the lexicon at all, so this is a homograph-drop
+        // control, not a change-1 control - see the doc comment above this function.
         (
             "fp_control:prompt_negative_conflict:not_sharp_leading_in_negative",
             json!({
                 "prompt": "a knife with a sharp edge on the counter",
                 "negative_prompt": "not sharp, oversaturated colors"
+            }),
+        ),
+        // F2 (task-3 fix report): the control that actually exercises change 1 (strip
+        // negations from BOTH fields, not just the prompt). Unlike the two `sharp` controls
+        // above, `handheld` SURVIVES the recalibrated lexicon - so reverting change 1 alone
+        // (leaving `negative` unstripped) has something to flip here. Verified: on this
+        // change 1 fires and this control is silent; reverting only `strip_negations(negative)`
+        // -> `negative` in a scratch copy makes the golden suite FAIL, naming exactly this
+        // label (see the task-3 fix report for the full transcript).
+        (
+            "fp_control:prompt_negative_conflict:handheld_survivor_negation_strip",
+            json!({
+                "prompt": "a handheld tracking shot",
+                "negative_prompt": "not handheld, tripod-mounted only"
             }),
         ),
         // A quoted occurrence of a term that SURVIVES the recalibrated lexicon
