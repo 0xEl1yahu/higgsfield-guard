@@ -144,11 +144,29 @@ fn find_term_match(text: &str, term: &str, ignore_case: bool) -> Option<(usize, 
     find_term_match_excluding(text, term, ignore_case, &[])
 }
 
-/// Is byte offset `pos` inside any of `excluded`'s `[start, end)` ranges? Linear scan -
-/// `excluded` is `quoted_spans`' output, a handful of ranges per prompt at most, so this
-/// is cheaper than sorting for a binary search.
+/// Is byte offset `pos` inside any of `excluded`'s `[start, end)` ranges?
+///
+/// `excluded` is always `quoted_spans`' output: sorted by `start` and non-overlapping,
+/// because `quoted_spans` builds spans by scanning `text` once, left to right, pairing
+/// quotes in order. That invariant is what makes binary search valid here: since starts
+/// are non-decreasing, the predicate `start <= pos` is true for a prefix of `excluded` and
+/// false for the rest, so `partition_point` finds the index just past the last span that
+/// could possibly contain `pos` in O(log S) comparisons, and only that one candidate span
+/// needs an end-bound check.
+///
+/// F1: this used to be `excluded.iter().any(|&(start, end)| pos >= start && pos < end)`,
+/// justified as cheap because "`excluded` is a handful of ranges per prompt at most". That
+/// premise holds for ordinary input but is unbounded and false for adversarial input - this
+/// function runs once per lexicon term per candidate match in `check_prompt_negative_conflict`
+/// (`checks.rs::CONFLICT_PHRASES`'s hot loop), so a prompt built from many short quoted
+/// segments made the whole check O(matches x spans). Measured against the pre-fix binary:
+/// a repeated `'"close-up" '` prompt with `negative_prompt: "close-up"` went from 0.073s at
+/// 2.8MB (this fix) to 9.149s (the linear scan) - see the task-3 fix report, finding F1, for
+/// the full table. `quoted_spans_and_is_excluded_scale_sublinearly_with_span_count` below is
+/// the regression test.
 fn is_excluded(pos: usize, excluded: &[(usize, usize)]) -> bool {
-    excluded.iter().any(|&(start, end)| pos >= start && pos < end)
+    let idx = excluded.partition_point(|&(start, _)| start <= pos);
+    idx > 0 && pos < excluded[idx - 1].1
 }
 
 /// Same scan as `find_term_match`, with one addition: a match that would otherwise be
@@ -576,6 +594,74 @@ mod tests {
         assert!(has_term_excluding(mixed, "close-up", &spans));
     }
 
+    // F1: is_excluded switched from a linear scan to a binary search over quoted_spans'
+    // sorted, non-overlapping output. These pin down the boundary behaviour directly
+    // (private fn, tested from within this module) so a future edit can't silently widen
+    // or narrow which positions count as excluded.
+    #[test]
+    fn is_excluded_checks_boundaries_gaps_and_the_empty_case() {
+        let spans: Vec<(usize, usize)> = vec![(5, 10), (20, 25), (40, 50)];
+        // Empty exclusion list: nothing is excluded, anywhere.
+        assert!(!is_excluded(0, &[]));
+        assert!(!is_excluded(usize::MAX, &[]));
+        // Before the first span.
+        assert!(!is_excluded(0, &spans));
+        assert!(!is_excluded(4, &spans));
+        // On the opening boundary (inclusive) through the closing boundary (exclusive).
+        assert!(is_excluded(5, &spans));
+        assert!(is_excluded(9, &spans));
+        assert!(!is_excluded(10, &spans));
+        // In the gap between the first and second span.
+        assert!(!is_excluded(15, &spans));
+        assert!(!is_excluded(19, &spans));
+        // The second span, by the same rule.
+        assert!(is_excluded(20, &spans));
+        assert!(is_excluded(24, &spans));
+        assert!(!is_excluded(25, &spans));
+        // The last span, and past the end of everything.
+        assert!(is_excluded(40, &spans));
+        assert!(is_excluded(49, &spans));
+        assert!(!is_excluded(50, &spans));
+        assert!(!is_excluded(1000, &spans));
+    }
+
+    #[test]
+    fn quoted_spans_and_is_excluded_scale_sublinearly_with_span_count() {
+        // F1 regression guard: the pre-fix `is_excluded` linear-scanned `excluded` once per
+        // candidate match, making `check_prompt_negative_conflict` O(matches x spans). This
+        // reconstructs the adversarial shape from the task-3 fix report (repeated quoted
+        // `"close-up"` segments, `negative_prompt: "close-up"`) at two sizes 8x apart and
+        // asserts wall-clock time grows far short of 8x - a quadratic implementation would
+        // grow roughly 64x (8x more matches, each scanning 8x more spans), while O(log S)
+        // per lookup grows barely at all. The threshold (16x, not ~1x) is deliberately
+        // generous so this doesn't flake on a loaded CI box; it is still tight enough to
+        // fail hard if someone reverts to the linear scan.
+        fn run(k: usize) -> std::time::Duration {
+            let prompt = "\"close-up\" ".repeat(k);
+            let params = json!({"prompt": prompt, "negative_prompt": "close-up"});
+            let start = std::time::Instant::now();
+            let _ = check_prompt_negative_conflict(&params);
+            start.elapsed()
+        }
+        // Warm up (page faults, allocator warm-up) before the timed runs.
+        run(1000);
+        let small = run(8_000);
+        let large = run(64_000);
+        let ratio = large.as_secs_f64() / small.as_secs_f64().max(1e-9);
+        assert!(
+            ratio < 16.0,
+            "is_excluded looks quadratic again: 8x the spans took {ratio:.1}x the time \
+             ({small:?} -> {large:?})"
+        );
+        // Also a generous absolute ceiling, independent of the small run's timing noise:
+        // the pre-fix binary took ~2.2s at 128000 (roughly double this input); the fixed
+        // version should be a small fraction of a second even on a slow machine.
+        assert!(
+            large < std::time::Duration::from_secs(2),
+            "64000-span case took {large:?}, expected well under 2s"
+        );
+    }
+
     #[test]
     fn conflict_phrases_single_token_entries_meet_the_four_char_minimum() {
         // Recalibration change 3 (SPEC.md §5.2): every CONFLICT_PHRASES entry is either
@@ -818,7 +904,6 @@ mod tests {
         }))
         .is_some());
     }
-
 
     #[test]
     fn prompt_negative_conflict_is_case_insensitive_via_explicit_lower() {
