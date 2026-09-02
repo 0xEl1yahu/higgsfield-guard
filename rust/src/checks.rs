@@ -235,6 +235,20 @@ fn find_term_match_excluding(
 /// start position falls anywhere in `[open, close]` - including on the quote characters
 /// themselves - counts as quoted.
 ///
+/// Pairing is purely positional (1st-with-2nd, 3rd-with-4th, ...), not semantic, which has
+/// two edges worth knowing about because neither one is "unterminated" and both look
+/// surprising in isolation: an unrelated pair of inch-mark `"` characters (measurements,
+/// not quotation) can accidentally pair up and swallow everything between them, including
+/// a live directive - `a 24" monitor, close-up, 6" lens` pairs the `"` after `24` with the
+/// `"` after `6`, and `close-up` sits inside that span and is excluded, even though nobody
+/// quoted anything and the term should still fire. Conversely, back-to-back quote
+/// characters pair with each other and leave what sits between the two pairs untouched -
+/// `""close-up""` pairs the first two quote characters with each other and the last two
+/// with each other, so `close-up` itself falls between the pairs, in neither span, and
+/// still fires. Both follow directly from the left-to-right positional rule above; no
+/// special casing is added for either, since research §10 specifies "matched double
+/// quotes", full stop, not a smarter quote detector.
+///
 /// Shared, not reimplemented: this is the one helper `check_prompt_negative_conflict`
 /// (this file) and Task 4's resolution-lexicon work both need for "a quoted literal is
 /// content, not direction" (research §10; SPEC.md §5.2).
@@ -355,6 +369,20 @@ pub fn check_resolution_claim(params: &Value) -> Option<Finding> {
 // vs static noise, a zoom lens vs a zoom move, wood grain vs film grain) even without a
 // confirmed-in-the-wild hit; where the directive sense matters, a bigram takes the bare
 // token's place instead.
+//
+// F3 (task-3 fix report): `letterbox` and `watermark` were demoted from bare single-token
+// entries to bigrams after the same treatment turned up two more confirmed false
+// positives, the same shape as `pan`:
+//   {"prompt":"A red letterbox on a quiet village street at dawn.","negative_prompt":"letterbox, black bars, borders"}
+//   {"prompt":"A close look at handmade paper with a visible watermark.","negative_prompt":"watermark, logo, signature"}
+// `letterbox` names an actual mail slot/postbox as readily as it names black aspect-ratio
+// bars, and `watermark` names actual paper watermarks (security paper, stationery,
+// currency) as readily as an image overlay - both are common-noun homographs, not the
+// "strict, unambiguous" single-token set SPEC.md §5.2 (recalibration change 3) requires.
+// Research §10 listed both as single-token entries, but §10 also states that same
+// unambiguity criterion; where the two conflict, the criterion governs, per SPEC.md §5.2's
+// recorded ruling. `letterbox bars` and `watermark overlay` take their place, carrying the
+// same directive sense without the homograph.
 const CONFLICT_PHRASES: &[&str] = &[
     "slow motion",
     "slow-mo",
@@ -371,8 +399,8 @@ const CONFLICT_PHRASES: &[&str] = &[
     "film grain",
     "static shot",
     "lens flare",
-    "letterbox",
-    "watermark",
+    "letterbox bars",
+    "watermark overlay",
     "subtitles",
 ];
 
@@ -575,6 +603,37 @@ mod tests {
     #[test]
     fn quoted_spans_is_empty_when_there_are_no_quotes() {
         assert!(quoted_spans("no quotes anywhere in this prompt").is_empty());
+    }
+
+    // Quote-pairing edges: positional pairing (1st-with-2nd, 3rd-with-4th, ...) has two
+    // surprising consequences beyond the trailing-unpaired-quote case already covered
+    // above - see the doc comment on `quoted_spans`.
+    #[test]
+    fn quoted_spans_lets_unrelated_inch_marks_accidentally_pair_and_swallow_a_directive() {
+        // Two independent measurements, not a quotation - but the `"` after "24" and the
+        // `"` after "6" pair up positionally, and "close-up" sits inside that accidental
+        // span and reads as excluded.
+        let text = r#"a 24" monitor, close-up, 6" lens"#;
+        let spans = quoted_spans(text);
+        assert_eq!(spans.len(), 1, "the two inch-marks must pair into a single span");
+        assert!(
+            !has_term_excluding(text, "close-up", &spans),
+            "close-up sits inside the accidental inch-mark span and must be excluded"
+        );
+    }
+
+    #[test]
+    fn quoted_spans_leaves_a_doubled_quote_sandwiched_term_live() {
+        // Back-to-back quote characters on each side pair with their immediate neighbour,
+        // not across the term - so "close-up" itself sits between the two spans, not
+        // inside either, and stays live.
+        let doubled = "\"\"close-up\"\"";
+        let spans = quoted_spans(doubled);
+        assert_eq!(spans.len(), 2, "the doubled quotes on each side must pair with each other");
+        assert!(
+            has_term_excluding(doubled, "close-up", &spans),
+            "close-up sits between the two quote pairs, not inside either, and must still match"
+        );
     }
 
     #[test]
@@ -875,6 +934,38 @@ mod tests {
         .is_none());
     }
 
+    // F3 (task-3 fix report): `letterbox` and `watermark` demoted from bare single-token
+    // entries to bigrams after both turned up confirmed false positives, the same
+    // homograph shape as FP1's cast-iron pan.
+    #[test]
+    fn prompt_negative_conflict_demotes_letterbox_and_watermark_to_bigrams() {
+        // FP4: a red letterbox (mail slot) on a village street is not a directive about
+        // black aspect-ratio bars.
+        assert!(check_prompt_negative_conflict(&json!({
+            "prompt": "A red letterbox on a quiet village street at dawn.",
+            "negative_prompt": "letterbox, black bars, borders"
+        }))
+        .is_none());
+        // FP5: a watermark on handmade paper is not a directive about an image overlay.
+        assert!(check_prompt_negative_conflict(&json!({
+            "prompt": "A close look at handmade paper with a visible watermark.",
+            "negative_prompt": "watermark, logo, signature"
+        }))
+        .is_none());
+        // The bigram replacements still carry the directive sense and fire when genuinely
+        // duplicated across both fields.
+        assert!(check_prompt_negative_conflict(&json!({
+            "prompt": "cinematic shot with visible letterbox bars top and bottom",
+            "negative_prompt": "letterbox bars, low quality"
+        }))
+        .is_some());
+        assert!(check_prompt_negative_conflict(&json!({
+            "prompt": "a product photo with a faint watermark overlay in the corner",
+            "negative_prompt": "watermark overlay, low quality"
+        }))
+        .is_some());
+    }
+
     #[test]
     fn prompt_negative_conflict_strips_negation_from_the_negative_field_too() {
         // Recalibration change 1. Even for a phrase that DID survive the lexicon,
@@ -900,6 +991,27 @@ mod tests {
         // Sanity check the same phrase still fires when it is NOT quoted.
         assert!(check_prompt_negative_conflict(&json!({
             "prompt": "a close-up on the actor's eyes",
+            "negative_prompt": "close-up, motion blur"
+        }))
+        .is_some());
+    }
+
+    // Quote-pairing edges, at the full check_prompt_negative_conflict level (see
+    // quoted_spans' doc comment and its direct unit tests above for the mechanism).
+    #[test]
+    fn prompt_negative_conflict_end_to_end_quote_pairing_edges() {
+        // Two unrelated inch-marks accidentally pair up and swallow the live "close-up"
+        // between them - a real directive goes silent because of stray measurement marks,
+        // not because anything was actually quoted.
+        assert!(check_prompt_negative_conflict(&json!({
+            "prompt": "a 24\" monitor, close-up, 6\" lens",
+            "negative_prompt": "close-up, motion blur"
+        }))
+        .is_none());
+        // Doubled quotes on each side pair with their own neighbour and leave the term
+        // between them live, so this still fires despite looking "extra quoted".
+        assert!(check_prompt_negative_conflict(&json!({
+            "prompt": "the caption reads \"\"close-up\"\" on screen",
             "negative_prompt": "close-up, motion blur"
         }))
         .is_some());

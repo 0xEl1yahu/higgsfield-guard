@@ -2604,59 +2604,71 @@
       "output": null
     },
     {
-      "input_fnv1a64": "e576253d509138f9",
-      "input_len": 178,
-      "label": "conflict:letterbox:obj",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"letterbox\" appears in both prompt and negative_prompt. Keep each term in one.",
-          "hookEventName": "PreToolUse"
-        }
-      }
-    },
-    {
-      "input_fnv1a64": "7b22c9dd83a82a3d",
+      "input_fnv1a64": "16c7f3fe71c0c401",
       "input_len": 188,
-      "label": "conflict:letterbox:str",
+      "label": "conflict:letterbox bars:obj",
       "output": {
         "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"letterbox\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"letterbox bars\" appears in both prompt and negative_prompt. Keep each term in one.",
           "hookEventName": "PreToolUse"
         }
       }
     },
     {
-      "input_fnv1a64": "ef815263463ff85d",
-      "input_len": 161,
-      "label": "conflict_agreement:letterbox",
+      "input_fnv1a64": "68460ca6903a71b5",
+      "input_len": 198,
+      "label": "conflict:letterbox bars:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"letterbox bars\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "fbdfb85b150afcff",
+      "input_len": 171,
+      "label": "conflict_agreement:letterbox bars",
       "output": null
     },
     {
-      "input_fnv1a64": "e151e5a9f3a8ca9d",
-      "input_len": 178,
-      "label": "conflict:watermark:obj",
+      "input_fnv1a64": "7c8ec7509fc77b65",
+      "input_len": 194,
+      "label": "conflict:watermark overlay:obj",
       "output": {
         "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"watermark\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"watermark overlay\" appears in both prompt and negative_prompt. Keep each term in one.",
           "hookEventName": "PreToolUse"
         }
       }
     },
     {
-      "input_fnv1a64": "9c4f90446514010d",
+      "input_fnv1a64": "531a5377782029a5",
+      "input_len": 204,
+      "label": "conflict:watermark overlay:str",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"watermark overlay\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "input_fnv1a64": "281d617b366cf2df",
+      "input_len": 177,
+      "label": "conflict_agreement:watermark overlay",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "367eff429685d73f",
+      "input_len": 186,
+      "label": "fp_control:prompt_negative_conflict:letterbox_mail_slot",
+      "output": null
+    },
+    {
+      "input_fnv1a64": "89623aed394de03e",
       "input_len": 188,
-      "label": "conflict:watermark:str",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"watermark\" appears in both prompt and negative_prompt. Keep each term in one.",
-          "hookEventName": "PreToolUse"
-        }
-      }
-    },
-    {
-      "input_fnv1a64": "245924da430c3f77",
-      "input_len": 161,
-      "label": "conflict_agreement:watermark",
+      "label": "fp_control:prompt_negative_conflict:paper_watermark",
       "output": null
     },
     {

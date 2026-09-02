@@ -135,15 +135,50 @@ Four changes fix these without weakening genuine detections:
    with normal prompt language. Where the directive sense still matters, a bigram takes
    its place instead.
 
+**Accepted cost of change 1:** stripping negations from `negative_prompt` too means a
+negated mention there no longer counts as containing the term at all —
+`negative_prompt: "no close-up"`, `"avoid slow motion"`, `"not handheld"` now go silent
+against an unnegated `close-up`/`slow motion`/`handheld` in the prompt, even though the
+bare word is present in both fields. This is deliberate and matches the field's own
+semantics (`negative_prompt` already means "avoid this"; a negation stacked on top of
+that is genuinely ambiguous, not a coherent conflict signal), but it is a real false
+negative class, not a free lunch — recorded here for the same reason item 3's
+`blur`/`blurry` miss is.
+
 Recalibrated list (multi-token entries kept from the seed list, plus the bigram
 replacements and new entries):
 
 `slow motion`, `slow-mo`, `motion blur`, `close-up`, `wide shot`, `handheld`, `blurred`,
 `blurry`, `camera pan`, `whip pan`, `slow zoom`, `on-screen text`, `film grain`, `static
-shot`, `lens flare`, `letterbox`, `watermark`, `subtitles`.
+shot`, `lens flare`, `letterbox bars`, `watermark overlay`, `subtitles`.
 
 The rule's one confirmed genuine historical hit, `slow motion`, is two tokens and
 survives unchanged.
+
+**Follow-up demotion (task-3 fix report, finding F3):** `letterbox` and `watermark`
+shipped as bare single-token entries per research §10's recommended list, then turned up
+the same homograph shape as `pan` once tested against ordinary prompt language:
+
+- `{"prompt":"A red letterbox on a quiet village street at dawn.","negative_prompt":"letterbox, black bars, borders"}`
+  fired on `letterbox` — a mail slot / postbox, not a camera-format directive.
+- `{"prompt":"A close look at handmade paper with a visible watermark.","negative_prompt":"watermark, logo, signature"}`
+  fired on `watermark` — a paper watermark (security paper, stationery, currency), not an
+  image overlay.
+
+Research §10's recommended list and its own criterion (change 3 above: "a strict,
+unambiguous single-token set") disagree here — both terms are recommended as single
+tokens, but both fail the unambiguity test that same recommendation demands. Where §10's
+list conflicts with §10's own criterion, **the criterion governs**: both are demoted to
+bigrams, `letterbox bars` and `watermark overlay`, carrying the same directive sense
+without the homograph. This is the same standard, applied after the fact, that condemned
+`pan` in the original recalibration.
+
+**Deferred from research §10:** item 1's normalization step (Unicode NFKC, whitespace
+collapse, punctuation trim on both fields before comparison) was never implemented —
+`check_prompt_negative_conflict` only lowercases. This is a real gap (e.g. curly-quoted
+or full-width variants of a lexicon term, or one wrapped in stray punctuation, won't
+match), not a completed part of the recalibration; it is left for whoever picks up the
+normalization work rather than folded silently into "done."
 
 ### 5.3 negation_placement — disabled
 

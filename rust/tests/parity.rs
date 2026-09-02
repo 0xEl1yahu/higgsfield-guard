@@ -97,6 +97,9 @@ fn fnv1a64(bytes: &[u8]) -> u64 {
 
 const RESOLUTION_TERMS: &[&str] = &["8k", "4k", "uhd", "1080p", "full hd", "720p", "480p"];
 
+// F3 (task-3 fix report): `letterbox` and `watermark` demoted to bigrams (`letterbox
+// bars`, `watermark overlay`) - mirrors checks.rs's CONFLICT_PHRASES; see the comment
+// there for why.
 const CONFLICT_PHRASES: &[&str] = &[
     "slow motion",
     "slow-mo",
@@ -113,8 +116,8 @@ const CONFLICT_PHRASES: &[&str] = &[
     "film grain",
     "static shot",
     "lens flare",
-    "letterbox",
-    "watermark",
+    "letterbox bars",
+    "watermark overlay",
     "subtitles",
 ];
 
@@ -627,11 +630,14 @@ fn negation_placement_fp_controls() -> Vec<(String, Vec<u8>)> {
 ///
 /// The remaining entries: one more exercises the negation-in-negative-field strip with a
 /// minimal `negative_prompt` value; a quoted-survivor entry covers change 2 (the quote
-/// exclusion) with a term that also survives the lexicon, for the same reason; and the
-/// final two are the `""` / whitespace-only `negative_prompt` edge cases research §8.2's
-/// "Benchmark additions" row calls for. `whitespace_only_negative_prompt` deliberately uses
-/// different prompt text from `extra_edge_sweep`'s `edge:negative_prompt_whitespace_only`
-/// case - identical stdin bytes under two labels would be silently dropped by the corpus's
+/// exclusion) with a term that also survives the lexicon, for the same reason;
+/// `letterbox_mail_slot` and `paper_watermark` are F3's real confirmed firings that
+/// motivated demoting `letterbox` and `watermark` to bigrams (see the comment on
+/// `CONFLICT_PHRASES` above); and the final two are the `""` / whitespace-only
+/// `negative_prompt` edge cases research §8.2's "Benchmark additions" row calls for.
+/// `whitespace_only_negative_prompt` deliberately uses different prompt text from
+/// `extra_edge_sweep`'s `edge:negative_prompt_whitespace_only` case - identical stdin
+/// bytes under two labels would be silently dropped by the corpus's
 /// de-duplication guard (see the collision check in
 /// `rust_matches_recorded_golden_expectations` below).
 fn prompt_negative_conflict_fp_controls() -> Vec<(String, Vec<u8>)> {
@@ -701,6 +707,24 @@ fn prompt_negative_conflict_fp_controls() -> Vec<(String, Vec<u8>)> {
             json!({
                 "prompt": "The subtitle card reads \"close-up\" as the scene direction.",
                 "negative_prompt": "close-up, motion blur"
+            }),
+        ),
+        // F3 (task-3 fix report) - the two demonstrated false positives that motivated
+        // demoting `letterbox` and `watermark` from bare tokens to bigrams
+        // (`letterbox bars`, `watermark overlay`): both confirmed firing on the shipped
+        // binary before this change, same homograph shape as FP1's cast-iron pan.
+        (
+            "fp_control:prompt_negative_conflict:letterbox_mail_slot",
+            json!({
+                "prompt": "A red letterbox on a quiet village street at dawn.",
+                "negative_prompt": "letterbox, black bars, borders"
+            }),
+        ),
+        (
+            "fp_control:prompt_negative_conflict:paper_watermark",
+            json!({
+                "prompt": "A close look at handmade paper with a visible watermark.",
+                "negative_prompt": "watermark, logo, signature"
             }),
         ),
         // negative_prompt of "" - no term can match an empty string.
