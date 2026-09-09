@@ -51,6 +51,10 @@ hook; there is no CLI adapter in this implementation.
 
 ## Tests and runtime
 
+[Main-branch CI](docs/CI.md) runs Linux/macOS regression and adversarial scenarios,
+real debug panic checks, and nine deliberate-mutation probes. See that guide for
+local commands, logs, fail-open semantics, and required-check configuration.
+
 Rust is the sole runtime; the Python-to-Rust migration is complete. The old Python
 implementation and its historical verification are read-only in
 [the archive](docs/archive/verified-port/README.md), never a fallback or live oracle.
