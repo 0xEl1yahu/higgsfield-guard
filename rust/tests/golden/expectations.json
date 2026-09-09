@@ -1,116 +1,66 @@
 {
   "captured_from_commit": "86383906fd101874c7ce7fe86b259c45fb85834f",
-  "count": 347,
+  "count": 538,
   "entries": [
     {
       "input_fnv1a64": "94b520152b340f40",
       "input_len": 152,
       "label": "batch:empty_requests_falls_back_to_top_level",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but width 1280 x height 720 gives a 720px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "297c2994ac9f59bd",
       "input_len": 173,
       "label": "batch:index=\"req-alpha\"",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request req-alpha: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "d5a049f9515d478a",
       "input_len": 164,
       "label": "batch:index=-3",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request -3: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "f94f056bd806a1d6",
       "input_len": 163,
       "label": "batch:index=0",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 0: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "a8615b0b375fc359",
       "input_len": 165,
       "label": "batch:index=2.5",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 2.5: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "91cffb2b029ebc5b",
       "input_len": 163,
       "label": "batch:index=7",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 7: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "c9d958cb09c9880d",
       "input_len": 167,
       "label": "batch:index=false",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request False: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "4f3be369ba308bef",
       "input_len": 166,
       "label": "batch:index=null",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request None: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "a39226c75da2511e",
       "input_len": 166,
       "label": "batch:index=true",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request True: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "88539f3eb2beb3e6",
       "input_len": 377,
       "label": "batch:mixed_entries",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request req-a: prompt says \"4k\" but width 1280 x height 720 gives a 720px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "ce0c387bf76bcad7",
@@ -122,78 +72,43 @@
       "input_fnv1a64": "4c8c4fe9a4b7902a",
       "input_len": 224,
       "label": "batch:positional_fallback",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 1: prompt says \"4k\" but width 1280 x height 720 gives a 720px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "603d4d0b157601de",
       "input_len": 173,
       "label": "combined:neg=None:model=None:obj",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "ed7f62bb9152a32e",
       "input_len": 183,
       "label": "combined:neg=None:model=None:str",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "9a4a53bb21e4060b",
       "input_len": 192,
       "label": "combined:neg=None:model=Some(\"kling2_6\"):obj",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "07ca8f278cef80d7",
       "input_len": 206,
       "label": "combined:neg=None:model=Some(\"kling2_6\"):str",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "2dca6d3f3c4dd153",
       "input_len": 204,
       "label": "combined:neg=None:model=Some(\"not_a_real_model_xyz\"):obj",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "8e47a8528b1ce6e3",
       "input_len": 218,
       "label": "combined:neg=None:model=Some(\"not_a_real_model_xyz\"):str",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "99a00f6d3d9bbdf9",
@@ -201,7 +116,7 @@
       "label": "combined:neg=Some(\"slow motion, sharp, blurry\"):model=None:obj",
       "output": {
         "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 2 findings\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
           "hookEventName": "PreToolUse"
         }
       }
@@ -212,7 +127,7 @@
       "label": "combined:neg=Some(\"slow motion, sharp, blurry\"):model=None:str",
       "output": {
         "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 2 findings\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
           "hookEventName": "PreToolUse"
         }
       }
@@ -223,7 +138,7 @@
       "label": "combined:neg=Some(\"slow motion, sharp, blurry\"):model=Some(\"kling2_6\"):obj",
       "output": {
         "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 2 findings\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
           "hookEventName": "PreToolUse"
         }
       }
@@ -234,7 +149,7 @@
       "label": "combined:neg=Some(\"slow motion, sharp, blurry\"):model=Some(\"kling2_6\"):str",
       "output": {
         "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 2 findings\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
           "hookEventName": "PreToolUse"
         }
       }
@@ -245,7 +160,7 @@
       "label": "combined:neg=Some(\"slow motion, sharp, blurry\"):model=Some(\"not_a_real_model_xyz\"):obj",
       "output": {
         "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 2 findings\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
           "hookEventName": "PreToolUse"
         }
       }
@@ -256,7 +171,7 @@
       "label": "combined:neg=Some(\"slow motion, sharp, blurry\"):model=Some(\"not_a_real_model_xyz\"):str",
       "output": {
         "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 2 findings\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
           "hookEventName": "PreToolUse"
         }
       }
@@ -489,23 +404,13 @@
       "input_fnv1a64": "1c71f2f83c49a5e1",
       "input_len": 141,
       "label": "dims:1376x768:obj",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8k\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "e40914c3b3cf6345",
       "input_len": 151,
       "label": "dims:1376x768:str",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8k\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "c0c58897b75eebf3",
@@ -523,45 +428,25 @@
       "input_fnv1a64": "28093419323e5c22",
       "input_len": 141,
       "label": "dims:1920x100:obj",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8k\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "f40e11e6208f48a0",
       "input_len": 151,
       "label": "dims:1920x100:str",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8k\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "fbe9c1d9afc08673",
       "input_len": 142,
       "label": "dims:3840x2160:obj",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8k\" but width 3840 x height 2160 gives a 2160px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "aaddad3ee3bd53e7",
       "input_len": 152,
       "label": "dims:3840x2160:str",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8k\" but width 3840 x height 2160 gives a 2160px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "15b2434a9951483d",
@@ -639,12 +524,7 @@
       "input_fnv1a64": "1d71587930dbc12f",
       "input_len": 158,
       "label": "edge:unicode_prompt",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but width 1280 x height 1280 gives a 1280px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "08aa48f2b8232bf7",
@@ -664,7 +544,7 @@
       "label": "fixture:kling2_6_4k_slowmo.json:batch",
       "output": {
         "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 2 findings\n- resolution_claim: request 0: prompt says \"4K\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: request 0: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: request 0: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
           "hookEventName": "PreToolUse"
         }
       }
@@ -675,7 +555,7 @@
       "label": "fixture:kling2_6_4k_slowmo.json:single",
       "output": {
         "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 2 findings\n- resolution_claim: prompt says \"4K\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
           "hookEventName": "PreToolUse"
         }
       }
@@ -1026,23 +906,13 @@
       "input_fnv1a64": "50f4b40ac6164b80",
       "input_len": 155,
       "label": "resolution:1080P:1376x768:obj",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"1080P\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "18bc9ed739400288",
       "input_len": 165,
       "label": "resolution:1080P:1376x768:str",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"1080P\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "f37840047eb6f2a2",
@@ -1060,23 +930,13 @@
       "input_fnv1a64": "551cce4dbe7cf2a7",
       "input_len": 155,
       "label": "resolution:1080P:1920x100:obj",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"1080P\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "a7a4faba3fa27a15",
       "input_len": 165,
       "label": "resolution:1080P:1920x100:str",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"1080P\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "45e4236787c17046",
@@ -1112,23 +972,13 @@
       "input_fnv1a64": "4b7af8316482fca0",
       "input_len": 155,
       "label": "resolution:1080p:1376x768:obj",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"1080p\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "a20d8e725e9fcee8",
       "input_len": 165,
       "label": "resolution:1080p:1376x768:str",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"1080p\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "8945a944d2407742",
@@ -1146,23 +996,13 @@
       "input_fnv1a64": "1c85e229d17a6507",
       "input_len": 155,
       "label": "resolution:1080p:1920x100:obj",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"1080p\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "2d046c812b3d9275",
       "input_len": 165,
       "label": "resolution:1080p:1920x100:str",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"1080p\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "9522ce63130cd8e6",
@@ -1222,23 +1062,13 @@
       "input_fnv1a64": "941a91e04cbeb616",
       "input_len": 154,
       "label": "resolution:480P:1920x100:obj",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"480P\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "abf4af234ba6ee70",
       "input_len": 164,
       "label": "resolution:480P:1920x100:str",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"480P\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "4e4b1fd4983ad97f",
@@ -1298,23 +1128,13 @@
       "input_fnv1a64": "5eec625db6c57976",
       "input_len": 154,
       "label": "resolution:480p:1920x100:obj",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"480p\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "ddcda05c28ee4cd0",
       "input_len": 164,
       "label": "resolution:480p:1920x100:str",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"480p\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "15cb77eac1ddea1f",
@@ -1350,23 +1170,13 @@
       "input_fnv1a64": "979207501b51ac44",
       "input_len": 152,
       "label": "resolution:4K:1376x768:obj",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "63170cfaa83b651c",
       "input_len": 162,
       "label": "resolution:4K:1376x768:str",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "caea2f02387fddde",
@@ -1384,23 +1194,13 @@
       "input_fnv1a64": "518df90b2b8940bb",
       "input_len": 152,
       "label": "resolution:4K:1920x100:obj",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "b9375e40d1106a39",
       "input_len": 162,
       "label": "resolution:4K:1920x100:str",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "e75e71409da8e992",
@@ -1436,23 +1236,13 @@
       "input_fnv1a64": "657c0c8af9a09e64",
       "input_len": 152,
       "label": "resolution:4k:1376x768:obj",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "6a292e8acd946a3c",
       "input_len": 162,
       "label": "resolution:4k:1376x768:str",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "b4c20494c24d433e",
@@ -1470,23 +1260,13 @@
       "input_fnv1a64": "bedf0baa5c0c641b",
       "input_len": 152,
       "label": "resolution:4k:1920x100:obj",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "2014bb7548a6bd99",
       "input_len": 162,
       "label": "resolution:4k:1920x100:str",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "c7fc80b2778222f2",
@@ -1546,23 +1326,13 @@
       "input_fnv1a64": "22cac54fe66769db",
       "input_len": 154,
       "label": "resolution:720P:1920x100:obj",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"720P\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "5206aed2e681564d",
       "input_len": 164,
       "label": "resolution:720P:1920x100:str",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"720P\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "12362f87469f3b12",
@@ -1622,23 +1392,13 @@
       "input_fnv1a64": "b36ffdf37f38147b",
       "input_len": 154,
       "label": "resolution:720p:1920x100:obj",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"720p\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "805005118a81982d",
       "input_len": 164,
       "label": "resolution:720p:1920x100:str",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"720p\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "f2d43ef920787472",
@@ -1674,23 +1434,13 @@
       "input_fnv1a64": "b53e8386d15ace30",
       "input_len": 152,
       "label": "resolution:8K:1376x768:obj",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8K\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "62f94b7f8c967e38",
       "input_len": 162,
       "label": "resolution:8K:1376x768:str",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8K\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "94159b55d5aa8752",
@@ -1708,45 +1458,25 @@
       "input_fnv1a64": "91d448f8945a3977",
       "input_len": 152,
       "label": "resolution:8K:1920x100:obj",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8K\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "067208e92203bca5",
       "input_len": 162,
       "label": "resolution:8K:1920x100:str",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8K\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "fbd9a32bd83d0df6",
       "input_len": 153,
       "label": "resolution:8K:3840x2160:obj",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8K\" but width 3840 x height 2160 gives a 2160px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "a7a5164708da72ee",
       "input_len": 163,
       "label": "resolution:8K:3840x2160:str",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8K\" but width 3840 x height 2160 gives a 2160px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "f819f58f9974145a",
@@ -1770,23 +1500,13 @@
       "input_fnv1a64": "15876f5910b02b10",
       "input_len": 152,
       "label": "resolution:8k:1376x768:obj",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8k\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "754dba338b08f398",
       "input_len": 162,
       "label": "resolution:8k:1376x768:str",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8k\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "fc2e0344a4b4f472",
@@ -1804,45 +1524,25 @@
       "input_fnv1a64": "451e185575db05d7",
       "input_len": 152,
       "label": "resolution:8k:1920x100:obj",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8k\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "f4db3bef2edaf545",
       "input_len": 162,
       "label": "resolution:8k:1920x100:str",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8k\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "a3c79247dae22116",
       "input_len": 153,
       "label": "resolution:8k:3840x2160:obj",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8k\" but width 3840 x height 2160 gives a 2160px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "5e5a3408f288984e",
       "input_len": 163,
       "label": "resolution:8k:3840x2160:str",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8k\" but width 3840 x height 2160 gives a 2160px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "b569e47e1f33853a",
@@ -1866,23 +1566,13 @@
       "input_fnv1a64": "87cf991524697f58",
       "input_len": 157,
       "label": "resolution:FULL HD:1376x768:obj",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"FULL HD\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "73fe57256eae8634",
       "input_len": 167,
       "label": "resolution:FULL HD:1376x768:str",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"FULL HD\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "ea7ad11716e1c85a",
@@ -1900,23 +1590,13 @@
       "input_fnv1a64": "fd2d2eb0d35896af",
       "input_len": 157,
       "label": "resolution:FULL HD:1920x100:obj",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"FULL HD\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "fd43c6b45b42d011",
       "input_len": 167,
       "label": "resolution:FULL HD:1920x100:str",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"FULL HD\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "4bc5899e316870ee",
@@ -1952,23 +1632,13 @@
       "input_fnv1a64": "9363fef1611789a0",
       "input_len": 153,
       "label": "resolution:UHD:1376x768:obj",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"UHD\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "c4842565ef2a6518",
       "input_len": 163,
       "label": "resolution:UHD:1376x768:str",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"UHD\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "218f046fd28e86e2",
@@ -1986,23 +1656,13 @@
       "input_fnv1a64": "00aa2cfe221700e7",
       "input_len": 153,
       "label": "resolution:UHD:1920x100:obj",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"UHD\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "0a1ca5fd3f300fc5",
       "input_len": 163,
       "label": "resolution:UHD:1920x100:str",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"UHD\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "150a8e944e98ef86",
@@ -2038,23 +1698,13 @@
       "input_fnv1a64": "e72f8fcda3c20898",
       "input_len": 157,
       "label": "resolution:full hd:1376x768:obj",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"full hd\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "02b839ec495f28b4",
       "input_len": 167,
       "label": "resolution:full hd:1376x768:str",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"full hd\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "3fd519127446e89a",
@@ -2072,23 +1722,13 @@
       "input_fnv1a64": "f09fbcaf1f0fddef",
       "input_len": 157,
       "label": "resolution:full hd:1920x100:obj",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"full hd\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "32572e96671c7411",
       "input_len": 167,
       "label": "resolution:full hd:1920x100:str",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"full hd\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "52ff157a4c21262e",
@@ -2124,23 +1764,13 @@
       "input_fnv1a64": "cd9683b7d0a19040",
       "input_len": 153,
       "label": "resolution:uhd:1376x768:obj",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"uhd\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "8704ddb06b029ff8",
       "input_len": 163,
       "label": "resolution:uhd:1376x768:str",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"uhd\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "81841ee2f144ef02",
@@ -2158,23 +1788,13 @@
       "input_fnv1a64": "2062c5c59a2d11c7",
       "input_len": 153,
       "label": "resolution:uhd:1920x100:obj",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"uhd\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "d842429ed59b9265",
       "input_len": 163,
       "label": "resolution:uhd:1920x100:str",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"uhd\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "ae834bb730f4dda6",
@@ -2210,12 +1830,7 @@
       "input_fnv1a64": "869297dbb5570934",
       "input_len": 145,
       "label": "resolution_param:1080p",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but the call produces a 1080px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "9a27ad65a9338ccd",
@@ -2233,12 +1848,7 @@
       "input_fnv1a64": "7d8d76b138962991",
       "input_len": 144,
       "label": "resolution_param:480p",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but the call produces a 480px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "d6370398040fc2f8",
@@ -2250,12 +1860,7 @@
       "input_fnv1a64": "e9b5b569eddf820c",
       "input_len": 144,
       "label": "resolution_param:720p",
-      "output": {
-        "hookSpecificOutput": {
-          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but the call produces a 720px short side. Raise resolution, or drop the claim from the prompt.",
-          "hookEventName": "PreToolUse"
-        }
-      }
+      "output": null
     },
     {
       "input_fnv1a64": "fb2c99e176e74c45",
@@ -2698,9 +2303,1791 @@
       "input_len": 161,
       "label": "conflict_agreement:subtitles",
       "output": null
+    },
+    {
+      "label": "canonical:resolution:gpt_image_2",
+      "input_len": 174,
+      "input_fnv1a64": "62220209bc05ebda",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:gpt_image_2:batch",
+      "input_len": 212,
+      "input_fnv1a64": "2531d1c7813d1f0f",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:cinematic_studio_2_5",
+      "input_len": 192,
+      "input_fnv1a64": "d2392e2bff6494e8",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:cinematic_studio_2_5:batch",
+      "input_len": 230,
+      "input_fnv1a64": "5596aae17863dd19",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:marketing_studio_image",
+      "input_len": 196,
+      "input_fnv1a64": "eb36d0b8a9c9579c",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:marketing_studio_image:batch",
+      "input_len": 234,
+      "input_fnv1a64": "e504a281a49d942d",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:ms_image",
+      "input_len": 168,
+      "input_fnv1a64": "f5ee46afe0d02b66",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:ms_image:batch",
+      "input_len": 206,
+      "input_fnv1a64": "143828c3ba513ae3",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:nano_banana_pro",
+      "input_len": 182,
+      "input_fnv1a64": "a82a16a8ae817552",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:nano_banana_pro:batch",
+      "input_len": 220,
+      "input_fnv1a64": "dd0888b9e72aad67",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:nano_banana_2",
+      "input_len": 178,
+      "input_fnv1a64": "3c64683e1048f08a",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:nano_banana_2:batch",
+      "input_len": 216,
+      "input_fnv1a64": "fa0ae99d356a5c37",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:nano_banana_2_lite",
+      "input_len": 188,
+      "input_fnv1a64": "01175332f98ad572",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:nano_banana_2_lite:batch",
+      "input_len": 226,
+      "input_fnv1a64": "c484ea44c1af0e97",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:flux_2",
+      "input_len": 164,
+      "input_fnv1a64": "b85d491fc8c46eb6",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:flux_2:batch",
+      "input_len": 202,
+      "input_fnv1a64": "4ed5ba5af8f86993",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:kling_omni_image",
+      "input_len": 184,
+      "input_fnv1a64": "4ddff7bf63fe9034",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:kling_omni_image:batch",
+      "input_len": 222,
+      "input_fnv1a64": "8df864ad10547f9d",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:gpt_image_2_5",
+      "input_len": 178,
+      "input_fnv1a64": "4199dabd5aaf5d42",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:gpt_image_2_5:batch",
+      "input_len": 216,
+      "input_fnv1a64": "98024a078eb545ef",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:seedream_v5_pro",
+      "input_len": 182,
+      "input_fnv1a64": "cf61d0d4bcfb2312",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:seedream_v5_pro:batch",
+      "input_len": 220,
+      "input_fnv1a64": "fe18d4ebaa7e6587",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:grok_image",
+      "input_len": 172,
+      "input_fnv1a64": "ea91cc916ef17c04",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:grok_image:batch",
+      "input_len": 210,
+      "input_fnv1a64": "ded727e8682d6d15",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:grok_image_2_0",
+      "input_len": 180,
+      "input_fnv1a64": "63be9c67d1e76e48",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:grok_image_2_0:batch",
+      "input_len": 218,
+      "input_fnv1a64": "cf38539ac16b3b29",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:recraft_v4_1",
+      "input_len": 176,
+      "input_fnv1a64": "cdd6660ae0882d82",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:recraft_v4_1:batch",
+      "input_len": 214,
+      "input_fnv1a64": "30383193cdbc6f2f",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:bytedance_image_upscale",
+      "input_len": 198,
+      "input_fnv1a64": "a9df51efeae5f5e1",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"2k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:bytedance_image_upscale:batch",
+      "input_len": 236,
+      "input_fnv1a64": "f4be5d86a33215a8",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"2k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:cinematic_studio_3_0",
+      "input_len": 194,
+      "input_fnv1a64": "b651d35f17606c52",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:cinematic_studio_3_0:batch",
+      "input_len": 232,
+      "input_fnv1a64": "b8229fa51325bcab",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:marketing_studio_video",
+      "input_len": 198,
+      "input_fnv1a64": "7ba75adc0e58e06a",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:marketing_studio_video:batch",
+      "input_len": 236,
+      "input_fnv1a64": "98ee2356c8dc3ee3",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:flux_3_video",
+      "input_len": 178,
+      "input_fnv1a64": "32acc64d42e1723b",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:flux_3_video:batch",
+      "input_len": 216,
+      "input_fnv1a64": "1a2c61e80e8bf3b2",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:grok_video_v15",
+      "input_len": 182,
+      "input_fnv1a64": "8b6f67c01dd85a7c",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:grok_video_v15:batch",
+      "input_len": 220,
+      "input_fnv1a64": "2cdd1962d8735e41",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:minimax_h3",
+      "input_len": 172,
+      "input_fnv1a64": "ee24346a715a8675",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"2K\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:minimax_h3:batch",
+      "input_len": 210,
+      "input_fnv1a64": "817c65f586b7c418",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"2K\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:minimax_h3_max",
+      "input_len": 182,
+      "input_fnv1a64": "189d2178a90f9ce4",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:minimax_h3_max:batch",
+      "input_len": 220,
+      "input_fnv1a64": "31a773472c0199b1",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:seedance1_5",
+      "input_len": 176,
+      "input_fnv1a64": "183af2b1030c6fe8",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:seedance1_5:batch",
+      "input_len": 214,
+      "input_fnv1a64": "a52fcf589bc14805",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:seedance_2_0",
+      "input_len": 178,
+      "input_fnv1a64": "536450be46e2165c",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:seedance_2_0:batch",
+      "input_len": 216,
+      "input_fnv1a64": "6d9fedc76fdea249",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:seedance_2_0_mini",
+      "input_len": 188,
+      "input_fnv1a64": "75543cb98fab293c",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:seedance_2_0_mini:batch",
+      "input_len": 226,
+      "input_fnv1a64": "5b13fca0b2d49dc1",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:seedance_2_5",
+      "input_len": 178,
+      "input_fnv1a64": "0329916bd942e262",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:seedance_2_5:batch",
+      "input_len": 216,
+      "input_fnv1a64": "e6789d8d0db25403",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:ad_multiplier",
+      "input_len": 180,
+      "input_fnv1a64": "9f69704ad4aacb10",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:ad_multiplier:batch",
+      "input_len": 218,
+      "input_fnv1a64": "a803c232fc2f7d2d",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:topaz_video",
+      "input_len": 177,
+      "input_fnv1a64": "25a8f0c81143b45f",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1080p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:topaz_video:batch",
+      "input_len": 215,
+      "input_fnv1a64": "23b8832298ec1d9e",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1080p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:bytedance_video_upscale",
+      "input_len": 201,
+      "input_fnv1a64": "2329e3fb65f010b3",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1080p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:bytedance_video_upscale:batch",
+      "input_len": 239,
+      "input_fnv1a64": "cf215f518f08158a",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1080p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:kling3_0_turbo",
+      "input_len": 182,
+      "input_fnv1a64": "4b48e1d42ece5af9",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:kling3_0_turbo:batch",
+      "input_len": 220,
+      "input_fnv1a64": "8dbaf21f77b2aa24",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:happy_horse_video",
+      "input_len": 188,
+      "input_fnv1a64": "8e92383fc4d736ed",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:happy_horse_video:batch",
+      "input_len": 226,
+      "input_fnv1a64": "3eae82a0e44a5cf8",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:hf_mult_motion_control",
+      "input_len": 198,
+      "input_fnv1a64": "998354155dc650d4",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:hf_mult_motion_control:batch",
+      "input_len": 236,
+      "input_fnv1a64": "89ec1356a1292f91",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:hf_mult_replace_object",
+      "input_len": 198,
+      "input_fnv1a64": "2c90543f26f093d4",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:hf_mult_replace_object:batch",
+      "input_len": 236,
+      "input_fnv1a64": "cf9fa428b0241d01",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:gemini_omni",
+      "input_len": 176,
+      "input_fnv1a64": "d227dd88c05f3275",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:gemini_omni:batch",
+      "input_len": 214,
+      "input_fnv1a64": "4073e856e2100628",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:gemini_omni_flash_1_1",
+      "input_len": 219,
+      "input_fnv1a64": "6f0357e4fb98931d",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"360p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:gemini_omni_flash_1_1:batch",
+      "input_len": 257,
+      "input_fnv1a64": "597a20d033993030",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"360p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:wan2_7",
+      "input_len": 166,
+      "input_fnv1a64": "224c6008504727a1",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:wan2_7:batch",
+      "input_len": 204,
+      "input_fnv1a64": "c090cee9a2eb9d54",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:wan3_0",
+      "input_len": 166,
+      "input_fnv1a64": "d213a0f83b766d7c",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:wan3_0:batch",
+      "input_len": 204,
+      "input_fnv1a64": "65171bf0fd05e7f9",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:wan3_0_prime",
+      "input_len": 178,
+      "input_fnv1a64": "8d42b634f4907494",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:wan3_0_prime:batch",
+      "input_len": 216,
+      "input_fnv1a64": "0c755a266065e8a1",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:carrier:wan2_6",
+      "input_len": 160,
+      "input_fnv1a64": "d033196563a6c9e6",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but quality selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:carrier:wan2_6:batch",
+      "input_len": 198,
+      "input_fnv1a64": "edab48942cf9627f",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but quality selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:carrier:soul_2",
+      "input_len": 158,
+      "input_fnv1a64": "43e4d61966bccc64",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but quality selects the \"2k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:carrier:soul_2:batch",
+      "input_len": 196,
+      "input_fnv1a64": "26a4858222e92abd",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but quality selects the \"2k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:carrier:soul_cinematic",
+      "input_len": 174,
+      "input_fnv1a64": "c303c5bfa3748eaa",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but quality selects the \"2k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:carrier:soul_cinematic:batch",
+      "input_len": 212,
+      "input_fnv1a64": "203b90bc673f4b4f",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but quality selects the \"2k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:carrier:soul_v2",
+      "input_len": 160,
+      "input_fnv1a64": "f167d61b734165d4",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but quality selects the \"2k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:carrier:soul_v2:batch",
+      "input_len": 198,
+      "input_fnv1a64": "b5541c4489ed8815",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but quality selects the \"2k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:carrier:kling3_0",
+      "input_len": 159,
+      "input_fnv1a64": "e05fa12784a2b320",
+      "output": null
+    },
+    {
+      "label": "canonical:carrier:kling3_0:batch",
+      "input_len": 197,
+      "input_fnv1a64": "f69fea6e6bacdca5",
+      "output": null
+    },
+    {
+      "label": "canonical:carrier:kling_video_edit",
+      "input_len": 175,
+      "input_fnv1a64": "1ab0ff8dca9fcfca",
+      "output": null
+    },
+    {
+      "label": "canonical:carrier:kling_video_edit:batch",
+      "input_len": 213,
+      "input_fnv1a64": "9516b3e17a39710b",
+      "output": null
+    },
+    {
+      "label": "canonical:targets:topaz_image",
+      "input_len": 193,
+      "input_fnv1a64": "28e0dd550ca2bb92",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but requested output_width 1920 x output_height 100 has a 100px short side under the local claim convention. Increase output_width/output_height, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:targets:topaz_image:batch",
+      "input_len": 231,
+      "input_fnv1a64": "ca9951d2497988af",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but requested output_width 1920 x output_height 100 has a 100px short side under the local claim convention. Increase output_width/output_height, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:targets:topaz_image_generative",
+      "input_len": 215,
+      "input_fnv1a64": "24f212cf5602a484",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but requested output_width 1920 x output_height 100 has a 100px short side under the local claim convention. Increase output_width/output_height, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:targets:topaz_image_generative:batch",
+      "input_len": 253,
+      "input_fnv1a64": "b798b690fec8f8dd",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but requested output_width 1920 x output_height 100 has a 100px short side under the local claim convention. Increase output_width/output_height, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:target-invalid:true",
+      "input_len": 194,
+      "input_fnv1a64": "7ce551b7b64af6dd",
+      "output": null
+    },
+    {
+      "label": "canonical:target-invalid:1280",
+      "input_len": 196,
+      "input_fnv1a64": "3d9ed75d41c87617",
+      "output": null
+    },
+    {
+      "label": "canonical:target-invalid:null",
+      "input_len": 194,
+      "input_fnv1a64": "8bfdd6e698bc4461",
+      "output": null
+    },
+    {
+      "label": "canonical:target-invalid:-1",
+      "input_len": 190,
+      "input_fnv1a64": "a76c14f9c1bcb3ad",
+      "output": null
+    },
+    {
+      "label": "canonical:target-invalid:0",
+      "input_len": 188,
+      "input_fnv1a64": "d854283e86cedb8d",
+      "output": null
+    },
+    {
+      "label": "canonical:target-match",
+      "input_len": 187,
+      "input_fnv1a64": "99fc9d0cf897a600",
+      "output": null
+    },
+    {
+      "label": "canonical:text:fullwidth",
+      "input_len": 192,
+      "input_fnv1a64": "f8a31518640fb85e",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"４Ｋ\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:text:mixed-quotes",
+      "input_len": 190,
+      "input_fnv1a64": "87cb7d0cfa43364e",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"４Ｋ\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:text:ascii-live",
+      "input_len": 191,
+      "input_fnv1a64": "84cfd9601c75b7dd",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:text:8k",
+      "input_len": 214,
+      "input_fnv1a64": "2edbb1ebad72d7f2",
+      "output": null
+    },
+    {
+      "label": "canonical:text:uhd",
+      "input_len": 172,
+      "input_fnv1a64": "7d8456f79f1f3e22",
+      "output": null
+    },
+    {
+      "label": "canonical:text:quoted",
+      "input_len": 212,
+      "input_fnv1a64": "0fc3674607f9ee95",
+      "output": null
+    },
+    {
+      "label": "canonical:text:curly",
+      "input_len": 179,
+      "input_fnv1a64": "cf372d15ce23fccd",
+      "output": null
+    },
+    {
+      "label": "canonical:text:fullwidth-quoted",
+      "input_len": 186,
+      "input_fnv1a64": "9b28677df6d2feb8",
+      "output": null
+    },
+    {
+      "label": "canonical:conflict:spaces",
+      "input_len": 170,
+      "input_fnv1a64": "9adbaef918cb055b",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:conflict:tab",
+      "input_len": 166,
+      "input_fnv1a64": "6602b6c53992001b",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:conflict:nbsp",
+      "input_len": 167,
+      "input_fnv1a64": "bb2ef80534d6ede3",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:conflict:fullwidth",
+      "input_len": 193,
+      "input_fnv1a64": "a56848659ffc7200",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:conflict:punctuation",
+      "input_len": 176,
+      "input_fnv1a64": "5869bb0d8167afa3",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:conflict:newline",
+      "input_len": 170,
+      "input_fnv1a64": "1add990c4addf1d2",
+      "output": null
+    },
+    {
+      "label": "canonical:conflict:comma",
+      "input_len": 168,
+      "input_fnv1a64": "4f6680097e3acb8b",
+      "output": null
+    },
+    {
+      "label": "canonical:conflict:slash",
+      "input_len": 169,
+      "input_fnv1a64": "a7853e390dcd0270",
+      "output": null
+    },
+    {
+      "label": "canonical:conflict:curly",
+      "input_len": 173,
+      "input_fnv1a64": "98d499b1a4ef711e",
+      "output": null
+    },
+    {
+      "label": "canonical:conflict:negated",
+      "input_len": 196,
+      "input_fnv1a64": "4c7b6c25e505c8cb",
+      "output": null
+    },
+    {
+      "label": "canonical:conflict:wide",
+      "input_len": 175,
+      "input_fnv1a64": "15560254f62bae9c",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"wide shot\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:overlap:handheld",
+      "input_len": 196,
+      "input_fnv1a64": "9f19af77e9775c36",
+      "output": null
+    },
+    {
+      "label": "canonical:overlap:grain",
+      "input_len": 176,
+      "input_fnv1a64": "54187f759400d336",
+      "output": null
+    },
+    {
+      "label": "canonical:duration:total",
+      "input_len": 183,
+      "input_fnv1a64": "823afc0e4bd27ef8",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- duration_claim: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:duration:compound",
+      "input_len": 194,
+      "input_fnv1a64": "f8f2c74a149ca318",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- duration_claim: prompt describes 12s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:duration:spans",
+      "input_len": 175,
+      "input_fnv1a64": "e3aaac0f37f5bd61",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- duration_claim: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:duration:to",
+      "input_len": 161,
+      "input_fnv1a64": "ac93fef3f8b5fec0",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- duration_claim: prompt describes 7s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:duration:ending",
+      "input_len": 166,
+      "input_fnv1a64": "152cfd0a1074efae",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- duration_claim: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:duration:fractional",
+      "input_len": 172,
+      "input_fnv1a64": "8875374da9b7afa4",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- duration_claim: prompt describes 5.5s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:duration:beyond-cap",
+      "input_len": 172,
+      "input_fnv1a64": "efbc30529d686600",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- duration_claim: prompt describes 900s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:duration:maximum",
+      "input_len": 213,
+      "input_fnv1a64": "f6e131e38305b411",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- duration_claim: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:duration:equal",
+      "input_len": 165,
+      "input_fnv1a64": "b797e47deda313a0",
+      "output": null
+    },
+    {
+      "label": "canonical:duration:under",
+      "input_len": 175,
+      "input_fnv1a64": "40f1ea442636301b",
+      "output": null
+    },
+    {
+      "label": "canonical:duration:fraction-tail",
+      "input_len": 175,
+      "input_fnv1a64": "e54b57689470cfe5",
+      "output": null
+    },
+    {
+      "label": "canonical:duration:lens",
+      "input_len": 177,
+      "input_fnv1a64": "38de3ea93dfa3990",
+      "output": null
+    },
+    {
+      "label": "canonical:duration:quoted",
+      "input_len": 171,
+      "input_fnv1a64": "aa3cc3524d35eebd",
+      "output": null
+    },
+    {
+      "label": "canonical:duration:curly",
+      "input_len": 172,
+      "input_fnv1a64": "7e3ddb0b8d7affa7",
+      "output": null
+    },
+    {
+      "label": "canonical:duration:fullwidth-quote",
+      "input_len": 182,
+      "input_fnv1a64": "11a947c1c07760b1",
+      "output": null
+    },
+    {
+      "label": "canonical:duration:signed",
+      "input_len": 168,
+      "input_fnv1a64": "ead82c59e1a0bb16",
+      "output": null
+    },
+    {
+      "label": "canonical:duration:positive-sign",
+      "input_len": 175,
+      "input_fnv1a64": "733cae7ca4efd2d3",
+      "output": null
+    },
+    {
+      "label": "canonical:duration:exponent",
+      "input_len": 170,
+      "input_fnv1a64": "0828a1a18547954d",
+      "output": null
+    },
+    {
+      "label": "canonical:duration:comma",
+      "input_len": 169,
+      "input_fnv1a64": "efb029374c173b77",
+      "output": null
+    },
+    {
+      "label": "canonical:duration:decimal",
+      "input_len": 171,
+      "input_fnv1a64": "1f5361d12cb17220",
+      "output": null
+    },
+    {
+      "label": "canonical:duration:reversed",
+      "input_len": 166,
+      "input_fnv1a64": "d2cfc5ce2e4a9577",
+      "output": null
+    },
+    {
+      "label": "canonical:duration:clock",
+      "input_len": 169,
+      "input_fnv1a64": "10c90aa60a4b00be",
+      "output": null
+    },
+    {
+      "label": "canonical:duration:subtotal",
+      "input_len": 172,
+      "input_fnv1a64": "7afcc61e0d79272b",
+      "output": null
+    },
+    {
+      "label": "canonical:duration:embedded",
+      "input_len": 169,
+      "input_fnv1a64": "9624daba7b96dc5e",
+      "output": null
+    },
+    {
+      "label": "canonical:duration:tail",
+      "input_len": 159,
+      "input_fnv1a64": "214cfaa231354e03",
+      "output": null
+    },
+    {
+      "label": "canonical:duration:newline",
+      "input_len": 168,
+      "input_fnv1a64": "6376525af0ece9dd",
+      "output": null
+    },
+    {
+      "label": "canonical:duration-mode:seedance_2_5:t2v",
+      "input_len": 199,
+      "input_fnv1a64": "6a4b659b061bd96a",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- duration_claim: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:duration-mode:seedance_2_5:video_edit",
+      "input_len": 213,
+      "input_fnv1a64": "7de594cc80870bac",
+      "output": null
+    },
+    {
+      "label": "canonical:duration-mode:seedance_2_5:video_extension",
+      "input_len": 223,
+      "input_fnv1a64": "cf3eb5044b6160fe",
+      "output": null
+    },
+    {
+      "label": "canonical:duration-mode:seedance_2_5:typo",
+      "input_len": 201,
+      "input_fnv1a64": "8e837dd12061081c",
+      "output": null
+    },
+    {
+      "label": "canonical:duration-mode:ad_multiplier:t2v",
+      "input_len": 201,
+      "input_fnv1a64": "5df06379ba08b5b4",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- duration_claim: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:duration-mode:ad_multiplier:video_edit",
+      "input_len": 215,
+      "input_fnv1a64": "8f6c872069bc2bca",
+      "output": null
+    },
+    {
+      "label": "canonical:duration-mode:ad_multiplier:video_extension",
+      "input_len": 225,
+      "input_fnv1a64": "aa2774b0c70a29a0",
+      "output": null
+    },
+    {
+      "label": "canonical:duration-mode:ad_multiplier:typo",
+      "input_len": 203,
+      "input_fnv1a64": "a23869d215e6c7ea",
+      "output": null
+    },
+    {
+      "label": "canonical:duration-mode:gemini:text-to-video",
+      "input_len": 222,
+      "input_fnv1a64": "8ae1c23d5582326d",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- duration_claim: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:duration-mode:gemini:edit",
+      "input_len": 204,
+      "input_fnv1a64": "0e6324f2973675b3",
+      "output": null
+    },
+    {
+      "label": "canonical:duration-model:unknown",
+      "input_len": 173,
+      "input_fnv1a64": "101cbb873802100b",
+      "output": null
+    },
+    {
+      "label": "canonical:duration-model:video_upscale",
+      "input_len": 185,
+      "input_fnv1a64": "f0a19ab726736fc1",
+      "output": null
+    },
+    {
+      "label": "canonical:duration-model:video_deflicker",
+      "input_len": 189,
+      "input_fnv1a64": "359bfbe9d5d0e5f1",
+      "output": null
+    },
+    {
+      "label": "canonical:duration-model:kling_video_edit",
+      "input_len": 191,
+      "input_fnv1a64": "55be73c04f3c0185",
+      "output": null
+    },
+    {
+      "label": "canonical:duration-model:clipify",
+      "input_len": 173,
+      "input_fnv1a64": "185e44d476ea7bd7",
+      "output": null
+    },
+    {
+      "label": "canonical:scope:video",
+      "input_len": 236,
+      "input_fnv1a64": "075f47f1329a0103",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 3 findings\n- resolution_claim: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim.\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.\n- duration_claim: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:scope:video:batch",
+      "input_len": 274,
+      "input_fnv1a64": "1a2c291adce26522",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 3 findings\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim.\n- prompt_negative_conflict: request 20: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.\n- duration_claim: request 20: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:scope:audio",
+      "input_len": 236,
+      "input_fnv1a64": "e3b2eb328edcbcad",
+      "output": null
+    },
+    {
+      "label": "canonical:scope:audio:batch",
+      "input_len": 274,
+      "input_fnv1a64": "7f627665a1274868",
+      "output": null
+    },
+    {
+      "label": "canonical:scope:image",
+      "input_len": 236,
+      "input_fnv1a64": "0b1d8a586d7c8197",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:scope:image:batch",
+      "input_len": 274,
+      "input_fnv1a64": "0b3d4928e3ac35da",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: request 20: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:scope:unknown",
+      "input_len": 240,
+      "input_fnv1a64": "ad8556f808eccdf1",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:scope:unknown:batch",
+      "input_len": 278,
+      "input_fnv1a64": "2251e1f2a5409968",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: request 20: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:scope:name:null",
+      "input_len": 211,
+      "input_fnv1a64": "3c2427bc5bcab7be",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:scope:name:23",
+      "input_len": 207,
+      "input_fnv1a64": "fcdb73586a83239e",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:scope:missing",
+      "input_len": 192,
+      "input_fnv1a64": "c61e4b39fe7b1601",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:scope:valid-image",
+      "input_len": 243,
+      "input_fnv1a64": "abf6571d6b4439a6",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 2 findings\n- resolution_claim: prompt says \"4K\" but resolution selects the \"2k\" output tier. Choose a supported higher tier, or revise the claim.\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:excluded:unknown",
+      "input_len": 166,
+      "input_fnv1a64": "f706da972e1c04c5",
+      "output": null
+    },
+    {
+      "label": "canonical:excluded:wrongkind",
+      "input_len": 173,
+      "input_fnv1a64": "3748522bbe9eccb4",
+      "output": null
+    },
+    {
+      "label": "canonical:excluded:stored",
+      "input_len": 179,
+      "input_fnv1a64": "1d4e3524909c332e",
+      "output": null
+    },
+    {
+      "label": "canonical:excluded:marketing",
+      "input_len": 209,
+      "input_fnv1a64": "15bf553d2c32559f",
+      "output": null
+    },
+    {
+      "label": "canonical:excluded:undeclared",
+      "input_len": 196,
+      "input_fnv1a64": "3b953ec92a9bedc9",
+      "output": null
+    },
+    {
+      "label": "canonical:excluded:fast",
+      "input_len": 183,
+      "input_fnv1a64": "c48545dc89ba54c4",
+      "output": null
+    },
+    {
+      "label": "canonical:excluded:mixed",
+      "input_len": 173,
+      "input_fnv1a64": "d3751380d2a5fe9e",
+      "output": null
+    },
+    {
+      "label": "canonical:excluded:hailuo",
+      "input_len": 171,
+      "input_fnv1a64": "eb39e4b6aed28ab7",
+      "output": null
+    },
+    {
+      "label": "canonical:excluded:quality",
+      "input_len": 167,
+      "input_fnv1a64": "9eb7fc376fa4c3c6",
+      "output": null
+    },
+    {
+      "label": "canonical:limitation:negated-resolution",
+      "input_len": 188,
+      "input_fnv1a64": "40e9d0402630d955",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:limitation:scene-duration",
+      "input_len": 187,
+      "input_fnv1a64": "1b193e2c1d659704",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- duration_claim: prompt describes 12s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:limitation:inch-marks",
+      "input_len": 194,
+      "input_fnv1a64": "665b2140a83c34d8",
+      "output": null
+    },
+    {
+      "label": "canonical:batch:explicit-mixed",
+      "input_len": 373,
+      "input_fnv1a64": "4285df728a48e6eb",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- duration_claim: request 20: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:batch:positional",
+      "input_len": 255,
+      "input_fnv1a64": "6ffeafcc12d01965",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- duration_claim: request 1: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:batch:two-offenders",
+      "input_len": 281,
+      "input_fnv1a64": "2db1c8940addf092",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 2 findings\n- duration_claim: request 10: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.\n- duration_claim: request 20: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:batch:no-fallback",
+      "input_len": 207,
+      "input_fnv1a64": "e3343fe24ab78519",
+      "output": null
+    },
+    {
+      "label": "canonical:batch:empty-fallback",
+      "input_len": 192,
+      "input_fnv1a64": "dcbb1c47e413bdc7",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- duration_claim: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:batch:index-true",
+      "input_len": 202,
+      "input_fnv1a64": "8a8a422e210e929c",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- duration_claim: request True: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:batch:index-null",
+      "input_len": 202,
+      "input_fnv1a64": "2c924c398b613c1e",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- duration_claim: request None: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:batch:index-req-alpha",
+      "input_len": 214,
+      "input_fnv1a64": "c2b8b065bbbe0f72",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- duration_claim: request req-alpha: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:batch:index--3",
+      "input_len": 198,
+      "input_fnv1a64": "4927d29926d56234",
+      "output": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- duration_claim: request -3: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
     }
   ],
   "generated_by": "rust/tests/parity.rs corpus generators, captured against the verified Rust binary",
-  "note": "Historical snapshot of verified behaviour, now diverging by design: originally matched the retired Python oracle at 320/0 divergences (plus 4,200 independently-fuzzed inputs). Since the oracle was archived: task 2 (negation_placement removal) moved 51 entries away from oracle behaviour and added 5 negative-control entries no oracle ever saw; task 3 (prompt_negative_conflict recalibration, SPEC.md \u00a75.2) added 7 negative-control entries (5 of them real false-positive regressions against the pre-recalibration binary, all now silent by design), removed 18 entries for the dropped bare pan/text/sharp/static/zoom/grain lexicon tokens, added 30 entries for the new camera pan/whip pan/slow zoom/on-screen text/film grain/static shot/lens flare/letterbox/watermark/subtitles entries, and updated 6 entries whose expected output named a hit on the now-dropped \"sharp\". A mismatch here is a deliberate behaviour change under review, not a bug to silence by editing this file to match.",
-  "schema_version": 1
+  "note": "Historical snapshot of verified behaviour, now diverging by design: originally matched the retired Python oracle at 320/0 divergences (plus 4,200 independently-fuzzed inputs). Since the oracle was archived: task 2 (negation_placement removal) moved 51 entries away from oracle behaviour and added 5 negative-control entries no oracle ever saw; task 3 (prompt_negative_conflict recalibration, SPEC.md §5.2) added 7 negative-control entries (5 of them real false-positive regressions against the pre-recalibration binary, all now silent by design), removed 18 entries for the dropped bare pan/text/sharp/static/zoom/grain lexicon tokens, added 30 entries for the new camera pan/whip pan/slow zoom/on-screen text/film grain/static shot/lens flare/letterbox/watermark/subtitles entries, and updated 6 entries whose expected output named a hit on the now-dropped \"sharp\". A mismatch here is a deliberate behaviour change under review, not a bug to silence by editing this file to match. 2026-09-09: 87 entries deliberately lose only unsupported resolution findings, with unchanged inputs. New semantic cases have independent exact-message expectations. See docs/golden-change-ledger.json. Original capture provenance retained.",
+  "schema_version": 1,
+  "behavior_revision": {
+    "date": "2026-09-09",
+    "base_commit": "a7e0039",
+    "status": "local uncommitted implementation",
+    "ledger": "docs/golden-change-ledger.json"
+  }
 }

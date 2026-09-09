@@ -1,46 +1,58 @@
 # higgsfield-lint
 
-A Claude Code `PreToolUse` hook that lints Higgsfield `generate_*` tool calls before they
-run, and tells the model when the prompt argues with its own parameters (a "4K" claim
-against a 768px-tall render, or a phrase repeated in both `prompt` and `negative_prompt`).
-It is advisory only: it never blocks a call, never exits non-zero, and never writes to
-stderr. See `SPEC.md` for the full design and rationale.
+Advisory Claude Code `PreToolUse` hook for Higgsfield MCP image, video and audio
+generation tools. It checks supported output-tier claims, local prompt/negative-prompt
+overlap, and video duration over-claims. Audio skips these text checks.
 
-## Required setup: build the binary
+The schema is grounded in a dated [official MCP capture](docs/higgsfield-canonical-contract.md).
+Unknown model semantics are not guessed. Bare width/height do not prove rendered size,
+and negative_prompt overlap is local text consistency—not proof the provider honors it.
 
-```
+## Build and verify
+
+```sh
 cargo build --release
-```
-
-This is not a one-time convenience, it is required before the hook does anything. The
-hook runs `target/release/higgsfield-lint` directly. If that binary is missing, or was
-built against an older `rust/src/*.rs`, the hook exits non-zero or runs stale logic -
-either way `PreToolUse` treats it as non-blocking and the generation call proceeds
-exactly as if the lint had found nothing. **Nothing distinguishes "the lint didn't run"
-from "the lint ran and found nothing."** Re-run this build whenever `rust/src/*.rs`
-changes, and confirm it before relying on the hook for the first time. See SPEC.md §12.1.
-
-## Running the tests
-
-```
+target/release/higgsfield-lint doctor
 cargo test --release
+cargo test --test fail_silent
 ```
 
-This runs the Rust unit tests, the pathological-input/fail-silent tests, and the golden
-corpus (`rust/tests/parity.rs`): it feeds an identical corpus of inputs to the compiled
-binary and asserts each one's output matches a recorded expectation in
-`rust/tests/golden/expectations.json`, compared as parsed JSON. See SPEC.md §9.
+Run from this checkout. Rebuild after changes under rust/src, Cargo.toml or Cargo.lock.
+The project hook configuration in [.claude/settings.json](.claude/settings.json) invokes
+`target/release/higgsfield-lint` directly. Doctor checks seven local conditions, including
+recursive source/manifest/lockfile freshness, six-tool matcher coverage and actual fixtures.
+Its timestamp check is a heuristic, not a build fingerprint.
 
-## The Rust is the specification
+In the intended Claude Code session, inspect `/hooks` and a tool trace to confirm this
+checkout's hook actually loaded. Doctor cannot prove another session's loaded state.
+No global installation is performed automatically.
 
-There is no second implementation checked against it any more. A hand-written Python
-port served as a differential oracle until the Rust was proven output-equivalent to it -
-320 inputs / 0 divergences, plus 4,200 independently-fuzzed inputs from a separate
-reviewer. It is now archived, read-only, at `docs/archive/verified-port/`: a **historical
-record**, never a runtime fallback, and never edited to match anything that changes here
-afterward. See that directory's README and SPEC.md §12.2 for the full history.
+The normal hook is fail-open: exit 0, empty stderr, empty stdout when no findings.
+Doctor is the explicit diagnostic exception. A missing executable or OS-level abort
+cannot be caught by the hook; the generation is not intentionally blocked.
 
-## Stack
+## Scope and limits
 
-Rust binary (`serde_json`, `regex`), built with `cargo build --release`. Full history of
-why this shipped in Rust, then Python, then Rust again is in SPEC.md §12.
+Resolution checks require a supported model/field/option association. Image and video
+tiers stay in their declared comparison domains; explicit Topaz targets are described
+as requested pixels. No universal 2k-to-pixel conversion or guessed output geometry.
+Duration checks require a known video model and eligible mode and compare the supplied
+setting, not a promised effective duration. Quotes and a narrow set of typography folds
+are supported. Ceiling inference, ratios, parameter clamps and language understanding
+remain deferred. See [SPEC](SPEC.md) and the
+[implementation report](docs/rule-regrounding-implementation-report.md).
+
+These hooks match MCP calls, not Higgsfield CLI shell commands. CLI use can bypass this
+hook; there is no CLI adapter in this implementation.
+
+## Tests and runtime
+
+Rust is the sole runtime; the Python-to-Rust migration is complete. The old Python
+implementation and its historical verification are read-only in
+[the archive](docs/archive/verified-port/README.md), never a fallback or live oracle.
+The current 538-input golden corpus preserves historical input bytes and adds 191
+independently specified semantic cases. See the [coverage guide](rust/tests/golden/README.md).
+
+Two direct dependencies: serde_json and regex. No hook-time network, application
+data-file reads, data-file writes or telemetry. The optional
+[credit-expiry reminder](docs/credit-expiry-task.md) is separate and was not scheduled.

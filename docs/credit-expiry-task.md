@@ -1,6 +1,8 @@
 # Credit expiry reminder
 
-## The problem, measured
+Status: proposed reminder; deployment/schedule not verified or modified on 2026-09-09.
+
+## Historical problem, measured
 
 From the Higgsfield `transactions` log: ~6,910 credits forfeited to monthly expiry across
 six cycles, against ~732 ever spent generating. Unused credits are wiped at each renewal
@@ -25,7 +27,8 @@ backwards roughly one day per month. **An earlier version of this document said 
 Compute the next reset as `last_known_reset + 30 days`, re-anchoring on the most recent
 `Subscription Credits Reset` row each run rather than extrapolating from a fixed date.
 
-Anchor: `2026-08-05` → next `2026-09-04`.
+Historical illustration: `2026-08-05` → `2026-09-04`. This is past as of 2026-09-09,
+not the next reset now. Fetch fresh transactions before reporting a current deadline.
 
 ## The scheduled task prompt
 
@@ -34,13 +37,15 @@ Anchor: `2026-08-05` → next `2026-09-04`.
 > that date plus 30 days. Then call `balance` for the current credit total.
 >
 > Report the credit total and the days remaining until the next reset. If more than 400
-> credits remain and fewer than 7 days are left, say so prominently and state that unused
+> credits remain and the reset is within 7 days inclusive (using exact timestamps and
+> the configured local timezone), say so prominently and state that unused
 > credits are wiped at reset rather than carried over.
 >
 > If the most recent reset is more than 31 days ago, the 30-day assumption has broken —
 > say so rather than reporting a date computed from it.
 
-## Schedule
+## Proposed schedule
 
-Weekly, Mondays 09:00 local. Weekly is sufficient because the warning window is 7 days;
-a daily task would spend tokens for no additional coverage.
+Weekly, Mondays 09:00 local. The inclusive seven-day boundary avoids a strict-window
+gap, but outages can still miss delivery. Scheduling and delivery guarantees need
+separate approval and verification.

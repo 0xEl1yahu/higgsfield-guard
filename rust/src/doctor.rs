@@ -25,6 +25,7 @@ pub enum Check {
 pub fn run() -> i32 {
     let checks = collect_checks();
     report(&checks);
+    println!("doctor checks this checkout and binary; confirm the hook is loaded with /hooks and verify a hook trace in the target Claude Code session.");
     exit_code(&checks)
 }
 
@@ -40,7 +41,7 @@ fn collect_checks() -> Vec<Check> {
             checks.push(Check::Fail(format!(
                 "binary location: could not determine this executable's own path: {err}"
             )));
-            checks.push(check_self_test());
+            checks.push(check_self_test(None));
             return checks;
         }
     };
@@ -54,8 +55,7 @@ fn collect_checks() -> Vec<Check> {
         )),
         None => Check::Fail(format!(
             "binary location: no ancestor directory of {} contains a data/ directory - \
-             the landmark load_models() and any future repo-relative data file depend on \
-             to find their way back to it",
+             the diagnostic-only repository landmark",
             exe.display()
         )),
     });
@@ -77,7 +77,12 @@ fn collect_checks() -> Vec<Check> {
             }
             let note = project_dir.note();
             checks.push(check_matcher_present(root, project_dir.path(), &exe, &note));
-            checks.push(check_matcher_correctness(root, project_dir.path(), &exe, &note));
+            checks.push(check_matcher_correctness(
+                root,
+                project_dir.path(),
+                &exe,
+                &note,
+            ));
         }
         None => {
             let skip = |name: &str| {
@@ -93,15 +98,11 @@ fn collect_checks() -> Vec<Check> {
         }
     }
 
-    checks.push(check_self_test());
+    checks.push(check_self_test(repo_root.as_deref()));
     checks
 }
 
-/// Walks up from `exe`'s parent directories looking for one that contains a
-/// `data/` directory - the layout `models::load_models` depends on. Mirrors
-/// `models::locate_data_file`'s walk, but stops at directory presence rather
-/// than requiring the specific JSON file inside it, since that distinction is
-/// check 2's job, not check 1's.
+/// Diagnostic-only root discovery; no data-file search runs on the hook path.
 fn find_repo_root(exe: &Path) -> Option<PathBuf> {
     let mut dir = exe.parent();
     while let Some(d) = dir {
@@ -118,14 +119,12 @@ fn find_repo_root(exe: &Path) -> Option<PathBuf> {
 /// HIGGSFIELD_PROMPT_RESEARCH.md §6, §8.3). This check now guards the retirement itself
 /// rather than the file's shape: it passes when the file is absent, and fails if it has
 /// reappeared, since its presence would mean something started reading unsupported
-/// model-acceptance data again without doctor noticing. Repoint this check to a
-/// replacement data file instead, if HFR-006 or a later rule ever introduces one.
+/// model-acceptance data again without doctor noticing. Keep this retirement check even if a later feature adds a separate data file.
 fn check_data_file(repo_root: &Path) -> Check {
     let path = repo_root.join("data").join("negative_prompt_models.json");
     if path.is_file() {
         Check::Fail(format!(
-            "data file: {} still exists but was retired in SPEC.md §5.3 - delete it, or \
-             repoint this check if a replacement data file has taken its place",
+            "data file: {} still exists but was retired in SPEC.md §5.3 - remove the unsupported file after reviewing why it reappeared",
             path.display()
         ))
     } else {
@@ -136,37 +135,69 @@ fn check_data_file(repo_root: &Path) -> Check {
     }
 }
 
-/// Check 3, the one that matters most: a stale binary runs old logic and is
-/// completely indistinguishable from a current one at runtime, so this is the
-/// only check that can ever catch it. Fails when any tracked source file -
-/// `rust/src/*.rs`, `Cargo.toml`, or `data/*.json` - is newer than the running
-/// executable.
+/// Diagnostic-only mtime check. Missing/unreadable build inputs are failures.
+/// Timestamps are a heuristic, not proof of source identity.
 fn check_binary_freshness(repo_root: &Path, exe_mtime: SystemTime) -> Check {
+    fn inputs(root: &Path) -> Result<Vec<PathBuf>, String> {
+        fn walk(dir: &Path, out: &mut Vec<PathBuf>) -> std::io::Result<()> {
+            for entry in fs::read_dir(dir)? {
+                let entry = entry?;
+                let path = entry.path();
+                let ty = entry.file_type()?;
+                if ty.is_symlink() {
+                    return Err(std::io::Error::other(format!(
+                        "symlinked source needs manual verification: {}",
+                        path.display()
+                    )));
+                }
+                if ty.is_dir() {
+                    walk(&path, out)?;
+                } else if path.extension().and_then(|e| e.to_str()) == Some("rs") {
+                    out.push(path);
+                }
+            }
+            Ok(())
+        }
+        let mut out = vec![root.join("Cargo.toml"), root.join("Cargo.lock")];
+        for name in ["main.rs", "lint.rs", "checks.rs", "doctor.rs"] {
+            let path = root.join("rust/src").join(name);
+            if !path.is_file() {
+                return Err(format!("missing required input {}", path.display()));
+            }
+        }
+        walk(&root.join("rust/src"), &mut out)
+            .map_err(|e| format!("cannot enumerate runtime sources: {e}"))?;
+        Ok(out)
+    }
+    let files = match inputs(repo_root) {
+        Ok(files) => files,
+        Err(e) => return Check::Fail(format!("binary freshness: {e}")),
+    };
     let mut newer = Vec::new();
-
-    newer.extend(newer_files_with_ext(
-        &repo_root.join("rust").join("src"),
-        "rs",
-        exe_mtime,
-    ));
-
-    let cargo_toml = repo_root.join("Cargo.toml");
-    if let Ok(modified) = fs::metadata(&cargo_toml).and_then(|m| m.modified()) {
-        if modified > exe_mtime {
-            newer.push(cargo_toml.display().to_string());
+    for path in files {
+        let mtime = match fs::metadata(&path).and_then(|m| m.modified()) {
+            Ok(time) if path.is_file() => time,
+            Ok(_) => {
+                return Check::Fail(format!(
+                    "binary freshness: {} is not a file",
+                    path.display()
+                ))
+            }
+            Err(e) => {
+                return Check::Fail(format!(
+                    "binary freshness: {} missing/unreadable: {e}",
+                    path.display()
+                ))
+            }
+        };
+        if mtime > exe_mtime {
+            newer.push(path.display().to_string());
         }
     }
-
-    newer.extend(newer_files_with_ext(&repo_root.join("data"), "json", exe_mtime));
-
+    newer.sort();
     if newer.is_empty() {
-        Check::Pass(
-            "binary freshness: binary is newer than every tracked source \
-             (rust/src/*.rs, Cargo.toml)"
-                .to_string(),
-        )
+        Check::Pass("binary freshness: binary is newer than every build input (rust/src/**/*.rs, Cargo.toml, Cargo.lock); mtime is not an identity proof".into())
     } else {
-        newer.sort();
         Check::Fail(format!(
             "binary freshness: STALE BINARY, rebuild needed - newer than the binary: {}",
             newer.join(", ")
@@ -174,30 +205,11 @@ fn check_binary_freshness(repo_root: &Path, exe_mtime: SystemTime) -> Check {
     }
 }
 
-fn newer_files_with_ext(dir: &Path, ext: &str, exe_mtime: SystemTime) -> Vec<String> {
-    let mut out = Vec::new();
-    let Ok(entries) = fs::read_dir(dir) else {
-        return out; // directory absent: nothing to report here, another check's job
-    };
-    for entry in entries.flatten() {
-        let path = entry.path();
-        if path.extension().and_then(|e| e.to_str()) != Some(ext) {
-            continue;
-        }
-        if let Ok(modified) = entry.metadata().and_then(|m| m.modified()) {
-            if modified > exe_mtime {
-                out.push(path.display().to_string());
-            }
-        }
-    }
-    out
-}
-
 fn check_binary_freshness_real(repo_root: &Path, exe: &Path) -> Check {
     match fs::metadata(exe).and_then(|m| m.modified()) {
         Ok(mtime) => check_binary_freshness(repo_root, mtime),
-        Err(err) => Check::Warn(format!(
-            "binary freshness: could not read this binary's own mtime, skipping: {err}"
+        Err(err) => Check::Fail(format!(
+            "binary freshness: could not read this binary's own mtime: {err}"
         )),
     }
 }
@@ -279,7 +291,10 @@ impl ProjectDir {
                 p.display()
             ),
             ProjectDir::Disagrees { env, .. } => {
-                format!("CLAUDE_PROJECT_DIR={} - see the project dir warning above", env.display())
+                format!(
+                    "CLAUDE_PROJECT_DIR={} - see the project dir warning above",
+                    env.display()
+                )
             }
         }
     }
@@ -359,7 +374,11 @@ fn command_resolves_to_exe(command: &str, project_dir: &Path, exe: &Path) -> boo
     }
 }
 
-fn find_own_hook_group<'a>(entries: &'a [Value], project_dir: &Path, exe: &Path) -> Option<&'a Value> {
+fn find_own_hook_group<'a>(
+    entries: &'a [Value],
+    project_dir: &Path,
+    exe: &Path,
+) -> Option<&'a Value> {
     entries.iter().find(|entry| {
         entry
             .get("hooks")
@@ -379,7 +398,12 @@ fn find_own_hook_group<'a>(entries: &'a [Value], project_dir: &Path, exe: &Path)
 /// executable when `$CLAUDE_PROJECT_DIR` is resolved as `project_dir` - i.e.
 /// the hook is actually wired up for this binary the way a live session would
 /// see it, not just present in the settings file under some other root.
-fn check_matcher_present(repo_root: &Path, project_dir: &Path, exe: &Path, project_dir_note: &str) -> Check {
+fn check_matcher_present(
+    repo_root: &Path,
+    project_dir: &Path,
+    exe: &Path,
+    project_dir_note: &str,
+) -> Check {
     let settings = match load_settings(repo_root) {
         Ok(v) => v,
         Err(err) => return Check::Fail(format!("matcher present: {err}")),
@@ -407,13 +431,37 @@ fn check_matcher_present(repo_root: &Path, project_dir: &Path, exe: &Path, proje
     }
 }
 
-const SHOULD_MATCH: &str = "mcp__ada4cfac-9b58-4bfb-9631-4a588b7a2e4b__generate_video";
-const SHOULD_NOT_MATCH: &[&str] = &["mcp__x__generate_3d", "mcp__x__show_generations"];
+const SHOULD_MATCH: &[&str] = &[
+    "mcp__ada4cfac-9b58-4bfb-9631-4a588b7a2e4b__generate_image",
+    "mcp__ada4cfac-9b58-4bfb-9631-4a588b7a2e4b__generate_video",
+    "mcp__ada4cfac-9b58-4bfb-9631-4a588b7a2e4b__generate_audio",
+    "mcp__ada4cfac-9b58-4bfb-9631-4a588b7a2e4b__generate_image_batch",
+    "mcp__ada4cfac-9b58-4bfb-9631-4a588b7a2e4b__generate_video_batch",
+    "mcp__ada4cfac-9b58-4bfb-9631-4a588b7a2e4b__generate_audio_batch",
+    "mcp__claude_ai_Higgsfield__generate_image",
+    "mcp__claude_ai_Higgsfield__generate_video",
+    "mcp__claude_ai_Higgsfield__generate_audio",
+    "mcp__claude_ai_Higgsfield__generate_image_batch",
+    "mcp__claude_ai_Higgsfield__generate_video_batch",
+    "mcp__claude_ai_Higgsfield__generate_audio_batch",
+];
+const SHOULD_NOT_MATCH: &[&str] = &[
+    "mcp__x__generate_3d",
+    "mcp__x__show_generations",
+    "mcp__x__generate_audio_clone",
+    "mcp__x__show_generate_audio",
+    "mcp__x__generate_video_extra",
+];
 
 /// Check 6: the matcher on this binary's own `PreToolUse` entry (resolved the
 /// same way check 5 does, via `project_dir`) matches a real Higgsfield tool
 /// name and rejects the two nearest lookalikes.
-fn check_matcher_correctness(repo_root: &Path, project_dir: &Path, exe: &Path, project_dir_note: &str) -> Check {
+fn check_matcher_correctness(
+    repo_root: &Path,
+    project_dir: &Path,
+    exe: &Path,
+    project_dir_note: &str,
+) -> Check {
     let settings = match load_settings(repo_root) {
         Ok(v) => v,
         Err(err) => return Check::Fail(format!("matcher correctness: {err}")),
@@ -436,7 +484,8 @@ fn check_matcher_correctness(repo_root: &Path, project_dir: &Path, exe: &Path, p
     };
     let Some(matcher) = entry.get("matcher").and_then(Value::as_str) else {
         return Check::Fail(
-            "matcher correctness: the matching PreToolUse entry has no \"matcher\" string".to_string(),
+            "matcher correctness: the matching PreToolUse entry has no \"matcher\" string"
+                .to_string(),
         );
     };
     let re = match Regex::new(matcher) {
@@ -448,11 +497,12 @@ fn check_matcher_correctness(repo_root: &Path, project_dir: &Path, exe: &Path, p
         }
     };
 
-    if !re.is_match(SHOULD_MATCH) {
-        return Check::Fail(format!(
-            "matcher correctness: matcher {matcher:?} does not match {SHOULD_MATCH:?} - \
-             a real Higgsfield call would be missed entirely"
-        ));
+    for good in SHOULD_MATCH {
+        if !re.is_match(good) {
+            return Check::Fail(format!(
+                "matcher correctness: matcher {matcher:?} does not match {good:?}"
+            ));
+        }
     }
     for bad in SHOULD_NOT_MATCH {
         if re.is_match(bad) {
@@ -462,7 +512,7 @@ fn check_matcher_correctness(repo_root: &Path, project_dir: &Path, exe: &Path, p
         }
     }
     Check::Pass(format!(
-        "matcher correctness: matcher {matcher:?} matches {SHOULD_MATCH:?} and rejects lookalikes ({project_dir_note})"
+        "matcher correctness: matcher {matcher:?} matches all six tool shapes under both server-name styles and rejects lookalikes ({project_dir_note})"
     ))
 }
 
@@ -489,25 +539,79 @@ fn evaluate_self_test(ids: &[&str]) -> Check {
     }
 }
 
-/// Check 7: lint a known-offending payload in-process (using the real,
-/// currently-running `lint`/`models` code, not a mock) and confirm exactly the
-/// two expected `check_id`s come back, in order.
-fn check_self_test() -> Check {
-    // "handheld" (not the original "sharp") since task 3's recalibration dropped "sharp"
-    // as a confirmed homograph (SPEC.md §5.2; HIGGSFIELD_PROMPT_RESEARCH.md §8.2, §10) -
-    // "handheld" is a single-token entry that survived that recalibration.
-    let tool_input = serde_json::json!({
-        "params": {
-            "prompt": "shot in 4k, no logos, handheld camera",
-            "negative_prompt": "handheld, blurry",
-            "width": 1280,
-            "height": 720
-        }
-    });
-    let models = lint::load_models();
-    let findings = lint::lint(&tool_input, &models);
+/// Check 7: independent synthetic controls and the two committed input fixtures.
+fn check_self_test(repo_root: Option<&Path>) -> Check {
+    use lint::ToolKind;
+    let synthetic = serde_json::json!({"params":{
+        "model":"seedance_2_0","resolution":"720p",
+        "prompt":"shot in 4k, no logos, handheld camera","negative_prompt":"handheld, blurry"
+    }});
+    let findings = lint::lint(&synthetic, ToolKind::Video);
     let ids: Vec<&str> = findings.iter().map(|f| f.check_id.as_str()).collect();
-    evaluate_self_test(&ids)
+    if let fail @ Check::Fail(_) = evaluate_self_test(&ids) {
+        return fail;
+    }
+    let duration =
+        serde_json::json!({"params":{"model":"kling2_6","prompt":"Total: 15s","duration":5}});
+    let quoted = serde_json::json!({"params":{"model":"seedance_2_0","prompt":"“４Ｋ”","resolution":"720p"}});
+    for (name, input, kind, expected) in [
+        (
+            "duration video",
+            &duration,
+            ToolKind::Video,
+            vec!["duration_claim"],
+        ),
+        ("duration image", &duration, ToolKind::Image, vec![]),
+        ("duration audio", &duration, ToolKind::Audio, vec![]),
+        ("audio all checks", &synthetic, ToolKind::Audio, vec![]),
+        ("quoted typography", &quoted, ToolKind::Video, vec![]),
+    ] {
+        let actual = lint::lint(input, kind);
+        let ids: Vec<&str> = actual.iter().map(|f| f.check_id.as_str()).collect();
+        if ids != expected {
+            return Check::Fail(format!(
+                "self-test: {name} produced {ids:?}, expected {expected:?}"
+            ));
+        }
+    }
+    let Some(root) = repo_root else {
+        return Check::Fail(
+            "self-test: synthetic controls passed but no repo root to verify committed fixtures"
+                .into(),
+        );
+    };
+    for (name, expected) in [
+        (
+            "tests/fixtures/kling2_6_4k_slowmo.json",
+            vec!["prompt_negative_conflict"],
+        ),
+        ("tests/fixtures/seedance_tree_clean.json", vec![]),
+    ] {
+        let input = match fs::read_to_string(root.join(name))
+            .map_err(|e| e.to_string())
+            .and_then(|s| serde_json::from_str::<Value>(&s).map_err(|e| e.to_string()))
+        {
+            Ok(input) if input.is_object() && input.get("params").is_some_and(Value::is_object) => {
+                input
+            }
+            Ok(_) => {
+                return Check::Fail(format!(
+                    "self-test: {name} has wrong shape; expected object params"
+                ))
+            }
+            Err(e) => {
+                return Check::Fail(format!("self-test: {name} missing/unreadable/invalid: {e}"))
+            }
+        };
+        let actual = lint::lint(&input, ToolKind::Video);
+        let ids: Vec<&str> = actual.iter().map(|f| f.check_id.as_str()).collect();
+        if ids != expected {
+            return Check::Fail(format!(
+                "self-test: {name} produced {ids:?}, expected {expected:?}"
+            ));
+        }
+    }
+    Check::Pass("self-test: synthetic scope/ordering/typography controls and both committed fixtures match expected ids".into())
 }
 
 fn report(checks: &[Check]) {
@@ -550,9 +654,8 @@ mod tests {
         fn new(label: &str) -> Self {
             let n = COUNTER.fetch_add(1, Ordering::SeqCst);
             let pid = std::process::id();
-            let path = std::env::temp_dir().join(format!(
-                "higgsfield-lint-doctor-test-{pid}-{label}-{n}"
-            ));
+            let path =
+                std::env::temp_dir().join(format!("higgsfield-lint-doctor-test-{pid}-{label}-{n}"));
             fs::create_dir_all(&path).expect("create temp repo root");
             TestRepo { path }
         }
@@ -605,7 +708,11 @@ mod tests {
     fn binary_location_passes_when_an_ancestor_has_a_data_dir() {
         let repo = TestRepo::new("loc-pass");
         repo.write("data/.keep", "");
-        let exe = repo.path().join("target").join("release").join("higgsfield-lint");
+        let exe = repo
+            .path()
+            .join("target")
+            .join("release")
+            .join("higgsfield-lint");
         assert_eq!(find_repo_root(&exe), Some(repo.path().to_path_buf()));
     }
 
@@ -616,7 +723,11 @@ mod tests {
         // freshly created, uniquely-named directory under the system temp dir,
         // so none of ITS ancestors (the temp dir, "/", etc.) are expected to
         // contain a literal `data/` directory either.
-        let exe = repo.path().join("target").join("release").join("higgsfield-lint");
+        let exe = repo
+            .path()
+            .join("target")
+            .join("release")
+            .join("higgsfield-lint");
         assert_eq!(find_repo_root(&exe), None);
     }
 
@@ -651,6 +762,10 @@ mod tests {
         let repo = TestRepo::new("fresh-pass");
         repo.write("rust/src/main.rs", "fn main() {}");
         repo.write("Cargo.toml", "[package]\nname=\"x\"");
+        repo.write("Cargo.lock", "# fixture");
+        for name in ["checks.rs", "lint.rs", "doctor.rs"] {
+            repo.write(&format!("rust/src/{name}"), "// fixture");
+        }
         repo.write("data/negative_prompt_models.json", "[]");
         let exe_mtime = SystemTime::now() + Duration::from_secs(3600);
         assert_pass(
@@ -675,14 +790,13 @@ mod tests {
     }
 
     #[test]
-    fn binary_freshness_fails_when_only_the_data_file_is_newer() {
+    fn binary_freshness_fails_when_build_inputs_are_missing() {
         let repo = TestRepo::new("fresh-fail-data");
-        // No rust/src, no Cargo.toml at all - only the data file is present
-        // and newer, which alone must still be enough to fail.
+        // A retired data file cannot substitute for required build inputs.
         repo.write("data/negative_prompt_models.json", "[]");
         assert_fail(
             &check_binary_freshness(repo.path(), SystemTime::UNIX_EPOCH),
-            "only data file newer",
+            "required build inputs missing",
         );
     }
 
@@ -708,7 +822,10 @@ mod tests {
     fn settings_file_fails_when_unparseable() {
         let repo = TestRepo::new("settings-fail-parse");
         repo.write(".claude/settings.json", "not json");
-        assert_fail(&check_settings_file(repo.path()), "unparseable settings file");
+        assert_fail(
+            &check_settings_file(repo.path()),
+            "unparseable settings file",
+        );
     }
 
     #[test]
@@ -742,7 +859,11 @@ mod tests {
     #[test]
     fn matcher_present_passes_when_a_command_resolves_to_this_exe() {
         let repo = TestRepo::new("present-pass");
-        let exe = repo.path().join("target").join("release").join("higgsfield-lint");
+        let exe = repo
+            .path()
+            .join("target")
+            .join("release")
+            .join("higgsfield-lint");
         repo.write(
             ".claude/settings.json",
             &settings_json(
@@ -759,7 +880,11 @@ mod tests {
     #[test]
     fn matcher_present_fails_when_no_command_resolves_to_this_exe() {
         let repo = TestRepo::new("present-fail");
-        let exe = repo.path().join("target").join("release").join("higgsfield-lint");
+        let exe = repo
+            .path()
+            .join("target")
+            .join("release")
+            .join("higgsfield-lint");
         repo.write(
             ".claude/settings.json",
             &settings_json("\"$CLAUDE_PROJECT_DIR/some/other/tool\"", REAL_MATCHER),
@@ -781,7 +906,11 @@ mod tests {
         // actually uses `project_dir` for substitution rather than silently
         // falling back to `repo_root`.
         let repo = TestRepo::new("present-fail-wrong-project-dir");
-        let exe = repo.path().join("target").join("release").join("higgsfield-lint");
+        let exe = repo
+            .path()
+            .join("target")
+            .join("release")
+            .join("higgsfield-lint");
         repo.write(
             ".claude/settings.json",
             &settings_json(
@@ -801,7 +930,11 @@ mod tests {
     #[test]
     fn matcher_correctness_passes_for_the_real_matcher() {
         let repo = TestRepo::new("correct-pass");
-        let exe = repo.path().join("target").join("release").join("higgsfield-lint");
+        let exe = repo
+            .path()
+            .join("target")
+            .join("release")
+            .join("higgsfield-lint");
         repo.write(
             ".claude/settings.json",
             &settings_json(
@@ -818,7 +951,11 @@ mod tests {
     #[test]
     fn matcher_correctness_fails_when_the_matcher_misses_generate_video() {
         let repo = TestRepo::new("correct-fail-misses");
-        let exe = repo.path().join("target").join("release").join("higgsfield-lint");
+        let exe = repo
+            .path()
+            .join("target")
+            .join("release")
+            .join("higgsfield-lint");
         repo.write(
             ".claude/settings.json",
             &settings_json(
@@ -835,7 +972,11 @@ mod tests {
     #[test]
     fn matcher_correctness_fails_when_the_matcher_wrongly_matches_generate_3d() {
         let repo = TestRepo::new("correct-fail-3d");
-        let exe = repo.path().join("target").join("release").join("higgsfield-lint");
+        let exe = repo
+            .path()
+            .join("target")
+            .join("release")
+            .join("higgsfield-lint");
         repo.write(
             ".claude/settings.json",
             &settings_json(
@@ -852,7 +993,11 @@ mod tests {
     #[test]
     fn matcher_correctness_fails_when_the_matcher_wrongly_matches_show_generations() {
         let repo = TestRepo::new("correct-fail-show");
-        let exe = repo.path().join("target").join("release").join("higgsfield-lint");
+        let exe = repo
+            .path()
+            .join("target")
+            .join("release")
+            .join("higgsfield-lint");
         repo.write(
             ".claude/settings.json",
             &settings_json(
@@ -874,7 +1019,11 @@ mod tests {
         // file must not be reported correct when resolved under a
         // `project_dir` other than the one it actually names.
         let repo = TestRepo::new("correct-fail-wrong-project-dir");
-        let exe = repo.path().join("target").join("release").join("higgsfield-lint");
+        let exe = repo
+            .path()
+            .join("target")
+            .join("release")
+            .join("higgsfield-lint");
         repo.write(
             ".claude/settings.json",
             &settings_json(
@@ -967,7 +1116,10 @@ mod tests {
 
     #[test]
     fn self_test_passes_on_the_current_build() {
-        assert_pass(&check_self_test(), "self-test on the current build");
+        assert_pass(
+            &check_self_test(Some(Path::new(env!("CARGO_MANIFEST_DIR")))),
+            "self-test on the current build",
+        );
     }
 
     #[test]
@@ -990,7 +1142,11 @@ mod tests {
             "an extra unexpected finding",
         );
         assert_fail(
-            &evaluate_self_test(&["resolution_claim", "prompt_negative_conflict", "negation_placement"]),
+            &evaluate_self_test(&[
+                "resolution_claim",
+                "prompt_negative_conflict",
+                "negation_placement",
+            ]),
             "the retired check_id reappearing would mean check_negation_placement (or \
              something like it) is running again without SPEC.md being updated",
         );
@@ -1014,5 +1170,108 @@ mod tests {
     fn exit_code_is_one_when_any_fail_present() {
         let checks = vec![Check::Pass("a".into()), Check::Fail("b".into())];
         assert_eq!(exit_code(&checks), 1);
+    }
+    #[test]
+    fn freshness_rejects_missing_required_inputs_and_nested_new_source() {
+        let repo = TestRepo::new("required");
+        for name in ["main.rs", "checks.rs", "lint.rs", "doctor.rs"] {
+            repo.write(&format!("rust/src/{name}"), "// fixture");
+        }
+        repo.write("Cargo.toml", "[package]");
+        assert_fail(
+            &check_binary_freshness(repo.path(), SystemTime::now() + Duration::from_secs(3600)),
+            "missing Cargo.lock",
+        );
+        repo.write("Cargo.lock", "# fixture");
+        let before = SystemTime::now() - Duration::from_secs(10);
+        for name in ["main.rs", "checks.rs", "lint.rs", "doctor.rs"] {
+            fs::File::open(repo.path().join("rust/src").join(name))
+                .unwrap()
+                .set_times(fs::FileTimes::new().set_modified(before))
+                .unwrap();
+        }
+        for name in ["Cargo.toml", "Cargo.lock"] {
+            fs::File::open(repo.path().join(name))
+                .unwrap()
+                .set_times(fs::FileTimes::new().set_modified(before))
+                .unwrap();
+        }
+        let exe_time = SystemTime::now() - Duration::from_secs(5);
+        assert_pass(&check_binary_freshness(repo.path(), exe_time), "old inputs");
+        repo.write("rust/src/nested/new.rs", "// new");
+        assert_fail(
+            &check_binary_freshness(repo.path(), exe_time),
+            "nested source",
+        );
+    }
+
+    #[test]
+    fn freshness_detects_only_new_cargo_lock() {
+        let repo = TestRepo::new("lock-only");
+        for name in ["main.rs", "checks.rs", "lint.rs", "doctor.rs"] {
+            repo.write(&format!("rust/src/{name}"), "// fixture");
+        }
+        repo.write("Cargo.toml", "[package]");
+        repo.write("Cargo.lock", "# fixture");
+        let future = SystemTime::now() + Duration::from_secs(100);
+        fs::File::open(repo.path().join("Cargo.lock"))
+            .unwrap()
+            .set_times(fs::FileTimes::new().set_modified(future))
+            .unwrap();
+        let check =
+            check_binary_freshness(repo.path(), SystemTime::now() + Duration::from_secs(50));
+        assert_fail(&check, "Cargo.lock only newer");
+        assert!(describe(&check).contains("Cargo.lock"));
+    }
+
+    #[test]
+    fn fixture_self_test_reports_missing_corrupt_shape_and_changed_findings() {
+        let repo = TestRepo::new("fixture-failures");
+        const KLING: &str = "tests/fixtures/kling2_6_4k_slowmo.json";
+        const SEED: &str = "tests/fixtures/seedance_tree_clean.json";
+        assert_fail(&check_self_test(None), "no root");
+        for contents in [
+            "not JSON",
+            "[]",
+            r#"{"params":"wrong"}"#,
+            r#"{"params":{"prompt":"clean"}}"#,
+        ] {
+            repo.write(KLING, contents);
+            let check = check_self_test(Some(repo.path()));
+            assert_fail(&check, "bad fixture");
+            assert!(describe(&check).contains(KLING));
+        }
+        repo.write(
+            KLING,
+            include_str!("../../tests/fixtures/kling2_6_4k_slowmo.json"),
+        );
+        assert_fail(&check_self_test(Some(repo.path())), "missing Seedance");
+        repo.write(
+            SEED,
+            include_str!("../../tests/fixtures/seedance_tree_clean.json"),
+        );
+        assert_pass(&check_self_test(Some(repo.path())), "both fixtures");
+    }
+
+    #[test]
+    fn matcher_must_cover_every_tool_family_and_batches() {
+        let repo = TestRepo::new("matcher-six");
+        let exe = repo.path().join("target/release/higgsfield-lint");
+        for matcher in [
+            r"mcp__.*__generate_(image|video)(_batch)?$",
+            r"mcp__.*__generate_(image|video|audio)$",
+        ] {
+            repo.write(
+                ".claude/settings.json",
+                &settings_json(
+                    "\"$CLAUDE_PROJECT_DIR/target/release/higgsfield-lint\"",
+                    matcher,
+                ),
+            );
+            assert_fail(
+                &check_matcher_correctness(repo.path(), repo.path(), &exe, "test"),
+                "incomplete matcher",
+            );
+        }
     }
 }

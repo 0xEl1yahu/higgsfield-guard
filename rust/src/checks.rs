@@ -1,5 +1,6 @@
 //! The lint checks: the boundary scan helpers (`has_term`, `find_original_case`,
-//! `has_term_excluding`), `check_resolution_claim`, and `check_prompt_negative_conflict`,
+//! `has_term_excluding`), `check_resolution_claim`, `check_prompt_negative_conflict`,
+//! and `check_duration_claim`,
 //! plus its shared helpers `strip_negations` and `quoted_spans`. The `lint`/`render`
 //! orchestration lives in `lint.rs`, which calls these checks from `lint_params`.
 //!
@@ -16,11 +17,10 @@
 //! itself recommends pairing with a typography exclusion), and `sharp` (`not sharp` in
 //! `negative_prompt` is agreement, not conflict, once negations are stripped from both
 //! fields rather than the prompt alone). `quoted_spans` is the exclusion primitive that
-//! change needed; it is written to be reused, not reimplemented, by Task 4's resolution
-//! lexicon work.
+//! change needed; resolution and duration reuse it with normalized text.
 //!
-//! This file is the specification - there is no second implementation to port against
-//! or stay in parity with any more (see `SPEC.md` §9 and §12.2). A rule-behaviour change
+//! Rust is the sole implementation, governed by SPEC and canonical evidence; there is
+//! no second live implementation (see `SPEC.md` §9 and §12.2). A rule-behaviour change
 //! here must update `SPEC.md` first, then `rust/tests/golden/expectations.json`
 //! deliberately (see `rust/tests/golden/README.md` for the procedure).
 
@@ -28,37 +28,92 @@ use regex::Regex;
 use serde_json::Value;
 use std::sync::LazyLock;
 
-use crate::lint::Finding;
+use crate::lint::{Finding, ToolKind};
 
-// Claimed resolution -> minimum acceptable short side in pixels. Order matters: when a
-// prompt claims multiple resolutions, the highest-pixel claim wins; ties are broken by
-// first-encountered, mirroring Python dict iteration order plus the strict `>` in
-// `_claimed_short_side`.
-const RESOLUTION_CLAIMS: &[(&str, i64)] = &[
-    ("8k", 4320),
-    ("4k", 2160),
-    ("uhd", 2160),
-    ("1080p", 1080),
-    ("full hd", 1080),
-    ("720p", 720),
-    ("480p", 480),
-];
+// Ordered claim thresholds are a local convention, not universal model geometry.
+const RESOLUTION_CLAIMS: &[(&str, i64)] =
+    &[("4k", 2160), ("1080p", 1080), ("720p", 720), ("480p", 480)];
 
-// Values the `resolution` parameter itself can take.
-const RESOLUTION_PARAM: &[(&str, i64)] = &[
-    ("4k", 2160),
-    ("1080p", 1080),
-    ("720p", 720),
-    ("480p", 480),
-];
-
-// A dimension only counts when it looks like a real render size. The 128px floor is meant
-// to ignore aspect-ratio expressions (e.g. width=16, height=9), which have BOTH sides
-// small - so the floor is keyed on the LARGER of the two dimensions, not applied to each
-// side individually. A pair like 1920x100 has a genuinely narrow short side and must
-// still be reported; requiring the floor on both sides would suppress it too, which is
-// exactly the false negative the Python's "Patch 2" fixed.
-const MIN_SANE_DIMENSION: i64 = 128;
+/// Each emitted scalar owns its original byte interval. No full-input source map.
+struct Folded<'a> {
+    chars: std::iter::Peekable<std::str::CharIndices<'a>>,
+}
+fn fold_scalar(c: char) -> char {
+    match c {
+        '\u{201c}'..='\u{201f}' => '"',
+        '\u{ff01}'..='\u{ff5e}' => char::from_u32(c as u32 - 0xfee0).unwrap(),
+        '\u{00a0}' | '\u{3000}' | '\t' => ' ',
+        '\r' => '\n',
+        _ => c,
+    }
+}
+impl<'a> Folded<'a> {
+    fn new(text: &'a str) -> Self {
+        Self {
+            chars: text.char_indices().peekable(),
+        }
+    }
+}
+impl Iterator for Folded<'_> {
+    type Item = (std::ops::Range<usize>, char);
+    fn next(&mut self) -> Option<Self::Item> {
+        let (start, original) = self.chars.next()?;
+        let c = fold_scalar(original);
+        let mut end = start + original.len_utf8();
+        if original == '\r' && self.chars.peek().is_some_and(|(_, c)| *c == '\n') {
+            let (i, c) = self.chars.next()?;
+            end = i + c.len_utf8();
+        } else if c == ' ' {
+            while self
+                .chars
+                .peek()
+                .is_some_and(|(_, c)| fold_scalar(*c) == ' ')
+            {
+                let (i, c) = self.chars.next()?;
+                end = i + c.len_utf8();
+            }
+        }
+        Some((start..end, c))
+    }
+}
+fn normalize_for_matching(text: &str) -> std::borrow::Cow<'_, str> {
+    let mut output: Option<String> = None;
+    for (range, c) in Folded::new(text) {
+        if output.is_none() && text[range.clone()].chars().eq(std::iter::once(c)) {
+            continue;
+        }
+        let out = output.get_or_insert_with(|| {
+            let mut out = String::with_capacity(text.len());
+            out.push_str(&text[..range.start]);
+            out
+        });
+        out.push(c);
+    }
+    output.map_or(std::borrow::Cow::Borrowed(text), std::borrow::Cow::Owned)
+}
+fn original_range_for_match(
+    original: &str,
+    range: std::ops::Range<usize>,
+) -> Option<std::ops::Range<usize>> {
+    if range.start >= range.end {
+        return None;
+    }
+    let mut offset = 0;
+    let mut start = None;
+    for (source, c) in Folded::new(original) {
+        if offset == range.start {
+            start = Some(source.start);
+        }
+        offset += c.len_utf8();
+        if offset == range.end {
+            return Some(start?..source.end);
+        }
+        if offset > range.end {
+            return None;
+        }
+    }
+    None
+}
 
 /// Case-SENSITIVE "does `term` occur in `text` as a standalone token" check.
 ///
@@ -83,7 +138,7 @@ const MIN_SANE_DIMENSION: i64 = 128;
 /// literal term (case-sensitive), then reject it if the character immediately before or
 /// after is an ASCII lowercase letter or digit. A rejected match does not stop the search
 /// - scanning resumes from the next start position so a later, valid occurrence can still
-/// be found.
+///   be found.
 pub fn has_term(text: &str, term: &str) -> bool {
     find_term_match(text, term, false).is_some()
 }
@@ -102,6 +157,7 @@ pub fn has_term_excluding(text: &str, term: &str, excluded: &[(usize, usize)]) -
 /// class), and returns the matched substring in its ORIGINAL casing from `text` (e.g.
 /// quoting `"4K"` as the user wrote it, not the lowercase lexicon key `"4k"`). Mirrors
 /// Python's `_find_original_case`, which passes `re.IGNORECASE`.
+#[cfg(test)]
 pub fn find_original_case(text: &str, term: &str) -> Option<String> {
     find_term_match(text, term, true).map(|(start, end)| text[start..end].to_string())
 }
@@ -162,11 +218,26 @@ fn find_term_match(text: &str, term: &str, ignore_case: bool) -> Option<(usize, 
 /// segments made the whole check O(matches x spans). Measured against the pre-fix binary:
 /// a repeated `'"close-up" '` prompt with `negative_prompt: "close-up"` went from 0.073s at
 /// 2.8MB (this fix) to 9.149s (the linear scan) - see the task-3 fix report, finding F1, for
-/// the full table. `quoted_spans_and_is_excluded_scale_sublinearly_with_span_count` below is
+/// the full table. `quote_lookup_has_logarithmic_comparison_bound` below is
 /// the regression test.
 fn is_excluded(pos: usize, excluded: &[(usize, usize)]) -> bool {
-    let idx = excluded.partition_point(|&(start, _)| start <= pos);
+    let idx = span_partition(pos, excluded, || {});
     idx > 0 && pos < excluded[idx - 1].1
+}
+
+// The observer counts the exact production comparisons; optimized away in normal calls.
+fn span_partition(pos: usize, spans: &[(usize, usize)], mut observe: impl FnMut()) -> usize {
+    spans.partition_point(|&(start, _)| {
+        observe();
+        start <= pos
+    })
+}
+fn range_excluded(start: usize, end: usize, spans: &[(usize, usize)]) -> bool {
+    if start >= end {
+        return false;
+    }
+    let idx = span_partition(end - 1, spans, || {});
+    idx > 0 && spans[idx - 1].1 > start
 }
 
 /// Same scan as `find_term_match`, with one addition: a match that would otherwise be
@@ -186,7 +257,7 @@ fn find_term_match_excluding(
     }
     let eq = |a: char, b: char| {
         if ignore_case {
-            a.to_ascii_lowercase() == b.to_ascii_lowercase()
+            a.eq_ignore_ascii_case(&b)
         } else {
             a == b
         }
@@ -264,94 +335,335 @@ pub fn quoted_spans(text: &str) -> Vec<(usize, usize)> {
     spans
 }
 
-/// Highest resolution claim present in the prompt, as (original_text, pixels). Port of
-/// `_claimed_short_side`.
-fn claimed_short_side(prompt: &str) -> Option<(String, i64)> {
-    let mut best: Option<(String, i64)> = None;
-    for (term, px) in RESOLUTION_CLAIMS {
-        if let Some(original) = find_original_case(prompt, term) {
-            let should_replace = match &best {
-                None => true,
-                Some((_, best_px)) => px > best_px,
-            };
-            if should_replace {
-                best = Some((original, *px));
+// Canonical MCP capture: docs/evidence/higgsfield-contract-2026-09-09.json.
+// Positive recognition constants, not a runtime validator or a ceiling snapshot.
+fn resolution_options(model: &str, kind: ToolKind) -> &'static [&'static str] {
+    match (model, kind) {
+        (
+            "gpt_image_2"
+            | "cinematic_studio_2_5"
+            | "marketing_studio_image"
+            | "ms_image"
+            | "nano_banana_pro"
+            | "nano_banana_2"
+            | "gpt_image_2_5",
+            ToolKind::Image,
+        ) => &["1k", "2k", "4k"],
+        ("nano_banana_2_lite", ToolKind::Image) => &["1k"],
+        (
+            "flux_2" | "kling_omni_image" | "grok_image" | "grok_image_2_0" | "recraft_v4_1",
+            ToolKind::Image,
+        ) => &["1k", "2k"],
+        ("seedream_v5_pro", ToolKind::Image) => &["1k", "1.5k", "2k"],
+        ("bytedance_image_upscale", ToolKind::Image) => &["2k", "4k"],
+        ("cinematic_studio_3_0" | "seedance_2_0", ToolKind::Video) => {
+            &["480p", "720p", "1080p", "4k"]
+        }
+        (
+            "marketing_studio_video"
+            | "grok_video_v15"
+            | "seedance1_5"
+            | "seedance_2_5"
+            | "ad_multiplier"
+            | "hf_mult_motion_control"
+            | "hf_mult_replace_object"
+            | "wan3_0"
+            | "wan3_0_prime",
+            ToolKind::Video,
+        ) => &["480p", "720p", "1080p"],
+        ("flux_3_video" | "kling3_0_turbo" | "happy_horse_video" | "wan2_7", ToolKind::Video) => {
+            &["720p", "1080p"]
+        }
+        ("minimax_h3", ToolKind::Video) => &["2k"],
+        ("minimax_h3_max", ToolKind::Video) => &["480p", "768p"],
+        ("seedance_2_0_mini", ToolKind::Video) => &["480p", "720p"],
+        ("topaz_video", ToolKind::Video) => &["1080p", "2160p"],
+        ("bytedance_video_upscale", ToolKind::Video) => &["1080p", "2k", "4k"],
+        ("gemini_omni", ToolKind::Video) => &["720p"],
+        ("gemini_omni_flash_1_1", ToolKind::Video) => &["360p", "720p", "1080p", "4k"],
+        _ => &[],
+    }
+}
+
+fn known_mode(params: &Value, model: &str) -> bool {
+    let options: &[&str] = match model {
+        "grok_image" => &["std", "quality"],
+        "cinematic_studio_video_v2" => &["pro", "std"],
+        "seedance_2_0" => &["std", "fast"],
+        "seedance_2_5" | "ad_multiplier" => {
+            &["t2v", "omni_reference", "video_edit", "video_extension"]
+        }
+        "kling3_0" | "kling_video_edit" => &["std", "pro", "4k"],
+        "gemini_omni_flash_1_1" => &[
+            "text-to-video",
+            "image-to-video",
+            "reference-to-video",
+            "edit",
+        ],
+        _ => return true,
+    };
+    match params.get("mode") {
+        None => model != "gemini_omni_flash_1_1", // required in this catalog
+        Some(Value::String(mode)) => options.contains(&mode.as_str()),
+        _ => false,
+    }
+}
+
+#[derive(Clone, Copy, Debug)]
+enum Tier {
+    NominalK(u8), // twice the nominal K label; not a pixel dimension
+    VideoP(u16),
+}
+
+impl Tier {
+    fn from_label(label: &str, kind: ToolKind) -> Option<Self> {
+        match label {
+            "1k" => Some(Self::NominalK(2)),
+            "1.5k" => Some(Self::NominalK(3)),
+            "2k" => Some(Self::NominalK(4)),
+            "4k" => Some(Self::NominalK(8)),
+            "360p" | "480p" | "720p" | "768p" | "1080p" | "2160p" if kind == ToolKind::Video => {
+                Some(Self::VideoP(label.strip_suffix('p')?.parse().ok()?))
             }
+            _ => None,
+        }
+    }
+
+    fn below_claim(self, claim: i64) -> bool {
+        match self {
+            Self::NominalK(rank) => claim == 2160 && rank < 8,
+            Self::VideoP(p) => claim > i64::from(p),
+        }
+    }
+}
+
+enum SubmittedSize<'a> {
+    Tier {
+        field: &'static str,
+        label: &'a str,
+        value: Tier,
+    },
+    Targets {
+        width: i64,
+        height: i64,
+    },
+}
+
+fn int_target(v: Option<&Value>) -> Option<i64> {
+    let n = v?;
+    if !(n.is_i64() || n.is_u64()) {
+        return None;
+    }
+    n.as_i64().filter(|n| *n > 0)
+}
+
+fn submitted_size(params: &Value, kind: ToolKind) -> Option<SubmittedSize<'_>> {
+    if !matches!(kind, ToolKind::Image | ToolKind::Video) {
+        return None;
+    }
+    let model = params.get("model")?.as_str()?;
+    if !known_mode(params, model) {
+        return None;
+    }
+    if kind == ToolKind::Image && matches!(model, "topaz_image" | "topaz_image_generative") {
+        return Some(SubmittedSize::Targets {
+            width: int_target(params.get("output_width"))?,
+            height: int_target(params.get("output_height"))?,
+        });
+    }
+    let (field, options): (&str, &[&str]) = match (model, kind) {
+        ("wan2_6", ToolKind::Video) => ("quality", &["720p", "1080p"]),
+        ("soul_2" | "soul_cinematic" | "soul_v2", ToolKind::Image) => ("quality", &["1.5k", "2k"]),
+        ("kling3_0" | "kling_video_edit", ToolKind::Video) => ("mode", &["4k"]),
+        _ => ("resolution", resolution_options(model, kind)),
+    };
+    let label = params.get(field)?.as_str()?;
+    let lower = label.to_ascii_lowercase();
+    if !options.contains(&lower.as_str()) {
+        return None;
+    }
+    if model == "marketing_studio_video"
+        && (params.get("width").is_some() || params.get("height").is_some())
+    {
+        return None; // two declared controls, unknown precedence
+    }
+    if model == "seedance_2_0"
+        && params.get("mode").and_then(Value::as_str) == Some("fast")
+        && matches!(lower.as_str(), "1080p" | "4k")
+    {
+        return None;
+    }
+    Some(SubmittedSize::Tier {
+        field,
+        label,
+        value: Tier::from_label(&lower, kind)?,
+    })
+}
+
+/// Compares only supplied, model-declared controls. Never promises a rendered size.
+pub fn check_resolution_claim(params: &Value, kind: ToolKind) -> Option<Finding> {
+    let source = submitted_size(params, kind)?;
+    let prompt = params.get("prompt")?.as_str()?;
+    let normalized = normalize_for_matching(prompt);
+    let quoted = quoted_spans(&normalized);
+    let (start, end, claim) = RESOLUTION_CLAIMS.iter().find_map(|(term, threshold)| {
+        find_term_match_excluding(&normalized, term, true, &quoted)
+            .map(|(start, end)| (start, end, *threshold))
+    })?;
+    let mismatch = match source {
+        SubmittedSize::Tier { value, .. } => value.below_claim(claim),
+        SubmittedSize::Targets { width, height } => width.min(height) < claim,
+    };
+    if !mismatch {
+        return None;
+    }
+    let range = original_range_for_match(prompt, start..end)?;
+    let spelling = prompt.get(range)?;
+    let body = match source {
+        SubmittedSize::Tier { field, label, .. } => format!(
+            "{field} selects the {label:?} output tier. Choose a supported higher tier, or revise the claim."
+        ),
+        SubmittedSize::Targets { width, height } => format!(
+            "requested output_width {width} x output_height {height} has a {}px short side under the local claim convention. Increase output_width/output_height, or revise the claim.",
+            width.min(height)
+        ),
+    };
+    Some(Finding {
+        check_id: "resolution_claim".into(),
+        message: format!("prompt says {spelling:?} but {body}"),
+    })
+}
+
+// Output-duration declarations only. Source-processing durations are excluded.
+// These ids are tested against the same dated MCP catalog as resolution_options.
+const DURATION_MODELS: &[&str] = &[
+    "cinematic_studio_3_0",
+    "cinematic_studio_video",
+    "cinematic_studio_video_v2",
+    "marketing_studio_video",
+    "flux_3_video",
+    "grok_video_v15",
+    "minimax_hailuo",
+    "minimax_h3",
+    "minimax_h3_max",
+    "wan2_6",
+    "seedance1_5",
+    "seedance_2_0",
+    "seedance_2_0_mini",
+    "seedance_2_5",
+    "ad_multiplier",
+    "kling2_6",
+    "kling3_0",
+    "kling3_0_turbo",
+    "happy_horse_video",
+    "grok_video",
+    "gemini_omni",
+    "gemini_omni_flash_1_1",
+    "wan2_7",
+    "wan3_0",
+    "wan3_0_prime",
+    "veo3_1",
+    "veo3_1_lite",
+];
+
+fn duration_eligible(params: &Value) -> bool {
+    let Some(model) = params.get("model").and_then(Value::as_str) else {
+        return false;
+    };
+    if !DURATION_MODELS.contains(&model) || !known_mode(params, model) {
+        return false;
+    }
+    let mode = params.get("mode").and_then(Value::as_str);
+    !((matches!(model, "seedance_2_5" | "ad_multiplier")
+        && matches!(mode, Some("video_edit" | "video_extension")))
+        || (model == "gemini_omni_flash_1_1" && mode == Some("edit")))
+}
+
+// Span branches precede single-number branches so a reversed/invalid range cannot
+// be rescued as a shorter valid tail. Horizontal spaces only; ASCII decimals only.
+static DURATION_RE: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(concat!(
+        r"(?i)(?:",
+        r"total:[ \t]*(?P<total>[0-9]+(?:\.[0-9]+)?)[ \t]*(?:seconds?|s)",
+        r"|(?P<from>[0-9]+(?:\.[0-9]+)?)[ \t]*(?:[-–—][ \t]*|s[ \t]+to[ \t]+)(?P<to>[0-9]+(?:\.[0-9]+)?)[ \t]*s",
+        r"|(?P<seconds>[0-9]+(?:\.[0-9]+)?)(?:[-–—]|[ \t]+)seconds?",
+        r"|(?P<ending>[0-9]+(?:\.[0-9]+)?)[ \t]*s[ \t]+total",
+        r")"
+    )).unwrap()
+});
+
+fn duration_prefix_bad(c: char) -> bool {
+    c.is_ascii_alphanumeric() || matches!(c, '_' | '+' | '-' | '–' | '—' | '.' | ',' | ':')
+}
+fn duration_max(prompt: &str) -> Option<f64> {
+    let text = normalize_for_matching(prompt);
+    let quotes = quoted_spans(&text);
+    let mut best: Option<f64> = None;
+    for cap in DURATION_RE.captures_iter(&text) {
+        let whole = cap.get(0)?;
+        if text[..whole.start()]
+            .chars()
+            .next_back()
+            .is_some_and(duration_prefix_bad)
+            || text[whole.end()..]
+                .chars()
+                .next()
+                .is_some_and(|c| c.is_ascii_alphanumeric() || c == '_')
+            || range_excluded(whole.start(), whole.end(), &quotes)
+        {
+            continue;
+        }
+        let number = cap
+            .name("total")
+            .or_else(|| cap.name("to"))
+            .or_else(|| cap.name("seconds"))
+            .or_else(|| cap.name("ending"))?;
+        let Ok(value) = number.as_str().parse::<f64>() else {
+            continue;
+        };
+        if !value.is_finite() {
+            continue;
+        }
+        if let Some(from) = cap.name("from") {
+            let Ok(start) = from.as_str().parse::<f64>() else {
+                continue;
+            };
+            if !start.is_finite() || start > value {
+                continue;
+            }
+        }
+        if best.is_none_or(|b| value > b) {
+            best = Some(value);
         }
     }
     best
 }
-
-/// Port of `_is_int_dimension`, adapted to `serde_json::Value`. Unlike Python (where
-/// `isinstance(True, int)` is `True`, forcing an explicit bool exclusion), `serde_json`
-/// represents JSON booleans as `Value::Bool`, a distinct variant from `Value::Number`, so
-/// no separate bool check is needed here. A JSON number written with a decimal point or
-/// exponent (e.g. `100.0`) is an `f64` in `serde_json` and correctly does NOT count,
-/// mirroring Python's `isinstance(100.0, int)` being `False`.
-fn is_int_dimension(value: Option<&Value>) -> Option<i64> {
-    let v = value?;
-    if v.is_i64() || v.is_u64() {
-        v.as_i64()
+fn seconds_display(n: f64) -> String {
+    // f64 formatting is safe for the full finite range; avoid giant fixed displays.
+    let plain = n.to_string();
+    if plain.len() <= 24 {
+        plain
     } else {
-        None
+        format!("{n:.6e}")
     }
 }
-
-struct Actual {
-    short_side: i64,
-    width: Option<i64>,
-    height: Option<i64>,
-}
-
-/// Port of `_actual_short_side`.
-fn actual_short_side(params: &Value) -> Option<Actual> {
-    if let Some(res) = params.get("resolution").and_then(Value::as_str) {
-        let lower = res.to_lowercase();
-        if let Some((_, px)) = RESOLUTION_PARAM.iter().find(|(k, _)| *k == lower) {
-            return Some(Actual {
-                short_side: *px,
-                width: None,
-                height: None,
-            });
-        }
-    }
-    let width = is_int_dimension(params.get("width"));
-    let height = is_int_dimension(params.get("height"));
-    if let (Some(w), Some(h)) = (width, height) {
-        if w.max(h) >= MIN_SANE_DIMENSION {
-            return Some(Actual {
-                short_side: w.min(h),
-                width: Some(w),
-                height: Some(h),
-            });
-        }
-    }
-    None
-}
-
-/// Port of `check_resolution_claim` (archived Python oracle,
-/// `docs/archive/verified-port/higgsfield_lint.py` lines 89-108).
-pub fn check_resolution_claim(params: &Value) -> Option<Finding> {
-    let prompt = params.get("prompt").and_then(Value::as_str)?;
-    let (claim_text, claim_px) = claimed_short_side(prompt)?;
-    let actual = actual_short_side(params)?;
-    if actual.short_side >= claim_px {
+pub fn check_duration_claim(params: &Value) -> Option<Finding> {
+    if !duration_eligible(params) {
         return None;
     }
-    let source = match actual.width {
-        Some(w) => format!(
-            "width {} x height {} gives a {}px short side",
-            w,
-            actual.height.expect("width present implies height present"),
-            actual.short_side
-        ),
-        None => format!("the call produces a {}px short side", actual.short_side),
-    };
+    let supplied = params.get("duration")?.as_f64()?;
+    if !supplied.is_finite() || !(1.0..=600.0).contains(&supplied) {
+        return None;
+    }
+    let claimed = duration_max(params.get("prompt")?.as_str()?)?;
+    if claimed <= supplied {
+        return None;
+    }
     Some(Finding {
-        check_id: "resolution_claim".to_string(),
+        check_id: "duration_claim".into(),
         message: format!(
-            "prompt says \"{}\" but {}. Raise resolution, or drop the claim from the prompt.",
-            claim_text, source
+            "prompt describes {}s of action but the supplied duration is {}s. Check the model's supported duration or retime the beats.",
+            seconds_display(claimed), seconds_display(supplied)
         ),
     })
 }
@@ -480,8 +792,10 @@ pub fn check_prompt_negative_conflict(params: &Value) -> Option<Finding> {
     // Recalibration change 1 (research §10): negations are now stripped from BOTH
     // fields, not the prompt alone. "not sharp" in negative_prompt is a double negative
     // and must not read as agreement-turned-conflict with "sharp" in the prompt.
-    let positive = strip_negations(prompt).to_lowercase();
-    let negative_low = strip_negations(negative).to_lowercase();
+    let positive_stripped = strip_negations(&normalize_for_matching(prompt)).to_lowercase();
+    let negative_stripped = strip_negations(&normalize_for_matching(negative)).to_lowercase();
+    let positive = normalize_for_matching(&positive_stripped);
+    let negative_low = normalize_for_matching(&negative_stripped);
     // Recalibration change 2: a quoted literal in the prompt is content the user asked
     // for verbatim (Nano Banana's own guidance), not a directive - so an occurrence
     // inside a matched `"..."` pair does not count towards a hit. Spans are computed on
@@ -516,6 +830,33 @@ pub fn check_prompt_negative_conflict(params: &Value) -> Option<Finding> {
 mod tests {
     use super::*;
     use serde_json::json;
+
+    #[test]
+    fn canonical_reconciliation_red_controls() {
+        assert!(check_resolution_claim(&json!({"model":"seedance_2_0","prompt":"Style: 8K IMAX commercial","resolution":"1080p"}), ToolKind::Video).is_none(), "8K style must be silent");
+        assert!(
+            check_resolution_claim(
+                &json!({"model":"nano_banana_pro","prompt":"poster, 4K","resolution":"2k"}),
+                ToolKind::Image
+            )
+            .is_some(),
+            "nominal tier mismatch must fire"
+        );
+        assert!(
+            check_prompt_negative_conflict(
+                &json!({"prompt":"“close-up”","negative_prompt":"close-up"})
+            )
+            .is_none(),
+            "curly quotes protect literal"
+        );
+        assert!(
+            check_prompt_negative_conflict(
+                &json!({"prompt":"slow   motion","negative_prompt":"slow motion"})
+            )
+            .is_some(),
+            "horizontal whitespace normalizes"
+        );
+    }
 
     #[test]
     fn has_term_respects_alphanumeric_boundaries() {
@@ -615,7 +956,11 @@ mod tests {
         // span and reads as excluded.
         let text = r#"a 24" monitor, close-up, 6" lens"#;
         let spans = quoted_spans(text);
-        assert_eq!(spans.len(), 1, "the two inch-marks must pair into a single span");
+        assert_eq!(
+            spans.len(),
+            1,
+            "the two inch-marks must pair into a single span"
+        );
         assert!(
             !has_term_excluding(text, "close-up", &spans),
             "close-up sits inside the accidental inch-mark span and must be excluded"
@@ -629,7 +974,11 @@ mod tests {
         // inside either, and stays live.
         let doubled = "\"\"close-up\"\"";
         let spans = quoted_spans(doubled);
-        assert_eq!(spans.len(), 2, "the doubled quotes on each side must pair with each other");
+        assert_eq!(
+            spans.len(),
+            2,
+            "the doubled quotes on each side must pair with each other"
+        );
         assert!(
             has_term_excluding(doubled, "close-up", &spans),
             "close-up sits between the two quote pairs, not inside either, and must still match"
@@ -685,40 +1034,42 @@ mod tests {
     }
 
     #[test]
-    fn quoted_spans_and_is_excluded_scale_sublinearly_with_span_count() {
-        // F1 regression guard: the pre-fix `is_excluded` linear-scanned `excluded` once per
-        // candidate match, making `check_prompt_negative_conflict` O(matches x spans). This
-        // reconstructs the adversarial shape from the task-3 fix report (repeated quoted
-        // `"close-up"` segments, `negative_prompt: "close-up"`) at two sizes 8x apart and
-        // asserts wall-clock time grows far short of 8x - a quadratic implementation would
-        // grow roughly 64x (8x more matches, each scanning 8x more spans), while O(log S)
-        // per lookup grows barely at all. The threshold (16x, not ~1x) is deliberately
-        // generous so this doesn't flake on a loaded CI box; it is still tight enough to
-        // fail hard if someone reverts to the linear scan.
-        fn run(k: usize) -> std::time::Duration {
-            let prompt = "\"close-up\" ".repeat(k);
-            let params = json!({"prompt": prompt, "negative_prompt": "close-up"});
-            let start = std::time::Instant::now();
-            let _ = check_prompt_negative_conflict(&params);
-            start.elapsed()
+    fn quote_lookup_has_logarithmic_comparison_bound() {
+        for count in [0usize, 1, 8, 8_000, 128_000] {
+            let spans: Vec<_> = (0..count).map(|i| (i * 4, i * 4 + 2)).collect();
+            for pos in [
+                0,
+                1,
+                2,
+                count * 2,
+                count * 4,
+                count.saturating_sub(1) * 4 + 1,
+                usize::MAX,
+            ] {
+                let mut comparisons = 0;
+                let index = span_partition(pos, &spans, || comparisons += 1);
+                let bound = if count == 0 {
+                    0
+                } else {
+                    usize::BITS - (count).leading_zeros() + 2
+                };
+                assert!(
+                    comparisons <= bound,
+                    "{count} spans: {comparisons} comparisons > {bound}"
+                );
+                assert_eq!(index, spans.iter().take_while(|&&(s, _)| s <= pos).count());
+            }
         }
-        // Warm up (page faults, allocator warm-up) before the timed runs.
-        run(1000);
-        let small = run(8_000);
-        let large = run(64_000);
-        let ratio = large.as_secs_f64() / small.as_secs_f64().max(1e-9);
-        assert!(
-            ratio < 16.0,
-            "is_excluded looks quadratic again: 8x the spans took {ratio:.1}x the time \
-             ({small:?} -> {large:?})"
-        );
-        // Also a generous absolute ceiling, independent of the small run's timing noise:
-        // the pre-fix binary took ~2.2s at 128000 (roughly double this input); the fixed
-        // version should be a small fraction of a second even on a slow machine.
-        assert!(
-            large < std::time::Duration::from_secs(2),
-            "64000-span case took {large:?}, expected well under 2s"
-        );
+    }
+
+    #[test]
+    fn repeated_quoted_prompt_is_silent_but_final_live_occurrence_fires() {
+        let mut p = json!({"prompt":"\"close-up\" ".repeat(64_000),"negative_prompt":"close-up"});
+        assert!(check_prompt_negative_conflict(&p).is_none());
+        p["prompt"] = json!(format!("{}close-up", p["prompt"].as_str().unwrap()));
+        assert!(check_prompt_negative_conflict(&p).is_some());
+        assert!(range_excluded(3, 8, &[(5, 10)]));
+        assert!(!range_excluded(0, 5, &[(5, 10)]));
     }
 
     #[test]
@@ -747,7 +1098,10 @@ mod tests {
         // sensitive); the uppercase-in-text case is exercised separately via
         // `find_original_case` (case-insensitive) below.
         assert!(has_term("\u{201c}4k\u{201d} caf\u{e9} shot", "4k"));
-        assert!(has_term("na\u{ef}ve 4k cr\u{e8}me br\u{fb}l\u{e9}e scene", "4k"));
+        assert!(has_term(
+            "na\u{ef}ve 4k cr\u{e8}me br\u{fb}l\u{e9}e scene",
+            "4k"
+        ));
         assert_eq!(
             find_original_case("\u{201c}4K\u{201d} caf\u{e9} shot", "4k").as_deref(),
             Some("4K")
@@ -755,118 +1109,494 @@ mod tests {
     }
 
     #[test]
-    fn resolution_claim_fires_at_1376x768_with_4k_claim() {
-        // Mirrors the kling2_6_4k_slowmo fixture used by the Python test suite.
-        let params = json!({
-            "prompt": "cinematic, ultra-clean commercial style, 4K, shallow depth of field",
-            "width": 1376,
-            "height": 768
-        });
-        let finding = check_resolution_claim(&params).expect("should fire");
-        assert_eq!(finding.check_id, "resolution_claim");
-        assert!(finding.message.contains("\"4K\""));
-        assert!(finding
-            .message
-            .contains("width 1376 x height 768 gives a 768px short side"));
+    fn resolution_claim_domains_sources_and_exclusions() {
+        let cases = [
+            (
+                ToolKind::Image,
+                json!({"model":"nano_banana_pro","prompt":"poster, 4K","resolution":"2k","aspect_ratio":"21:9"}),
+                Some("resolution selects the \"2k\""),
+            ),
+            (
+                ToolKind::Image,
+                json!({"model":"seedream_v5_pro","prompt":"4K","resolution":"1.5k","width":4096,"height":4096}),
+                Some("resolution selects the \"1.5k\""),
+            ),
+            (
+                ToolKind::Video,
+                json!({"model":"wan2_6","prompt":"4K","quality":"720p","width":4096,"height":4096,"resolution":"4k"}),
+                Some("quality selects the \"720p\""),
+            ),
+            (
+                ToolKind::Video,
+                json!({"model":"minimax_h3","prompt":"4K","resolution":"2K"}),
+                Some("resolution selects the \"2K\""),
+            ),
+            (
+                ToolKind::Video,
+                json!({"model":"minimax_h3_max","prompt":"1080p","resolution":"768p"}),
+                Some("resolution selects the \"768p\""),
+            ),
+            (
+                ToolKind::Video,
+                json!({"model":"gemini_omni_flash_1_1","mode":"text-to-video","prompt":"480p","resolution":"360p"}),
+                Some("resolution selects the \"360p\""),
+            ),
+            (
+                ToolKind::Video,
+                json!({"model":"kling2_6","prompt":"4K","width":1376,"height":768,"resolution":"720p"}),
+                None,
+            ),
+            (
+                ToolKind::Video,
+                json!({"prompt":"4K","resolution":"720p","width":1280,"height":720}),
+                None,
+            ),
+            (
+                ToolKind::Unknown,
+                json!({"model":"seedance_2_0","prompt":"4K","resolution":"720p"}),
+                None,
+            ),
+            (
+                ToolKind::Audio,
+                json!({"model":"seedance_2_0","prompt":"4K","resolution":"720p"}),
+                None,
+            ),
+            (
+                ToolKind::Image,
+                json!({"model":"seedance_2_0","prompt":"4K","resolution":"720p"}),
+                None,
+            ),
+            (
+                ToolKind::Image,
+                json!({"model":"nano_banana_pro","prompt":"1080p","resolution":"2k"}),
+                None,
+            ),
+            (
+                ToolKind::Image,
+                json!({"model":"nano_banana_pro","prompt":"4K","resolution":"4k"}),
+                None,
+            ),
+            (
+                ToolKind::Video,
+                json!({"model":"wan2_6","prompt":"720p","quality":"720p"}),
+                None,
+            ),
+            (
+                ToolKind::Video,
+                json!({"model":"kling3_0","prompt":"4K","mode":"4k"}),
+                None,
+            ),
+            (
+                ToolKind::Video,
+                json!({"model":"kling3_0","prompt":"4K","mode":"1080p"}),
+                None,
+            ),
+            (
+                ToolKind::Video,
+                json!({"model":"kling3_0","prompt":"4K","mode":"pro"}),
+                None,
+            ),
+            (
+                ToolKind::Video,
+                json!({"model":"seedance_2_0","prompt":"4K","resolution":"1080p","mode":"fast"}),
+                None,
+            ),
+            (
+                ToolKind::Video,
+                json!({"model":"seedance_2_0","prompt":"4K","resolution":"720p","mode":"typo"}),
+                None,
+            ),
+            (
+                ToolKind::Video,
+                json!({"model":"marketing_studio_video","prompt":"4K","resolution":"720p","width":1280,"height":720}),
+                None,
+            ),
+            (
+                ToolKind::Video,
+                json!({"model":"minimax_hailuo","prompt":"4K","resolution":"768"}),
+                None,
+            ),
+            (
+                ToolKind::Image,
+                json!({"model":"text2image_soul_v2","prompt":"4K","quality":"2k"}),
+                None,
+            ),
+            (
+                ToolKind::Image,
+                json!({"model":"gpt_image_2","prompt":"4K","quality":"high"}),
+                None,
+            ),
+            (
+                ToolKind::Image,
+                json!({"model":"nano_banana_pro","prompt":"4K","resolution":720}),
+                None,
+            ),
+            (
+                ToolKind::Image,
+                json!({"model":"nano_banana_pro","prompt":"4K","resolution":"native"}),
+                None,
+            ),
+            (
+                ToolKind::Image,
+                json!({"model":"nano_banana_pro","prompt":123,"resolution":"2k"}),
+                None,
+            ),
+        ];
+        for (kind, params, expected) in cases {
+            let result = check_resolution_claim(&params, kind);
+            assert_eq!(result.is_some(), expected.is_some(), "{params} {kind:?}");
+            if let (Some(f), Some(text)) = (result, expected) {
+                assert_eq!(f.check_id, "resolution_claim");
+                assert!(f.message.contains(text), "{}", f.message);
+                assert!(!f.message.contains("produces") && !f.message.contains("short side"));
+            }
+        }
+        for model in ["soul_2", "soul_cinematic", "soul_v2"] {
+            assert!(check_resolution_claim(
+                &json!({"model":model,"prompt":"4K","quality":"2k"}),
+                ToolKind::Image
+            )
+            .is_some());
+        }
     }
 
     #[test]
-    fn resolution_claim_silent_when_resolution_param_satisfies_claim() {
-        let params = json!({"prompt": "shot in 4k", "resolution": "4k"});
-        assert!(check_resolution_claim(&params).is_none());
+    fn resolution_claim_target_pixels_reject_malformed_and_keep_asymmetric_controls() {
+        for model in ["topaz_image", "topaz_image_generative"] {
+            for (w, h, fires) in [
+                (1920, 100, true),
+                (1, 1, true),
+                (1376, 768, true),
+                (3840, 2160, false),
+            ] {
+                let p = json!({"model":model,"prompt":"4K","output_width":w,"output_height":h});
+                let f = check_resolution_claim(&p, ToolKind::Image);
+                assert_eq!(f.is_some(), fires, "{p}");
+                if let Some(f) = f {
+                    assert!(f.message.contains("requested output_width"));
+                }
+            }
+            for w in [
+                json!(true),
+                json!(false),
+                json!(1280.0),
+                json!("1280"),
+                json!(null),
+                json!(-1),
+                json!(0),
+                json!(u64::MAX),
+            ] {
+                let p = json!({"model":model,"prompt":"4K","output_width":w,"output_height":3840});
+                assert!(check_resolution_claim(&p, ToolKind::Image).is_none(), "{p}");
+            }
+            assert!(check_resolution_claim(
+                &json!({"model":model,"prompt":"4K","width":1280,"height":720}),
+                ToolKind::Image
+            )
+            .is_none());
+        }
     }
 
     #[test]
-    fn resolution_claim_resolution_param_takes_precedence_over_dimensions() {
-        let params = json!({
-            "prompt": "4K hero shot",
-            "resolution": "4k",
-            "width": 100,
-            "height": 100
-        });
-        assert!(check_resolution_claim(&params).is_none());
+    fn resolution_claim_typography_quotes_original_spelling() {
+        for prompt in [
+            "Style: 8K IMAX commercial",
+            "UHD Full HD",
+            "The presenter says \"shot in 4K\"",
+            "“shot in 4K”",
+            "＂４Ｋ＂",
+        ] {
+            assert!(
+                check_resolution_claim(
+                    &json!({"model":"seedance_2_0","prompt":prompt,"resolution":"720p"}),
+                    ToolKind::Video
+                )
+                .is_none(),
+                "{prompt}"
+            );
+        }
+        for (prompt, spelling) in [
+            ("café 🎥 shot in ４Ｋ", "４Ｋ"),
+            ("“4K” then shot in ４Ｋ", "４Ｋ"),
+            ("shot in 4K; says \"4K\"", "4K"),
+        ] {
+            let f = check_resolution_claim(
+                &json!({"model":"seedance_2_0","prompt":prompt,"resolution":"720p"}),
+                ToolKind::Video,
+            )
+            .unwrap();
+            assert!(
+                f.message.starts_with(&format!("prompt says {spelling:?}")),
+                "{}",
+                f.message
+            );
+        }
     }
 
     #[test]
-    fn resolution_claim_message_omits_dimensions_when_source_is_resolution_param() {
-        let params = json!({"prompt": "shot in 4k", "resolution": "1080p"});
-        let finding = check_resolution_claim(&params).expect("should fire");
-        assert!(!finding.message.contains("width"));
-        assert!(finding
-            .message
-            .contains("the call produces a 1080px short side"));
+    fn normalization_is_idempotent_and_recovers_only_valid_source_boundaries() {
+        for text in [
+            "plain ASCII",
+            "café 🎥  ４Ｋ",
+            "\tｓｌｏｗ　ｍｏｔｉｏｎ",
+            "a\r\nb\rc",
+            "“a”„b‟",
+            "x\u{00a0}\t  y",
+        ] {
+            let normalized = normalize_for_matching(text);
+            assert_eq!(normalize_for_matching(&normalized), normalized);
+            let mut offset = 0;
+            for (source, c) in Folded::new(text) {
+                assert_eq!(
+                    original_range_for_match(text, offset..offset + c.len_utf8()),
+                    Some(source)
+                );
+                offset += c.len_utf8();
+            }
+        }
+        assert!(matches!(
+            normalize_for_matching("already normalized"),
+            std::borrow::Cow::Borrowed(_)
+        ));
+        assert_eq!(original_range_for_match("é", 1..2), None);
+        assert_eq!(original_range_for_match("é", 0..1), None);
+        assert_eq!(original_range_for_match("x", 0..2), None);
+        assert_eq!(original_range_for_match("x", 0..0), None);
+        let original = "é  slow\t \u{00a0}motion";
+        let n = normalize_for_matching(original);
+        let (s, e) = find_term_match(&n, "slow motion", false).unwrap();
+        assert_eq!(
+            &original[original_range_for_match(original, s..e).unwrap()],
+            "slow\t \u{00a0}motion"
+        );
     }
 
     #[test]
-    fn resolution_claim_ignores_boolean_dimensions() {
-        let params = json!({"prompt": "a 4k shot", "width": true, "height": true});
-        assert!(check_resolution_claim(&params).is_none());
+    fn normalized_conflict_whitespace_punctuation_and_negations() {
+        for prompt in [
+            "slow   motion",
+            "slow\tmotion",
+            "slow\u{00a0}motion",
+            "ｓｌｏｗ　ｍｏｔｉｏｎ",
+            "(slow motion),",
+        ] {
+            assert!(
+                check_prompt_negative_conflict(
+                    &json!({"prompt":prompt,"negative_prompt":"slow motion"})
+                )
+                .is_some(),
+                "{prompt}"
+            );
+        }
+        for prompt in [
+            "slow\nmotion",
+            "slow, motion",
+            "slow / motion",
+            "“slow motion”",
+            "＂ｓｌｏｗ　ｍｏｔｉｏｎ＂",
+            "ｎｏ ｓｌｏｗ ｍｏｔｉｏｎ",
+        ] {
+            assert!(
+                check_prompt_negative_conflict(
+                    &json!({"prompt":prompt,"negative_prompt":"slow motion"})
+                )
+                .is_none(),
+                "{prompt}"
+            );
+        }
+        assert!(check_prompt_negative_conflict(
+            &json!({"prompt":"close - up","negative_prompt":"close-up"})
+        )
+        .is_none());
+        assert!(check_prompt_negative_conflict(
+            &json!({"prompt":"handheld","negative_prompt":"ｎｏ ｈａｎｄｈｅｌｄ"})
+        )
+        .is_none());
     }
 
     #[test]
-    fn resolution_claim_ignores_asymmetric_boolean_width() {
-        // F1: every other boolean case in the corpus pairs `true` with `true`, which
-        // does not discriminate a buggy `is_int_dimension` that coerces `Bool(true)` to
-        // `1` (max(1,1)=1 already misses the floor, so correct and buggy code produce
-        // identical silence). Pairing a boolean `width` with a real `height` that would
-        // defeat the claim on its own closes that hole: if `is_int_dimension` wrongly
-        // returned `Some(1)` for `Bool(true)`, this would compute a 1px short side and
-        // FIRE against the "8k" claim; the correct implementation excludes the boolean
-        // entirely and stays silent.
-        let params = json!({"prompt": "shot in 8k", "width": true, "height": 3840});
-        assert!(check_resolution_claim(&params).is_none());
+    fn duration_claim_parser_positive_grammar_and_maximum() {
+        for (text, value) in [
+            ("Total: 15s / 6 shots / 16:9", 15.0),
+            ("A 12-second sportswear ad", 12.0),
+            ("0–3s … 12–15s", 15.0),
+            ("3s to 7s", 7.0),
+            ("15s total", 15.0),
+            ("Total: 5.5s", 5.5),
+            ("TOTAL: 15 seconds", 15.0),
+            ("0—7s", 7.0),
+            ("0-7s", 7.0),
+            ("holds for 12 seconds", 12.0),
+            ("Total: 900s", 900.0),
+            ("“Total: 15s” then 12-second action", 12.0),
+            ("Total: １５s", 15.0),
+            ("-15 seconds; Total: 12s", 12.0),
+        ] {
+            assert_eq!(duration_max(text), Some(value), "{text}");
+        }
+        assert_eq!(
+            duration_max("3 seconds, 12-second action, Total: 15s"),
+            Some(15.0)
+        );
     }
 
     #[test]
-    fn resolution_claim_silent_on_aspect_ratio_style_pair() {
-        let params = json!({"prompt": "a 4k banner shot", "width": 16, "height": 9});
-        assert!(check_resolution_claim(&params).is_none());
+    fn duration_claim_parser_does_not_rescue_partial_invalid_tokens() {
+        for text in [
+            "subtotal: 15s",
+            "x12-second",
+            "12-secondhand",
+            "15shots",
+            "-15 seconds",
+            "+15 seconds",
+            "1e3 seconds",
+            "1,000 seconds",
+            "1.2.3 seconds",
+            "15s2",
+            "01:15 seconds",
+            ".5 seconds",
+            "15–3s",
+            "-3s to 15s",
+            "1e3–15s",
+            "Total: -15s",
+            "Total: 1.2.3s",
+            "\"Total: 15s\"",
+            "“Total: 15s”",
+            "＂Total: 15s＂",
+            "15 frames",
+            "fifteen seconds",
+            "15 secs",
+            "Total 15s",
+            "15s\ntotal",
+            "12\nseconds",
+            "shot on a 50mm at T2.0",
+        ] {
+            assert_eq!(duration_max(text), None, "must not rescue: {text}");
+        }
+        let overflow = format!("Total: {}s", "9".repeat(400));
+        assert_eq!(duration_max(&overflow), None);
+        assert_eq!(duration_max(&(overflow + "; Total: 15s")), Some(15.0));
+        assert_eq!(duration_max("0.5 seconds"), Some(0.5));
+        assert!(seconds_display(1e200).len() < 25);
     }
 
     #[test]
-    fn resolution_claim_silent_when_both_dimensions_below_floor() {
-        let params = json!({"prompt": "a 4k banner shot", "width": 64, "height": 64});
-        assert!(check_resolution_claim(&params).is_none());
+    fn duration_claim_eligibility_bounds_and_exact_message() {
+        let p = json!({"model":"kling2_6","prompt":"Total: 15s","duration":5});
+        assert_eq!(check_duration_claim(&p).unwrap().message,
+            "prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.");
+        for n in [
+            json!(null),
+            json!("5"),
+            json!(true),
+            json!(0),
+            json!(601),
+            json!(-1),
+        ] {
+            let mut q = p.clone();
+            q["duration"] = n;
+            assert!(check_duration_claim(&q).is_none(), "{q}");
+        }
+        for n in [1.0, 5.0, 5.5, 600.0] {
+            let q = json!({"model":"kling2_6","prompt":"Total: 900s","duration":n});
+            assert!(check_duration_claim(&q).is_some());
+        }
+        for (prompt, seconds) in [
+            ("Total: 5s", 5.0),
+            ("Total: 5s", 5.5),
+            ("holds for 3 seconds", 15.0),
+        ] {
+            assert!(check_duration_claim(
+                &json!({"model":"kling2_6","prompt":prompt,"duration":seconds})
+            )
+            .is_none());
+        }
+        for model in ["seedance_2_5", "ad_multiplier"] {
+            for mode in ["video_edit", "video_extension", "typo"] {
+                assert!(check_duration_claim(
+                    &json!({"model":model,"mode":mode,"prompt":"Total: 15s","duration":5})
+                )
+                .is_none());
+            }
+            assert!(check_duration_claim(
+                &json!({"model":model,"mode":"t2v","prompt":"Total: 15s","duration":5})
+            )
+            .is_some());
+        }
+        for model in [
+            "unknown",
+            "kling_video_edit",
+            "video_upscale",
+            "video_deflicker",
+            "clipify",
+            "nano_banana_pro",
+        ] {
+            assert!(check_duration_claim(
+                &json!({"model":model,"prompt":"Total: 15s","duration":5})
+            )
+            .is_none());
+        }
+        assert!(check_duration_claim(&json!({"model":"gemini_omni_flash_1_1","mode":"edit","prompt":"Total: 15s","duration":5})).is_none());
+        assert!(check_duration_claim(&json!({"model":"gemini_omni_flash_1_1","mode":"text-to-video","prompt":"Total: 15s","duration":5})).is_some());
+        assert!(check_duration_claim(&json!({"prompt":"Total: 15s","duration":5})).is_none());
     }
 
     #[test]
-    fn resolution_claim_fires_on_narrow_short_side_despite_wide_side() {
-        let params = json!({"prompt": "shot in 4k", "width": 1920, "height": 100});
-        let finding = check_resolution_claim(&params).expect("should fire");
-        assert!(finding
-            .message
-            .contains("width 1920 x height 100 gives a 100px short side"));
-    }
-
-    #[test]
-    fn resolution_claim_silent_when_no_claim_in_prompt() {
-        let params = json!({"prompt": "a cat on a windowsill", "width": 100, "height": 100});
-        assert!(check_resolution_claim(&params).is_none());
-    }
-
-    #[test]
-    fn resolution_claim_silent_when_dimensions_satisfy_claim() {
-        let params = json!({"prompt": "shot in 720p", "width": 1920, "height": 1080});
-        assert!(check_resolution_claim(&params).is_none());
-    }
-
-    #[test]
-    fn resolution_claim_silent_when_prompt_missing_or_not_string() {
-        assert!(check_resolution_claim(&json!({"width": 100, "height": 100})).is_none());
-        assert!(check_resolution_claim(&json!({"prompt": 123})).is_none());
-    }
-
-    #[test]
-    fn resolution_claim_silent_on_clean_seedance_call() {
-        // Mirrors the seedance_tree_clean fixture: "resolution": "1080p" with matching
-        // 1920x1080 dimensions and no unmet claim.
-        let params = json!({
-            "prompt": "Flat 2D vector cartoon animation, no camera movement, no zoom, no pan.",
-            "width": 1920,
-            "height": 1080,
-            "resolution": "1080p"
-        });
-        assert!(check_resolution_claim(&params).is_none());
+    fn canonical_allowlists_match_saved_mcp_not_cli_catalog() {
+        let capture: Value = serde_json::from_str(include_str!(
+            "../../docs/evidence/higgsfield-contract-2026-09-09.json"
+        ))
+        .unwrap();
+        let models: Vec<&Value> = capture["mcp"]["catalog"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .flat_map(|c| c["pages"].as_array().unwrap())
+            .flat_map(|p| p["items"].as_array().unwrap())
+            .collect();
+        for model in &models {
+            let id = model["id"].as_str().unwrap();
+            let kind = match model["output_type"].as_str().unwrap() {
+                "image" => ToolKind::Image,
+                "video" => ToolKind::Video,
+                _ => ToolKind::Audio,
+            };
+            for label in resolution_options(id, kind) {
+                let param = model["parameters"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .find(|p| p["name"] == "resolution")
+                    .unwrap();
+                assert!(
+                    param["options"]
+                        .as_array()
+                        .unwrap()
+                        .iter()
+                        .any(|v| v.as_str().unwrap().eq_ignore_ascii_case(label)),
+                    "{id} {label}"
+                );
+                let mut p = json!({"model":id,"resolution":label});
+                if id == "gemini_omni_flash_1_1" {
+                    p["mode"] = json!("text-to-video");
+                }
+                assert!(submitted_size(&p, kind).is_some(), "{id} {label}");
+            }
+        }
+        for id in DURATION_MODELS {
+            let model = models.iter().find(|m| m["id"] == *id).unwrap();
+            assert_eq!(model["output_type"], "video");
+            assert!(
+                model.get("duration_range").is_some()
+                    || model.get("durations").is_some()
+                    || model["parameters"]
+                        .as_array()
+                        .unwrap()
+                        .iter()
+                        .any(|p| p["name"] == "duration"),
+                "{id}"
+            );
+        }
     }
 
     // --- Task 3: negation checks -------------------------------------------------
@@ -888,7 +1618,9 @@ mod tests {
         let finding = check_prompt_negative_conflict(&params).expect("should fire");
         assert_eq!(finding.check_id, "prompt_negative_conflict");
         assert!(finding.message.contains("\"slow motion\""));
-        assert!(finding.message.contains("appears in both prompt and negative_prompt"));
+        assert!(finding
+            .message
+            .contains("appears in both prompt and negative_prompt"));
     }
 
     #[test]
@@ -1026,7 +1758,8 @@ mod tests {
             "prompt": "Slow Motion hero shot, cinematic",
             "negative_prompt": "Blurry, Slow Motion"
         });
-        let finding = check_prompt_negative_conflict(&params).expect("should fire despite mixed case");
+        let finding =
+            check_prompt_negative_conflict(&params).expect("should fire despite mixed case");
         assert!(finding.message.contains("\"slow motion\""));
     }
 
@@ -1042,7 +1775,9 @@ mod tests {
         assert!(finding.message.contains("\"camera pan\""));
         assert!(finding.message.contains("\"film grain\""));
         assert!(finding.message.contains("\"static shot\""));
-        assert!(finding.message.contains(" appear in both prompt and negative_prompt"));
+        assert!(finding
+            .message
+            .contains(" appear in both prompt and negative_prompt"));
     }
 
     #[test]
@@ -1065,7 +1800,10 @@ mod tests {
         assert_eq!(strip_negations("avoid harsh shadows").trim(), "");
         // A trailing word beyond the pattern's 3-word reach survives untouched.
         assert_eq!(strip_negations("no text please").trim(), "");
-        assert_eq!(strip_negations("no clutter, cat on a windowsill").trim(), ", cat on a windowsill");
+        assert_eq!(
+            strip_negations("no clutter, cat on a windowsill").trim(),
+            ", cat on a windowsill"
+        );
     }
 
     #[test]

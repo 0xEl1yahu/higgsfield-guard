@@ -1,0 +1,3336 @@
+{
+  "date": "2026-09-09",
+  "base_commit": "a7e0039",
+  "note": "Reviewed contract-derived changes, not binary-output regeneration. Existing inputs preserved.",
+  "changes": [
+    {
+      "label": "fixture:kling2_6_4k_slowmo.json:single",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 2 findings\n- resolution_claim: prompt says \"4K\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "fixture:kling2_6_4k_slowmo.json:batch",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 2 findings\n- resolution_claim: request 0: prompt says \"4K\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: request 0: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: request 0: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "resolution:8k:1920x100:obj",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8k\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:8k:1920x100:str",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8k\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:8k:1376x768:obj",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8k\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:8k:1376x768:str",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8k\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:8k:3840x2160:obj",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8k\" but width 3840 x height 2160 gives a 2160px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:8k:3840x2160:str",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8k\" but width 3840 x height 2160 gives a 2160px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:8K:1920x100:obj",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8K\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:8K:1920x100:str",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8K\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:8K:1376x768:obj",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8K\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:8K:1376x768:str",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8K\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:8K:3840x2160:obj",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8K\" but width 3840 x height 2160 gives a 2160px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:8K:3840x2160:str",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8K\" but width 3840 x height 2160 gives a 2160px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:4k:1920x100:obj",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:4k:1920x100:str",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:4k:1376x768:obj",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:4k:1376x768:str",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:4K:1920x100:obj",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:4K:1920x100:str",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:4K:1376x768:obj",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:4K:1376x768:str",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:uhd:1920x100:obj",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"uhd\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:uhd:1920x100:str",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"uhd\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:uhd:1376x768:obj",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"uhd\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:uhd:1376x768:str",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"uhd\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:UHD:1920x100:obj",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"UHD\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:UHD:1920x100:str",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"UHD\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:UHD:1376x768:obj",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"UHD\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:UHD:1376x768:str",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"UHD\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:1080p:1920x100:obj",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"1080p\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:1080p:1920x100:str",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"1080p\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:1080p:1376x768:obj",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"1080p\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:1080p:1376x768:str",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"1080p\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:1080P:1920x100:obj",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"1080P\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:1080P:1920x100:str",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"1080P\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:1080P:1376x768:obj",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"1080P\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:1080P:1376x768:str",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"1080P\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:full hd:1920x100:obj",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"full hd\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:full hd:1920x100:str",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"full hd\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:full hd:1376x768:obj",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"full hd\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:full hd:1376x768:str",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"full hd\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:FULL HD:1920x100:obj",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"FULL HD\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:FULL HD:1920x100:str",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"FULL HD\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:FULL HD:1376x768:obj",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"FULL HD\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:FULL HD:1376x768:str",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"FULL HD\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:720p:1920x100:obj",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"720p\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:720p:1920x100:str",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"720p\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:720P:1920x100:obj",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"720P\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:720P:1920x100:str",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"720P\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:480p:1920x100:obj",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"480p\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:480p:1920x100:str",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"480p\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:480P:1920x100:obj",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"480P\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution:480P:1920x100:str",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"480P\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution_param:1080p",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but the call produces a 1080px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution_param:720p",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but the call produces a 720px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "resolution_param:480p",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but the call produces a 480px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "dims:1920x100:obj",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8k\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "dims:1920x100:str",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8k\" but width 1920 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "dims:1376x768:obj",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8k\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "dims:1376x768:str",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8k\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "dims:3840x2160:obj",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8k\" but width 3840 x height 2160 gives a 2160px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "dims:3840x2160:str",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"8k\" but width 3840 x height 2160 gives a 2160px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "batch:index=0",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 0: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "batch:index=7",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 7: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "batch:index=-3",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request -3: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "batch:index=\"req-alpha\"",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request req-alpha: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "batch:index=true",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request True: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "batch:index=false",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request False: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "batch:index=null",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request None: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "batch:index=2.5",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 2.5: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "batch:positional_fallback",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 1: prompt says \"4k\" but width 1280 x height 720 gives a 720px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "batch:mixed_entries",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request req-a: prompt says \"4k\" but width 1280 x height 720 gives a 720px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "batch:empty_requests_falls_back_to_top_level",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but width 1280 x height 720 gives a 720px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "combined:neg=Some(\"slow motion, sharp, blurry\"):model=Some(\"kling2_6\"):obj",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 2 findings\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "combined:neg=Some(\"slow motion, sharp, blurry\"):model=Some(\"kling2_6\"):str",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 2 findings\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "combined:neg=Some(\"slow motion, sharp, blurry\"):model=Some(\"not_a_real_model_xyz\"):obj",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 2 findings\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "combined:neg=Some(\"slow motion, sharp, blurry\"):model=Some(\"not_a_real_model_xyz\"):str",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 2 findings\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "combined:neg=Some(\"slow motion, sharp, blurry\"):model=None:obj",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 2 findings\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "combined:neg=Some(\"slow motion, sharp, blurry\"):model=None:str",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 2 findings\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "combined:neg=None:model=Some(\"kling2_6\"):obj",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "combined:neg=None:model=Some(\"kling2_6\"):str",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "combined:neg=None:model=Some(\"not_a_real_model_xyz\"):obj",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "combined:neg=None:model=Some(\"not_a_real_model_xyz\"):str",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "combined:neg=None:model=None:obj",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "combined:neg=None:model=None:str",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4k\" but width 1280 x height 100 gives a 100px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "edge:unicode_prompt",
+      "change": "modified",
+      "reason": "Canonical correction: remove unsupported generic resolution/dimension inference; preserve historical input and remaining conflict text.",
+      "input_changed": false,
+      "before": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but width 1280 x height 1280 gives a 1280px short side. Raise resolution, or drop the claim from the prompt.",
+          "hookEventName": "PreToolUse"
+        }
+      },
+      "after": null
+    },
+    {
+      "label": "canonical:resolution:gpt_image_2",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:gpt_image_2:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:cinematic_studio_2_5",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:cinematic_studio_2_5:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:marketing_studio_image",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:marketing_studio_image:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:ms_image",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:ms_image:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:nano_banana_pro",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:nano_banana_pro:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:nano_banana_2",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:nano_banana_2:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:nano_banana_2_lite",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:nano_banana_2_lite:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:flux_2",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:flux_2:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:kling_omni_image",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:kling_omni_image:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:gpt_image_2_5",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:gpt_image_2_5:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:seedream_v5_pro",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:seedream_v5_pro:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:grok_image",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:grok_image:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:grok_image_2_0",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:grok_image_2_0:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:recraft_v4_1",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:recraft_v4_1:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:bytedance_image_upscale",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"2k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:bytedance_image_upscale:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"2k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:cinematic_studio_3_0",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:cinematic_studio_3_0:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:marketing_studio_video",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:marketing_studio_video:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:flux_3_video",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:flux_3_video:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:grok_video_v15",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:grok_video_v15:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:minimax_h3",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"2K\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:minimax_h3:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"2K\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:minimax_h3_max",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:minimax_h3_max:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:seedance1_5",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:seedance1_5:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:seedance_2_0",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:seedance_2_0:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:seedance_2_0_mini",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:seedance_2_0_mini:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:seedance_2_5",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:seedance_2_5:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:ad_multiplier",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:ad_multiplier:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:topaz_video",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1080p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:topaz_video:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1080p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:bytedance_video_upscale",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1080p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:bytedance_video_upscale:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1080p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:kling3_0_turbo",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:kling3_0_turbo:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:happy_horse_video",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:happy_horse_video:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:hf_mult_motion_control",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:hf_mult_motion_control:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:hf_mult_replace_object",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:hf_mult_replace_object:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:gemini_omni",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:gemini_omni:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:gemini_omni_flash_1_1",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"360p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:gemini_omni_flash_1_1:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"360p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:wan2_7",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:wan2_7:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:wan3_0",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:wan3_0:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:wan3_0_prime",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:resolution:wan3_0_prime:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:carrier:wan2_6",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but quality selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:carrier:wan2_6:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but quality selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:carrier:soul_2",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but quality selects the \"2k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:carrier:soul_2:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but quality selects the \"2k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:carrier:soul_cinematic",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but quality selects the \"2k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:carrier:soul_cinematic:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but quality selects the \"2k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:carrier:soul_v2",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but quality selects the \"2k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:carrier:soul_v2:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but quality selects the \"2k\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:carrier:kling3_0",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:carrier:kling3_0:batch",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:carrier:kling_video_edit",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:carrier:kling_video_edit:batch",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:targets:topaz_image",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but requested output_width 1920 x output_height 100 has a 100px short side under the local claim convention. Increase output_width/output_height, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:targets:topaz_image:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but requested output_width 1920 x output_height 100 has a 100px short side under the local claim convention. Increase output_width/output_height, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:targets:topaz_image_generative",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but requested output_width 1920 x output_height 100 has a 100px short side under the local claim convention. Increase output_width/output_height, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:targets:topaz_image_generative:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but requested output_width 1920 x output_height 100 has a 100px short side under the local claim convention. Increase output_width/output_height, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:target-invalid:true",
+      "change": "added",
+      "reason": "Explicit robustness contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:target-invalid:1280",
+      "change": "added",
+      "reason": "Explicit robustness contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:target-invalid:null",
+      "change": "added",
+      "reason": "Explicit robustness contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:target-invalid:-1",
+      "change": "added",
+      "reason": "Explicit robustness contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:target-invalid:0",
+      "change": "added",
+      "reason": "Explicit robustness contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:target-match",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:text:fullwidth",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"４Ｋ\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:text:mixed-quotes",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"４Ｋ\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:text:ascii-live",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:text:8k",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:text:uhd",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:text:quoted",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:text:curly",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:text:fullwidth-quoted",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:conflict:spaces",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:conflict:tab",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:conflict:nbsp",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:conflict:fullwidth",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:conflict:punctuation",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:conflict:newline",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:conflict:comma",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:conflict:slash",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:conflict:curly",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:conflict:negated",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:conflict:wide",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"wide shot\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:overlap:handheld",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:overlap:grain",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:duration:total",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- duration_claim: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:duration:compound",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- duration_claim: prompt describes 12s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:duration:spans",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- duration_claim: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:duration:to",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- duration_claim: prompt describes 7s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:duration:ending",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- duration_claim: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:duration:fractional",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- duration_claim: prompt describes 5.5s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:duration:beyond-cap",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- duration_claim: prompt describes 900s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:duration:maximum",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- duration_claim: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:duration:equal",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:duration:under",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:duration:fraction-tail",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:duration:lens",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:duration:quoted",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:duration:curly",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:duration:fullwidth-quote",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:duration:signed",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:duration:positive-sign",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:duration:exponent",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:duration:comma",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:duration:decimal",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:duration:reversed",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:duration:clock",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:duration:subtotal",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:duration:embedded",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:duration:tail",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:duration:newline",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:duration-mode:seedance_2_5:t2v",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- duration_claim: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:duration-mode:seedance_2_5:video_edit",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:duration-mode:seedance_2_5:video_extension",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:duration-mode:seedance_2_5:typo",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:duration-mode:ad_multiplier:t2v",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- duration_claim: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:duration-mode:ad_multiplier:video_edit",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:duration-mode:ad_multiplier:video_extension",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:duration-mode:ad_multiplier:typo",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:duration-mode:gemini:text-to-video",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- duration_claim: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:duration-mode:gemini:edit",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:duration-model:unknown",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:duration-model:video_upscale",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:duration-model:video_deflicker",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:duration-model:kling_video_edit",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:duration-model:clipify",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:scope:video",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 3 findings\n- resolution_claim: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim.\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.\n- duration_claim: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:scope:video:batch",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 3 findings\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim.\n- prompt_negative_conflict: request 20: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.\n- duration_claim: request 20: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:scope:audio",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:scope:audio:batch",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:scope:image",
+      "change": "added",
+      "reason": "Explicit robustness contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:scope:image:batch",
+      "change": "added",
+      "reason": "Explicit robustness contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: request 20: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:scope:unknown",
+      "change": "added",
+      "reason": "Explicit robustness contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:scope:unknown:batch",
+      "change": "added",
+      "reason": "Explicit robustness contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: request 20: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:scope:name:null",
+      "change": "added",
+      "reason": "Explicit robustness contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:scope:name:23",
+      "change": "added",
+      "reason": "Explicit robustness contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:scope:missing",
+      "change": "added",
+      "reason": "Explicit robustness contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:scope:valid-image",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 2 findings\n- resolution_claim: prompt says \"4K\" but resolution selects the \"2k\" output tier. Choose a supported higher tier, or revise the claim.\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:excluded:unknown",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:excluded:wrongkind",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:excluded:stored",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:excluded:marketing",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:excluded:undeclared",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:excluded:fast",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:excluded:mixed",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:excluded:hailuo",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:excluded:quality",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:limitation:negated-resolution",
+      "change": "added",
+      "reason": "Explicit limitation contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:limitation:scene-duration",
+      "change": "added",
+      "reason": "Explicit limitation contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- duration_claim: prompt describes 12s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:limitation:inch-marks",
+      "change": "added",
+      "reason": "Explicit limitation contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:batch:explicit-mixed",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- duration_claim: request 20: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:batch:positional",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- duration_claim: request 1: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:batch:two-offenders",
+      "change": "added",
+      "reason": "Explicit positive contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 2 findings\n- duration_claim: request 10: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.\n- duration_claim: request 20: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:batch:no-fallback",
+      "change": "added",
+      "reason": "Explicit negative contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "canonical:batch:empty-fallback",
+      "change": "added",
+      "reason": "Explicit robustness contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- duration_claim: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:batch:index-true",
+      "change": "added",
+      "reason": "Explicit robustness contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- duration_claim: request True: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:batch:index-null",
+      "change": "added",
+      "reason": "Explicit robustness contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- duration_claim: request None: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:batch:index-req-alpha",
+      "change": "added",
+      "reason": "Explicit robustness contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- duration_claim: request req-alpha: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    },
+    {
+      "label": "canonical:batch:index--3",
+      "change": "added",
+      "reason": "Explicit robustness contract in semantic-cases.json; expectation independent of runtime output.",
+      "input_changed": true,
+      "before": null,
+      "after": {
+        "hookSpecificOutput": {
+          "additionalContext": "higgsfield-lint: 1 finding\n- duration_claim: request -3: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+          "hookEventName": "PreToolUse"
+        }
+      }
+    }
+  ]
+}

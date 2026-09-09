@@ -1,0 +1,2 @@
+# Unified-diff context for an empty line is one required space, not prose whitespace.
+docs/plan-revision.diff whitespace=-blank-at-eol

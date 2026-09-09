@@ -7,12 +7,13 @@
 //! archived, read-only, at `docs/archive/verified-port/` - see its README there for the
 //! full history and the exact commit that was true at.
 //!
-//! The Rust is now the specification. This file keeps the same corpus - the real fixtures,
+//! Rust is the sole implementation; SPEC and canonical evidence govern intended behavior.
+//! This file preserves the historical corpus - the real fixtures,
 //! the pathological-input set, and the generated sweep across every lexicon entry,
 //! dimension pair, and negation form - but compares the compiled binary's output against
 //! **recorded expectations** in `rust/tests/golden/expectations.json` instead of against a
-//! second live process. Those expectations are today's verified behaviour, captured before
-//! the oracle was retired (see that file's `note` field and the commit it names).
+//! second live process. Original expectations were captured before the oracle retired;
+//! subsequent reviewed revisions are recorded in metadata and the per-label change ledger.
 //!
 //! Every subsequent rule change in this project's plan deliberately flips some of these
 //! expectations. That is expected and healthy - a flip is a reviewed behaviour change, not
@@ -140,7 +141,7 @@ const TOOL_BATCH: &str = "mcp__higgsfield__generate_video_batch";
 /// negative_prompt-capable, read from `data/negative_prompt_models.json` rather than
 /// hardcoded so the corpus kept working if the list changed. That check and its data
 /// file were both retired (SPEC.md §5.3; HIGGSFIELD_PROMPT_RESEARCH.md §6, §8.3) - no
-/// check reads a `model` field at all any more, so there is no live list to read here.
+/// reads that retired model list. Active checks now use canonical model constants.
 /// The literal is kept unchanged rather than deleted: this function still feeds every
 /// sweep below that varies a `model` field, and hardcoding the same value keeps those
 /// sweeps generating byte-identical input to what they always have (recorded
@@ -172,7 +173,11 @@ fn batch_one(index: Value, params: Value) -> Value {
     json!({"requests": [{"index": index, "params": params}]})
 }
 
-fn with_optional(mut obj: serde_json::Map<String, Value>, negative: Option<&str>, model: Option<&str>) -> Value {
+fn with_optional(
+    mut obj: serde_json::Map<String, Value>,
+    negative: Option<&str>,
+    model: Option<&str>,
+) -> Value {
     if let Some(n) = negative {
         obj.insert("negative_prompt".to_string(), json!(n));
     }
@@ -213,7 +218,10 @@ fn fixture_inputs() -> Vec<(String, Vec<u8>)> {
         let fixture: Value = serde_json::from_str(&text).unwrap();
         let name = path.file_name().unwrap().to_string_lossy().to_string();
 
-        out.push((format!("fixture:{name}:single"), wrap(TOOL_SINGLE, fixture.clone())));
+        out.push((
+            format!("fixture:{name}:single"),
+            wrap(TOOL_SINGLE, fixture.clone()),
+        ));
 
         let params = fixture
             .get("params")
@@ -242,16 +250,34 @@ fn pathological_inputs() -> Vec<(String, Vec<u8>)> {
         ("garbage", b"not json".to_vec()),
         ("empty_object", b"{}".to_vec()),
         ("tool_input_null", br#"{"tool_input": null}"#.to_vec()),
-        ("tool_input_string", br#"{"tool_input": "a string"}"#.to_vec()),
-        ("params_bare_string", br#"{"tool_input": {"params": "a bare string"}}"#.to_vec()),
-        ("params_non_dict_list", br#"{"tool_input": {"params": []}}"#.to_vec()),
-        ("requests_not_a_list", br#"{"tool_input": {"requests": "not a list"}}"#.to_vec()),
-        ("requests_junk_entries", br#"{"tool_input": {"requests": [null, 3, "x"]}}"#.to_vec()),
+        (
+            "tool_input_string",
+            br#"{"tool_input": "a string"}"#.to_vec(),
+        ),
+        (
+            "params_bare_string",
+            br#"{"tool_input": {"params": "a bare string"}}"#.to_vec(),
+        ),
+        (
+            "params_non_dict_list",
+            br#"{"tool_input": {"params": []}}"#.to_vec(),
+        ),
+        (
+            "requests_not_a_list",
+            br#"{"tool_input": {"requests": "not a list"}}"#.to_vec(),
+        ),
+        (
+            "requests_junk_entries",
+            br#"{"tool_input": {"requests": [null, 3, "x"]}}"#.to_vec(),
+        ),
         ("invalid_utf8", vec![0xff, 0xfe, 0x00, 0x01]),
         (
             "huge_prompt",
-            format!(r#"{{"tool_input":{{"params":{{"prompt":"{}"}}}}}}"#, "a".repeat(5_000_000))
-                .into_bytes(),
+            format!(
+                r#"{{"tool_input":{{"params":{{"prompt":"{}"}}}}}}"#,
+                "a".repeat(5_000_000)
+            )
+            .into_bytes(),
         ),
         (
             "deeply_nested_array",
@@ -262,7 +288,10 @@ fn pathological_inputs() -> Vec<(String, Vec<u8>)> {
         // nothing special in either implementation (no field named `__panic__` is read by
         // either the oracle or the port), so both sides simply find no prompt/resolution
         // and stay silent - which is itself worth confirming stays true.
-        ("magic_panic_key", br#"{"tool_input": {"params": {"__panic__": true}}}"#.to_vec()),
+        (
+            "magic_panic_key",
+            br#"{"tool_input": {"params": {"__panic__": true}}}"#.to_vec(),
+        ),
     ];
     cases
         .into_iter()
@@ -284,19 +313,35 @@ fn resolution_sweep() -> Vec<(String, Vec<u8>)> {
             let prompt = format!("epic cinematic scene, {variant}, highly detailed");
             for (w, h) in DIMENSION_PAIRS {
                 let params = json!({"prompt": prompt, "width": w, "height": h});
-                out.push((format!("resolution:{variant}:{w}x{h}:obj"), wrap(TOOL_SINGLE, single(params.clone()))));
-                out.push((format!("resolution:{variant}:{w}x{h}:str"), wrap(TOOL_SINGLE, single_str(&params))));
+                out.push((
+                    format!("resolution:{variant}:{w}x{h}:obj"),
+                    wrap(TOOL_SINGLE, single(params.clone())),
+                ));
+                out.push((
+                    format!("resolution:{variant}:{w}x{h}:str"),
+                    wrap(TOOL_SINGLE, single_str(&params)),
+                ));
             }
             // Booleans must be excluded from dimension logic even though
             // `isinstance(True, int)` is `True` in Python - the oracle explicitly guards
             // against this (`_is_int_dimension`).
             let bool_params = json!({"prompt": prompt, "width": true, "height": true});
-            out.push((format!("resolution:{variant}:bool_dims"), wrap(TOOL_SINGLE, single(bool_params))));
+            out.push((
+                format!("resolution:{variant}:bool_dims"),
+                wrap(TOOL_SINGLE, single(bool_params)),
+            ));
         }
     }
-    for res_val in KNOWN_RESOLUTION_PARAM_VALUES.iter().chain(UNKNOWN_RESOLUTION_PARAM_VALUES.iter()) {
-        let params = json!({"prompt": "shot in 4k, cinematic establishing shot", "resolution": res_val});
-        out.push((format!("resolution_param:{res_val}"), wrap(TOOL_SINGLE, single(params))));
+    for res_val in KNOWN_RESOLUTION_PARAM_VALUES
+        .iter()
+        .chain(UNKNOWN_RESOLUTION_PARAM_VALUES.iter())
+    {
+        let params =
+            json!({"prompt": "shot in 4k, cinematic establishing shot", "resolution": res_val});
+        out.push((
+            format!("resolution_param:{res_val}"),
+            wrap(TOOL_SINGLE, single(params)),
+        ));
     }
     out
 }
@@ -311,14 +356,23 @@ fn conflict_phrase_sweep() -> Vec<(String, Vec<u8>)> {
             "prompt": format!("a scene featuring {phrase}, cinematic composition"),
             "negative_prompt": format!("{phrase}, low quality")
         });
-        out.push((format!("conflict:{phrase}:obj"), wrap(TOOL_SINGLE, single(params.clone()))));
-        out.push((format!("conflict:{phrase}:str"), wrap(TOOL_SINGLE, single_str(&params))));
+        out.push((
+            format!("conflict:{phrase}:obj"),
+            wrap(TOOL_SINGLE, single(params.clone())),
+        ));
+        out.push((
+            format!("conflict:{phrase}:str"),
+            wrap(TOOL_SINGLE, single_str(&params)),
+        ));
 
         let negated_params = json!({
             "prompt": format!("no {phrase}, cat on a windowsill"),
             "negative_prompt": format!("{phrase}, low quality")
         });
-        out.push((format!("conflict_agreement:{phrase}"), wrap(TOOL_SINGLE, single(negated_params))));
+        out.push((
+            format!("conflict_agreement:{phrase}"),
+            wrap(TOOL_SINGLE, single(negated_params)),
+        ));
     }
     out
 }
@@ -341,7 +395,10 @@ fn negation_form_sweep(known: &str) -> Vec<(String, Vec<u8>)> {
             }
         }
         let base = json!({"prompt": prompt, "negative_prompt": "blurry"});
-        out.push((format!("negation_form:{form}:str"), wrap(TOOL_SINGLE, single_str(&base))));
+        out.push((
+            format!("negation_form:{form}:str"),
+            wrap(TOOL_SINGLE, single_str(&base)),
+        ));
     }
     out
 }
@@ -352,7 +409,10 @@ fn negation_form_sweep(known: &str) -> Vec<(String, Vec<u8>)> {
 fn stopword_sweep(known: &str) -> Vec<(String, Vec<u8>)> {
     let mut out = Vec::new();
     let idioms = [
-        ("no_more", "a busy street with no more than three people visible"),
+        (
+            "no_more",
+            "a busy street with no more than three people visible",
+        ),
         ("no_longer", "a building that is no longer standing"),
         ("no_matter", "a hero who fights no matter what happens"),
     ];
@@ -361,11 +421,17 @@ fn stopword_sweep(known: &str) -> Vec<(String, Vec<u8>)> {
             let mut m = serde_json::Map::new();
             m.insert("prompt".to_string(), json!(prompt));
             let params = with_optional(m, Some("blurry"), model);
-            out.push((format!("stopword:{name}:model={model:?}"), wrap(TOOL_SINGLE, single(params))));
+            out.push((
+                format!("stopword:{name}:model={model:?}"),
+                wrap(TOOL_SINGLE, single(params)),
+            ));
         }
         let mixed_prompt = format!("{prompt}, no clutter");
         let params = json!({"prompt": mixed_prompt, "negative_prompt": "blurry"});
-        out.push((format!("stopword:{name}:mixed_with_directive"), wrap(TOOL_SINGLE, single(params))));
+        out.push((
+            format!("stopword:{name}:mixed_with_directive"),
+            wrap(TOOL_SINGLE, single(params)),
+        ));
     }
     out
 }
@@ -375,22 +441,39 @@ fn stopword_sweep(known: &str) -> Vec<(String, Vec<u8>)> {
 fn gerund_sweep(known: &str) -> Vec<(String, Vec<u8>)> {
     let mut out = Vec::new();
     let noise_phrases = ["without moving", "without breathing", "without blinking"];
-    let directive_phrases = ["no flickering", "no warping", "avoid flickering", "avoid shimmering"];
+    let directive_phrases = [
+        "no flickering",
+        "no warping",
+        "avoid flickering",
+        "avoid shimmering",
+    ];
 
     for phrase in noise_phrases {
         for model in [Some(known), None] {
             let mut m = serde_json::Map::new();
-            m.insert("prompt".to_string(), json!(format!("a monk sitting {phrase}, breathing slowly")));
+            m.insert(
+                "prompt".to_string(),
+                json!(format!("a monk sitting {phrase}, breathing slowly")),
+            );
             let params = with_optional(m, Some("blurry"), model);
-            out.push((format!("gerund_noise:{phrase}:model={model:?}"), wrap(TOOL_SINGLE, single(params))));
+            out.push((
+                format!("gerund_noise:{phrase}:model={model:?}"),
+                wrap(TOOL_SINGLE, single(params)),
+            ));
         }
     }
     for phrase in directive_phrases {
         for model in [Some(known), None] {
             let mut m = serde_json::Map::new();
-            m.insert("prompt".to_string(), json!(format!("a scene, {phrase}, cinematic")));
+            m.insert(
+                "prompt".to_string(),
+                json!(format!("a scene, {phrase}, cinematic")),
+            );
             let params = with_optional(m, Some("blurry"), model);
-            out.push((format!("gerund_directive:{phrase}:model={model:?}"), wrap(TOOL_SINGLE, single(params))));
+            out.push((
+                format!("gerund_directive:{phrase}:model={model:?}"),
+                wrap(TOOL_SINGLE, single(params)),
+            ));
         }
     }
     out
@@ -412,13 +495,27 @@ fn dimension_pair_sweep() -> Vec<(String, Vec<u8>)> {
         // and pairs that clear the floor ((1920,100), (1376,768), (3840,2160)) all fire,
         // since none reaches the 8k claim's 4320px minimum short side.
         let params = json!({"prompt": "a calm nature scene shot in 8k", "width": w, "height": h});
-        out.push((format!("dims:{w}x{h}:obj"), wrap(TOOL_SINGLE, single(params.clone()))));
-        out.push((format!("dims:{w}x{h}:str"), wrap(TOOL_SINGLE, single_str(&params))));
+        out.push((
+            format!("dims:{w}x{h}:obj"),
+            wrap(TOOL_SINGLE, single(params.clone())),
+        ));
+        out.push((
+            format!("dims:{w}x{h}:str"),
+            wrap(TOOL_SINGLE, single_str(&params)),
+        ));
     }
-    let bool_params = json!({"prompt": "shot in 8k, dramatic lighting", "width": true, "height": true});
-    out.push(("dims:true_true".to_string(), wrap(TOOL_SINGLE, single(bool_params))));
-    let float_params = json!({"prompt": "shot in 4k, dramatic lighting", "width": 100.0, "height": 100.0});
-    out.push(("dims:floats_excluded".to_string(), wrap(TOOL_SINGLE, single(float_params))));
+    let bool_params =
+        json!({"prompt": "shot in 8k, dramatic lighting", "width": true, "height": true});
+    out.push((
+        "dims:true_true".to_string(),
+        wrap(TOOL_SINGLE, single(bool_params)),
+    ));
+    let float_params =
+        json!({"prompt": "shot in 4k, dramatic lighting", "width": 100.0, "height": 100.0});
+    out.push((
+        "dims:floats_excluded".to_string(),
+        wrap(TOOL_SINGLE, single(float_params)),
+    ));
 
     // F1: an ASYMMETRIC boolean/integer pair. Every other boolean case in this corpus
     // pairs `true` with `true` (or `false` with `false`), which is non-discriminating: a
@@ -430,7 +527,10 @@ fn dimension_pair_sweep() -> Vec<(String, Vec<u8>)> {
     // WOULD fire against the "8k" claim's 4320px minimum, while the correct
     // implementation excludes the boolean `width` entirely and stays silent.
     let asymmetric_bool_params = json!({"prompt": "shot in 8k", "width": true, "height": 3840});
-    out.push(("dims:asymmetric_bool".to_string(), wrap(TOOL_SINGLE, single(asymmetric_bool_params))));
+    out.push((
+        "dims:asymmetric_bool".to_string(),
+        wrap(TOOL_SINGLE, single(asymmetric_bool_params)),
+    ));
     out
 }
 
@@ -474,14 +574,20 @@ fn batch_sweep(known: &str) -> Vec<(String, Vec<u8>)> {
         // silence-equals-silence match, never exercising `format_index`'s rendering of
         // the index into the "request {index}: ..." message text at all.
         let params = json!({"prompt": "shot in 4k, cinematic", "width": 1280, "height": 100});
-        out.push((format!("batch:index={idx}"), wrap(TOOL_BATCH, batch_one(idx.clone(), params))));
+        out.push((
+            format!("batch:index={idx}"),
+            wrap(TOOL_BATCH, batch_one(idx.clone(), params)),
+        ));
     }
 
     let positional_fallback = json!({"requests": [
         {"params": {"prompt": "a cat on a windowsill", "width": 100, "height": 100}},
         {"params": {"prompt": "shot in 4k, cinematic", "width": 1280, "height": 720}},
     ]});
-    out.push(("batch:positional_fallback".to_string(), wrap(TOOL_BATCH, positional_fallback)));
+    out.push((
+        "batch:positional_fallback".to_string(),
+        wrap(TOOL_BATCH, positional_fallback),
+    ));
 
     let mixed = json!({"requests": [
         {"index": "req-a", "params": {"prompt": "shot in 4k, cinematic", "width": 1280, "height": 720}},
@@ -799,7 +905,8 @@ struct GoldenEntry {
 /// hand-edited into an inconsistent state, which is a setup bug, not a rule-behaviour
 /// question the divergence report should have to explain.
 fn load_golden() -> HashMap<String, GoldenEntry> {
-    let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("rust/tests/golden/expectations.json");
+    let path =
+        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("rust/tests/golden/expectations.json");
     let text = std::fs::read_to_string(&path)
         .unwrap_or_else(|e| panic!("could not read {}: {e}", path.display()));
     let doc: Value = serde_json::from_str(&text)
@@ -826,12 +933,20 @@ fn load_golden() -> HashMap<String, GoldenEntry> {
             .and_then(Value::as_str)
             .unwrap_or_else(|| panic!("golden entry {label:?} is missing \"input_fnv1a64\""))
             .to_string();
-        let output = entry
-            .get("output")
-            .cloned()
-            .filter(|v| !v.is_null());
-        let prior = map.insert(label.clone(), GoldenEntry { input_len, input_hash, output });
-        assert!(prior.is_none(), "duplicate golden label {label:?} in {}", path.display());
+        let output = entry.get("output").cloned().filter(|v| !v.is_null());
+        let prior = map.insert(
+            label.clone(),
+            GoldenEntry {
+                input_len,
+                input_hash,
+                output,
+            },
+        );
+        assert!(
+            prior.is_none(),
+            "duplicate golden label {label:?} in {}",
+            path.display()
+        );
     }
     map
 }
@@ -844,7 +959,12 @@ fn load_golden() -> HashMap<String, GoldenEntry> {
 /// Returns `None` when everything matches, or a `Some(String)` naming the input and showing
 /// expected vs. actual - callers accumulate these across the whole corpus rather than
 /// failing on the first one, so a single test run reports every offending input at once.
-fn compare(label: &str, input: &[u8], rust_out: &Outcome, golden: Option<&GoldenEntry>) -> Option<String> {
+fn compare(
+    label: &str,
+    input: &[u8],
+    rust_out: &Outcome,
+    golden: Option<&GoldenEntry>,
+) -> Option<String> {
     let mut problems = Vec::new();
 
     // The hook-path contract applies to every input in this corpus, golden entry or not:
@@ -965,8 +1085,7 @@ fn truncated_lossy(input: &[u8], max_bytes: usize) -> String {
 // The test
 // =============================================================================================
 
-#[test]
-fn rust_matches_recorded_golden_expectations() {
+fn all_inputs() -> Vec<(String, Vec<u8>)> {
     let known = known_model();
 
     let mut all: Vec<(String, Vec<u8>)> = Vec::new();
@@ -984,6 +1103,197 @@ fn rust_matches_recorded_golden_expectations() {
     all.extend(negation_placement_fp_controls());
     all.extend(prompt_negative_conflict_fp_controls());
 
+    for case in semantic_cases() {
+        all.push((
+            case["label"].as_str().unwrap().to_string(),
+            serde_json::to_vec(&case["input"]).unwrap(),
+        ));
+    }
+    all
+}
+
+#[test]
+fn research_mapping_references_live_controls() {
+    let labels: HashSet<String> = all_inputs().into_iter().map(|(label, _)| label).collect();
+    let sources = concat!(
+        include_str!("../src/checks.rs"),
+        include_str!("fail_silent.rs"),
+        include_str!("../src/lint.rs")
+    );
+    let mut seen = HashSet::new();
+    let mut covered = 0;
+    let mut deferred = 0;
+    for line in include_str!("golden/README.md")
+        .lines()
+        .filter(|line| line.starts_with("| F-"))
+    {
+        let fields: Vec<&str> = line.split('|').map(str::trim).collect();
+        let id = fields[1];
+        assert!(seen.insert(id), "duplicate {id}");
+        let reference = fields[3].trim_matches('`');
+        match fields[2] {
+            "covered" => {
+                covered += 1;
+                if let Some(name) = reference.strip_prefix("unit:") {
+                    assert!(
+                        sources.contains(&format!("fn {name}(")),
+                        "missing test {id}: {name}"
+                    );
+                } else {
+                    assert!(
+                        labels.contains(reference),
+                        "missing corpus {id}: {reference}"
+                    );
+                }
+            }
+            "deferred" => {
+                deferred += 1;
+                assert!(["HFR-002", "HFR-003", "HFR-004", "HFR-007"].contains(&reference));
+            }
+            status => panic!("unknown mapping status {status}"),
+        }
+        assert!(!fields[4].is_empty(), "missing explanation {id}");
+    }
+    let expected: HashSet<String> = (1..=6)
+        .chain([101, 102, 103, 201, 202, 203, 301, 302])
+        .chain(401..=416)
+        .chain(501..=508)
+        .chain(601..=624)
+        .chain(701..=703)
+        .map(|n| format!("F-{n:03}"))
+        .collect();
+    assert_eq!(
+        seen.into_iter().map(str::to_string).collect::<HashSet<_>>(),
+        expected
+    );
+    println!("research mapping: {covered} covered / {deferred} deferred / 0 accepted = 65; representative coverage explicitly marked");
+}
+
+fn semantic_cases() -> Vec<Value> {
+    let data: Value = serde_json::from_str(include_str!("golden/semantic-cases.json")).unwrap();
+    data["cases"].as_array().unwrap().clone()
+}
+
+fn actual_context(out: &Outcome) -> Option<String> {
+    if out.stdout.is_empty() {
+        return None;
+    }
+    let value: Value = serde_json::from_slice(&out.stdout).expect("hook JSON");
+    Some(
+        value["hookSpecificOutput"]["additionalContext"]
+            .as_str()
+            .expect("context")
+            .to_string(),
+    )
+}
+fn actual_ids(context: Option<&str>) -> Vec<&str> {
+    context
+        .into_iter()
+        .flat_map(|s| s.lines().skip(1))
+        .map(|line| line.strip_prefix("- ").unwrap().split_once(": ").unwrap().0)
+        .collect()
+}
+
+#[test]
+fn semantic_contract_and_repeated_process_determinism() {
+    let cases = semantic_cases();
+    let mut positives: std::collections::BTreeMap<String, (usize, usize)> = Default::default();
+    let mut negative = 0;
+    let mut limitations = 0;
+    let mut robustness = 0;
+    let mut repeated = 0;
+    for case in &cases {
+        let label = case["label"].as_str().unwrap();
+        let input = serde_json::to_vec(&case["input"]).unwrap();
+        let out = run_rust(&input);
+        assert_eq!(out.code, 0, "{label}");
+        assert!(out.stderr.is_empty(), "{label}");
+        let context = actual_context(&out);
+        let expected = case["expected_context"].as_str();
+        assert_eq!(context.as_deref(), expected, "semantic message: {label}");
+        let actual = actual_ids(context.as_deref());
+        let expected_ids: Vec<&str> = case["expected_ids"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|v| v.as_str().unwrap())
+            .collect();
+        assert_eq!(actual, expected_ids, "semantic ids: {label}");
+        match case["class"].as_str().unwrap() {
+            "negative" => {
+                negative += 1;
+                assert!(actual.is_empty(), "{label}");
+            }
+            "positive" => {
+                assert!(!expected_ids.is_empty(), "{label}");
+                for id in expected_ids.into_iter().collect::<HashSet<_>>() {
+                    let counts = positives.entry(id.to_string()).or_default();
+                    counts.0 += 1;
+                    counts.1 += usize::from(actual.contains(&id));
+                }
+            }
+            "robustness" => robustness += 1,
+            "limitation" => {
+                limitations += 1;
+                assert!(
+                    case.get("ideal_ids").is_some(),
+                    "{label}: missing ideal behavior"
+                );
+                println!(
+                    "known limitation {label}: actual={actual:?}, ideal={}",
+                    case["ideal_ids"]
+                );
+            }
+            class => panic!("unknown semantic class {class}"),
+        }
+        // Named selection, not a timing test. Covers all-check/scope, Unicode and batch paths.
+        if label.starts_with("canonical:scope:") || label == "canonical:text:fullwidth" {
+            let again = run_rust(&input);
+            assert_eq!(
+                (again.code, again.stdout, again.stderr),
+                (out.code, out.stdout, out.stderr),
+                "{label}: nondeterministic"
+            );
+            repeated += 1;
+        }
+    }
+    println!("semantic mandatory negatives: {negative}, unexpected firings: 0");
+    for (id, (total, correct)) in positives {
+        println!("supported positives {id}: {correct}/{total}");
+    }
+    println!("known limitations: {limitations}; robustness: {robustness}; repeated process cases: {repeated}; output mismatches: 0");
+}
+
+/// Read-only review aid; never writes or accepts a golden expectation.
+#[test]
+#[ignore = "read-only mismatch inspection for an intentional behavior review"]
+fn audit_golden_changes() {
+    let golden = load_golden();
+    for (label, input) in all_inputs() {
+        let out = run_rust(&input);
+        let value = if out.stdout.is_empty() {
+            Value::Null
+        } else {
+            serde_json::from_slice(&out.stdout).unwrap()
+        };
+        if golden
+            .get(&label)
+            .is_none_or(|g| g.output.as_ref().unwrap_or(&Value::Null) != &value)
+        {
+            let preview: Value = serde_json::from_slice(&input).unwrap_or(Value::Null);
+            let preview =
+                truncated_lossy(serde_json::to_string(&preview).unwrap().as_bytes(), 1500);
+            println!(
+                "AUDIT{}",
+                json!({"label":label,"input_len":input.len(),"input_fnv1a64":format!("{:016x}",fnv1a64(&input)),"preview":preview,"output":value,"code":out.code,"stderr_empty":out.stderr.is_empty()})
+            );
+        }
+    }
+}
+
+#[test]
+fn rust_matches_recorded_golden_expectations() {
+    let all = all_inputs();
     // De-duplicate by exact stdin byte content. Different sweep groups can legitimately
     // land on the same bytes (e.g. two groups both happening to build an identical params
     // object); the harness should report a distinct-input count, not an inflated one.
@@ -1031,6 +1341,18 @@ fn rust_matches_recorded_golden_expectations() {
 
     let golden = load_golden();
 
+    let missing = corpus
+        .iter()
+        .filter(|(label, _)| !golden.contains_key(label))
+        .count();
+    let changed_inputs = corpus
+        .iter()
+        .filter(|(label, input)| {
+            golden.get(label).is_some_and(|g| {
+                g.input_len != input.len() || g.input_hash != format!("{:016x}", fnv1a64(input))
+            })
+        })
+        .count();
     let mut divergences: Vec<String> = Vec::new();
     let mut seen_labels: HashSet<String> = HashSet::new();
     for (label, input) in &corpus {
@@ -1044,7 +1366,10 @@ fn rust_matches_recorded_golden_expectations() {
     // The reverse of "missing golden entry": a label the golden file still records that the
     // corpus no longer generates at all. Left unreported, `expectations.json` would quietly
     // accumulate dead entries for inputs nothing exercises any more.
-    let mut orphaned: Vec<&String> = golden.keys().filter(|l| !seen_labels.contains(*l)).collect();
+    let mut orphaned: Vec<&String> = golden
+        .keys()
+        .filter(|l| !seen_labels.contains(*l))
+        .collect();
     orphaned.sort();
     for label in &orphaned {
         divergences.push(format!(
@@ -1054,6 +1379,10 @@ fn rust_matches_recorded_golden_expectations() {
         ));
     }
 
+    println!(
+        "golden integrity: missing {missing}; orphaned {}; changed input cases {changed_inputs}",
+        orphaned.len()
+    );
     println!(
         "golden corpus: compared {} distinct inputs against {} recorded expectations - {} divergence(s)",
         corpus.len(),

@@ -1,26 +1,40 @@
-use serde_json::Value;
-use std::collections::HashSet;
-
-// `checks` and `models` are top-level sibling modules declared in main.rs (the crate
-// root), which resolves rust/src/checks.rs and rust/src/models.rs natively since they
-// are plain siblings of lint.rs - no `#[path]` juggling needed. `lint` is the
-// orchestrator and depends on both.
 use crate::checks;
-use crate::models;
+use serde_json::Value;
 
 pub struct Finding {
     pub check_id: String,
     pub message: String,
 }
 
-pub fn load_models() -> HashSet<String> {
-    models::load_models()
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ToolKind {
+    Image,
+    Video,
+    Audio,
+    Unknown,
+}
+
+pub fn tool_kind(name: Option<&str>) -> ToolKind {
+    let Some(name) = name else {
+        return ToolKind::Unknown;
+    };
+    let component = if name.starts_with("mcp__") {
+        name.rsplit("__").next().unwrap_or("")
+    } else {
+        name
+    };
+    match component {
+        "generate_image" | "generate_image_batch" => ToolKind::Image,
+        "generate_video" | "generate_video_batch" => ToolKind::Video,
+        "generate_audio" | "generate_audio_batch" => ToolKind::Audio,
+        _ => ToolKind::Unknown,
+    }
 }
 
 /// Port of `_resolve_params` (archived Python oracle,
-/// `docs/archive/verified-port/higgsfield_lint.py` lines 206-219). All three Higgsfield tool schemas
+/// `docs/archive/verified-port/higgsfield_lint.py` lines 206-219). The three single-generation schemas
 /// declare `params` as `anyOf: [object, string]`: a JSON-encoded string is a legal shape,
-/// not a malformed fixture. A string is parsed and linted normally when it decodes to an
+/// not a malformed single-call fixture. Batch string params are extra fail-open tolerance. A string is parsed and linted normally when it decodes to an
 /// object; anything else (a string that fails to parse, or that parses to a non-object,
 /// or a `raw` that is neither an object nor a string - e.g. missing, null, a list, a bool)
 /// falls through to `None`/silence.
@@ -49,13 +63,18 @@ fn resolve_params(raw: Option<&Value>) -> Option<Value> {
 /// check_negation_placement)`. `check_negation_placement` was disabled (SPEC.md §5.3;
 /// HIGGSFIELD_PROMPT_RESEARCH.md §6, §8.3) and no longer runs here at all; see
 /// `rust/src/checks.rs` for what was kept from it and why.
-fn lint_params(params: &Value) -> Vec<Finding> {
+fn lint_params(params: &Value, kind: ToolKind) -> Vec<Finding> {
     let mut findings = Vec::new();
-    if let Some(f) = checks::check_resolution_claim(params) {
+    if let Some(f) = checks::check_resolution_claim(params, kind) {
         findings.push(f);
     }
     if let Some(f) = checks::check_prompt_negative_conflict(params) {
         findings.push(f);
+    }
+    if kind == ToolKind::Video {
+        if let Some(f) = checks::check_duration_claim(params) {
+            findings.push(f);
+        }
     }
     findings
 }
@@ -103,14 +122,10 @@ fn format_index(value: &Value) -> String {
 /// Port of `lint` (archived Python oracle,
 /// `docs/archive/verified-port/higgsfield_lint.py` lines 231-253).
 ///
-/// `_models` is unused: it was threaded through to `lint_params` for
-/// `check_negation_placement`, the only check that ever read a model set, and that check
-/// was disabled (SPEC.md §5.3). The parameter stays in the signature so `main.rs` and
-/// `doctor.rs`'s self-test - which still call `load_models()` and pass its result here -
-/// don't need to change for this; HFR-006, the eventual replacement, will not use a model
-/// list at all (research §10), so this plumbing is expected to go away with it rather than
-/// be revived.
-pub fn lint(tool_input: &Value, _models: &HashSet<String>) -> Vec<Finding> {
+pub fn lint(tool_input: &Value, kind: ToolKind) -> Vec<Finding> {
+    if kind == ToolKind::Audio {
+        return Vec::new();
+    }
     let Some(tool_input) = tool_input.as_object() else {
         return Vec::new();
     };
@@ -134,7 +149,7 @@ pub fn lint(tool_input: &Value, _models: &HashSet<String>) -> Vec<Finding> {
                     .get("index")
                     .map(format_index)
                     .unwrap_or_else(|| i.to_string()); // entry.get("index", i) - positional fallback
-                for finding in lint_params(&params) {
+                for finding in lint_params(&params, kind) {
                     findings.push(Finding {
                         check_id: finding.check_id,
                         message: format!("request {}: {}", index, finding.message),
@@ -148,14 +163,18 @@ pub fn lint(tool_input: &Value, _models: &HashSet<String>) -> Vec<Finding> {
     let Some(params) = resolve_params(tool_input.get("params")) else {
         return Vec::new();
     };
-    lint_params(&params)
+    lint_params(&params, kind)
 }
 
 /// Port of `render` (archived Python oracle,
 /// `docs/archive/verified-port/higgsfield_lint.py` lines 256-260).
 pub fn render(findings: &[Finding]) -> String {
     let plural = if findings.len() == 1 { "" } else { "s" };
-    let mut lines = vec![format!("higgsfield-lint: {} finding{}", findings.len(), plural)];
+    let mut lines = vec![format!(
+        "higgsfield-lint: {} finding{}",
+        findings.len(),
+        plural
+    )];
     lines.extend(
         findings
             .iter()
@@ -169,8 +188,38 @@ mod tests {
     use super::*;
     use serde_json::json;
 
-    fn empty_models() -> HashSet<String> {
-        HashSet::new()
+    #[test]
+    fn tool_classifier_exact_components() {
+        for (suffix, kind) in [
+            ("image", ToolKind::Image),
+            ("video", ToolKind::Video),
+            ("audio", ToolKind::Audio),
+        ] {
+            for batch in ["", "_batch"] {
+                for prefix in [
+                    "",
+                    "mcp__claude_ai_Higgsfield__",
+                    "mcp__ada4cfac-9b58-4bfb-9631-4a588b7a2e4b__",
+                ] {
+                    assert_eq!(
+                        tool_kind(Some(&format!("{prefix}generate_{suffix}{batch}"))),
+                        kind
+                    );
+                }
+            }
+        }
+        for name in [
+            "",
+            "show_generate_audio",
+            "generate_audio_clone",
+            "generate_videography",
+            "mcp__x__generate_video_extra",
+            "Generate_video",
+            "other__generate_video",
+        ] {
+            assert_eq!(tool_kind(Some(name)), ToolKind::Unknown, "{name}");
+        }
+        assert_eq!(tool_kind(None), ToolKind::Unknown);
     }
 
     // --- batch path ----------------------------------------------------------------
@@ -180,11 +229,11 @@ mod tests {
         let tool_input = json!({
             "requests": [
                 {"index": 10, "params": {"prompt": "a cat on a windowsill", "width": 100, "height": 100}},
-                {"index": 20, "params": {"prompt": "shot in 4k", "width": 1280, "height": 720}},
+                {"index": 20, "params": {"model": "seedance_2_0", "prompt": "shot in 4k", "resolution": "720p"}},
                 {"index": 30, "params": {"prompt": "a dog in a garden", "width": 100, "height": 100}},
             ]
         });
-        let findings = lint(&tool_input, &empty_models());
+        let findings = lint(&tool_input, ToolKind::Video);
         assert_eq!(findings.len(), 1);
         assert!(
             findings[0].message.starts_with("request 20: "),
@@ -198,11 +247,11 @@ mod tests {
         let tool_input = json!({
             "requests": [
                 {"params": {"prompt": "a cat on a windowsill", "width": 100, "height": 100}},
-                {"params": {"prompt": "shot in 4k", "width": 1280, "height": 720}},
+                {"params": {"model": "seedance_2_0", "prompt": "shot in 4k", "resolution": "720p"}},
                 {"params": {"prompt": "a dog in a garden", "width": 100, "height": 100}},
             ]
         });
-        let findings = lint(&tool_input, &empty_models());
+        let findings = lint(&tool_input, ToolKind::Video);
         assert_eq!(findings.len(), 1);
         assert!(
             findings[0].message.starts_with("request 1: "),
@@ -215,10 +264,10 @@ mod tests {
     fn batch_entry_accepts_json_string_params() {
         let tool_input = json!({
             "requests": [
-                {"params": "{\"prompt\": \"shot in 4k\", \"width\": 1280, \"height\": 720}"}
+                {"params": "{\"model\": \"seedance_2_0\", \"prompt\": \"shot in 4k\", \"resolution\": \"720p\"}"}
             ]
         });
-        let findings = lint(&tool_input, &empty_models());
+        let findings = lint(&tool_input, ToolKind::Video);
         assert_eq!(findings.len(), 1);
         assert!(findings[0].message.starts_with("request 0: "));
     }
@@ -230,10 +279,10 @@ mod tests {
                 1,
                 "not a dict",
                 {"params": "not valid json"},
-                {"params": {"prompt": "shot in 4k", "width": 1280, "height": 720}}
+                {"params": {"model": "seedance_2_0", "prompt": "shot in 4k", "resolution": "720p"}}
             ]
         });
-        let findings = lint(&tool_input, &empty_models());
+        let findings = lint(&tool_input, ToolKind::Video);
         assert_eq!(findings.len(), 1);
         assert!(
             findings[0].message.starts_with("request 3: "),
@@ -246,9 +295,9 @@ mod tests {
     fn empty_requests_list_falls_through_to_top_level_params() {
         let tool_input = json!({
             "requests": [],
-            "params": {"prompt": "shot in 4k", "width": 1280, "height": 720}
+            "params": {"model": "seedance_2_0", "prompt": "shot in 4k", "resolution": "720p"}
         });
-        let findings = lint(&tool_input, &empty_models());
+        let findings = lint(&tool_input, ToolKind::Video);
         assert_eq!(findings.len(), 1);
         assert!(!findings[0].message.starts_with("request "));
     }
@@ -260,9 +309,9 @@ mod tests {
         // rather than falling back to the top-level `params`, which would otherwise fire.
         let tool_input = json!({
             "requests": [ {"no_params_field": true} ],
-            "params": {"prompt": "shot in 4k", "width": 100, "height": 100}
+            "params": {"model":"seedance_2_0","prompt": "shot in 4k", "resolution":"720p"}
         });
-        let findings = lint(&tool_input, &empty_models());
+        let findings = lint(&tool_input, ToolKind::Video);
         assert!(findings.is_empty());
     }
 
@@ -271,9 +320,9 @@ mod tests {
     #[test]
     fn top_level_json_string_params_is_parsed_and_linted() {
         let tool_input = json!({
-            "params": "{\"prompt\": \"shot in 4k\", \"width\": 1280, \"height\": 720}"
+            "params": "{\"model\": \"seedance_2_0\", \"prompt\": \"shot in 4k\", \"resolution\": \"720p\"}"
         });
-        let findings = lint(&tool_input, &empty_models());
+        let findings = lint(&tool_input, ToolKind::Video);
         assert_eq!(findings.len(), 1);
         assert_eq!(findings[0].check_id, "resolution_claim");
     }
@@ -283,7 +332,7 @@ mod tests {
         // Regression guard matching the archived Python test suite: a bare string that is
         // not valid JSON must still return no findings, not panic or error.
         let tool_input = json!({"params": "a bare string"});
-        assert!(lint(&tool_input, &empty_models()).is_empty());
+        assert!(lint(&tool_input, ToolKind::Video).is_empty());
     }
 
     #[test]
@@ -298,21 +347,23 @@ mod tests {
         // §8.2, §10) - "handheld" is a single-token entry that survived it.
         let tool_input = json!({
             "params": {
+                "model": "seedance_2_0",
+                "resolution": "720p",
                 "prompt": "shot in 4k, no logos, handheld camera",
                 "negative_prompt": "handheld, blurry",
                 "width": 1280,
                 "height": 720
             }
         });
-        let findings = lint(&tool_input, &empty_models());
+        let findings = lint(&tool_input, ToolKind::Video);
         let ids: Vec<&str> = findings.iter().map(|f| f.check_id.as_str()).collect();
         assert_eq!(ids, vec!["resolution_claim", "prompt_negative_conflict"]);
     }
 
     #[test]
     fn non_dict_tool_input_is_silent() {
-        assert!(lint(&json!("not an object"), &empty_models()).is_empty());
-        assert!(lint(&json!(null), &empty_models()).is_empty());
+        assert!(lint(&json!("not an object"), ToolKind::Video).is_empty());
+        assert!(lint(&json!(null), ToolKind::Video).is_empty());
     }
 
     // --- render ----------------------------------------------------------------------
