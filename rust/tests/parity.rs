@@ -1197,6 +1197,9 @@ fn actual_ids(context: Option<&str>) -> Vec<&str> {
 #[test]
 fn semantic_contract_and_repeated_process_determinism() {
     let cases = semantic_cases();
+    assert!(cases.len() >= 191, "semantic corpus unexpectedly shrank");
+    let labels: HashSet<_> = cases.iter().map(|c| c["label"].as_str().unwrap()).collect();
+    assert_eq!(labels.len(), cases.len(), "duplicate semantic labels");
     let mut positives: std::collections::BTreeMap<String, (usize, usize)> = Default::default();
     let mut negative = 0;
     let mut limitations = 0;
@@ -1256,6 +1259,24 @@ fn semantic_contract_and_repeated_process_determinism() {
             );
             repeated += 1;
         }
+    }
+    // Review any deliberate reduction; an empty/reclassified suite must not pass.
+    assert!(negative >= 59, "mandatory-negative coverage shrank");
+    assert!(
+        limitations >= 3 && robustness >= 17 && repeated >= 13,
+        "coverage class shrank"
+    );
+    for (id, minimum) in [
+        ("resolution_claim", 92),
+        ("prompt_negative_conflict", 9),
+        ("duration_claim", 16),
+    ] {
+        assert!(
+            positives
+                .get(id)
+                .is_some_and(|(total, correct)| *total >= minimum && total == correct),
+            "positive coverage shrank: {id}"
+        );
     }
     println!("semantic mandatory negatives: {negative}, unexpected firings: 0");
     for (id, (total, correct)) in positives {
@@ -1334,8 +1355,8 @@ fn rust_matches_recorded_golden_expectations() {
     );
 
     assert!(
-        corpus.len() >= 300,
-        "corpus has only {} distinct inputs after de-duplication; the task requires >= 300 - widen the sweep",
+        corpus.len() >= 538,
+        "corpus has only {} distinct inputs after de-duplication; baseline requires >= 538 - review corpus removal explicitly",
         corpus.len()
     );
 
