@@ -1,5 +1,9 @@
 # Re-ground Higgsfield lint rules on canonical MCP contracts
 
+Repository note: the old `0xdefence/higgsfield-guard` repository was deleted. This PR
+continues the work in the new public `0xdefence/higgsfield-preprocessor` repository,
+preserving the local `main` baseline and feature-branch history.
+
 ## Summary
 
 - Reconcile the six generation-tool schemas and model capabilities against the dated official MCP capture; keep CLI and MCP catalogs distinct.
