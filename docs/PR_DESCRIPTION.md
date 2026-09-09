@@ -1,8 +1,10 @@
 # Re-ground Higgsfield lint rules on canonical MCP contracts
 
-Repository note: the old `0xdefence/higgsfield-guard` repository was deleted. This PR
-continues the work in the new public `0xdefence/higgsfield-preprocessor` repository,
-preserving the local `main` baseline and feature-branch history.
+Repository note: `0xdefence/higgsfield-guard` was deleted on September 2 and restored
+through GitHub recovery on September 10. This PR continues in the original private
+repository, preserving its `main` baseline and feature-branch history. No replacement
+repository was created. GitHub does not restore previous team/collaborator permissions;
+any required access must be reviewed separately.
 
 ## Summary
 

@@ -1,8 +1,8 @@
 # higgsfield-lint
 
-Repository note (2026-09-10): the old `0xdefence/higgsfield-guard` repository was
-deleted. This project now lives at [0xdefence/higgsfield-preprocessor](https://github.com/0xdefence/higgsfield-preprocessor),
-with its local Git history preserved.
+Repository note (2026-09-10): [0xdefence/higgsfield-guard](https://github.com/0xdefence/higgsfield-guard)
+was deleted on September 2 and restored on September 10. Work continues in the
+original repository with its Git history preserved; no replacement repository was created.
 
 Advisory Claude Code `PreToolUse` hook for Higgsfield MCP image, video and audio
 generation tools. It checks supported output-tier claims, local prompt/negative-prompt
