@@ -1,24 +1,39 @@
-//! Differential parity harness.
+//! Golden-output regression corpus.
 //!
-//! `src/higgsfield_lint.py` is the READ-ONLY oracle for this port - it is never edited,
-//! including to make a comparison here pass. Every previous task's unit/integration tests
-//! prove the Rust matches what the porter *believed* the Python does; this harness proves
-//! it matches what the Python *actually does*, by running both implementations against an
-//! identical corpus of stdin payloads and diffing the results. A single divergence fails
-//! the whole test; if that happens the Rust is what changes, not the oracle.
+//! This harness used to be a differential parity harness against `src/higgsfield_lint.py`,
+//! a hand-written Python port of the original design. That job is finished: the Rust was
+//! proven output-equivalent to the Python at 320 distinct inputs / 0 divergences, plus
+//! 4,200 independently-fuzzed inputs from a separate reviewer. The Python oracle is now
+//! archived, read-only, at `docs/archive/verified-port/` - see its README there for the
+//! full history and the exact commit that was true at.
 //!
-//! Comparison rules (task-5-brief.md Step 2):
-//!   - both processes must exit 0,
-//!   - both stderr streams must be empty,
-//!   - stdout must either be empty on BOTH sides, or parse as JSON on BOTH sides and be
-//!     equal AS PARSED VALUES - never as raw bytes. Python's `json.dump` emits
-//!     `{"a": 1}` (space after `:` and `,`); `serde_json::to_string` emits `{"a":1}`. A
-//!     byte-for-byte comparison would fail on every single non-empty output for a reason
-//!     that has nothing to do with correctness, so both outputs are parsed back into
-//!     `serde_json::Value` and compared structurally instead.
+//! Rust is the sole implementation; SPEC and canonical evidence govern intended behavior.
+//! This file preserves the historical corpus - the real fixtures,
+//! the pathological-input set, and the generated sweep across every lexicon entry,
+//! dimension pair, and negation form - but compares the compiled binary's output against
+//! **recorded expectations** in `rust/tests/golden/expectations.json` instead of against a
+//! second live process. Original expectations were captured before the oracle retired;
+//! subsequent reviewed revisions are recorded in metadata and the per-label change ledger.
+//!
+//! Every subsequent rule change in this project's plan deliberately flips some of these
+//! expectations. That is expected and healthy - a flip is a reviewed behaviour change, not
+//! a bug - but it must be a *conscious* edit to `expectations.json`, never a silent one:
+//! there is no mechanism here that regenerates the file automatically, on purpose.
+//!
+//! Comparison rules (unchanged in spirit from the retired differential version):
+//!   - the binary must exit 0 and write nothing to stderr (the hook-path contract, checked
+//!     here as well as in `fail_silent.rs`, since every input in this corpus exercises it),
+//!   - stdout must be empty exactly when the recorded expectation is `null`, or parse as
+//!     JSON and be structurally equal to the recorded expectation - never compared as raw
+//!     bytes, since `serde_json::to_string`'s separator whitespace and key ordering are not
+//!     part of the contract.
+//!   - the exact input bytes generated for a label must still hash to what was recorded at
+//!     capture time. A hash mismatch means the corpus-generation code changed what a label
+//!     produces without anyone re-capturing it - a silent drift in what is being tested,
+//!     not a rule-behaviour change, and it is reported as its own failure category.
 
 use serde_json::{json, Value};
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::io::Write;
 use std::path::PathBuf;
 use std::process::{Command, Stdio};
@@ -59,38 +74,52 @@ fn run_rust(input: &[u8]) -> Outcome {
     run(Command::new(exe), input)
 }
 
-fn run_python(input: &[u8]) -> Outcome {
-    // CARGO_MANIFEST_DIR is the directory containing the Cargo.toml that declares this
-    // `[[test]]` target - the repo root - so this resolves regardless of the cwd `cargo
-    // test` happens to be invoked from.
-    let script = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("src/higgsfield_lint.py");
-    let mut cmd = Command::new("python3");
-    cmd.arg(script);
-    run(cmd, input)
+/// FNV-1a, 64-bit. Chosen over `std::collections::hash_map::DefaultHasher` deliberately:
+/// this hash is persisted in a checked-in file and compared across separate `cargo test`
+/// invocations (possibly different machines, different Rust versions), and the standard
+/// library documents `DefaultHasher`'s exact algorithm as an implementation detail that is
+/// free to change between releases. FNV-1a is a fixed, fully specified algorithm with no
+/// such caveat, and is trivial to implement from stdlib alone.
+fn fnv1a64(bytes: &[u8]) -> u64 {
+    let mut hash: u64 = 0xcbf29ce484222325;
+    for &b in bytes {
+        hash ^= b as u64;
+        hash = hash.wrapping_mul(0x0000_0100_0000_01b3);
+    }
+    hash
 }
 
 // =============================================================================================
-// Shared corpus-building vocabulary (mirrors the oracle's lexicons - see
-// src/higgsfield_lint.py lines 21-133 and rust/src/checks.rs lines 21-271)
+// Shared corpus-building vocabulary (mirrors the specification's lexicons - see
+// rust/src/checks.rs lines 21-271. CONFLICT_PHRASES below was updated in task 3 to mirror
+// checks.rs's recalibrated list (SPEC.md §5.2; HIGGSFIELD_PROMPT_RESEARCH.md §10) -
+// everywhere else in this section is unchanged from the retired differential harness.)
 // =============================================================================================
 
 const RESOLUTION_TERMS: &[&str] = &["8k", "4k", "uhd", "1080p", "full hd", "720p", "480p"];
 
+// F3 (task-3 fix report): `letterbox` and `watermark` demoted to bigrams (`letterbox
+// bars`, `watermark overlay`) - mirrors checks.rs's CONFLICT_PHRASES; see the comment
+// there for why.
 const CONFLICT_PHRASES: &[&str] = &[
     "slow motion",
     "slow-mo",
     "motion blur",
-    "static",
-    "blurred",
-    "blurry",
-    "sharp",
-    "text",
     "close-up",
     "wide shot",
-    "zoom",
-    "pan",
     "handheld",
-    "grain",
+    "blurred",
+    "blurry",
+    "camera pan",
+    "whip pan",
+    "slow zoom",
+    "on-screen text",
+    "film grain",
+    "static shot",
+    "lens flare",
+    "letterbox bars",
+    "watermark overlay",
+    "subtitles",
 ];
 
 const NEGATION_FORMS: &[&str] = &["no", "without", "avoid", "not"];
@@ -108,17 +137,19 @@ const UNKNOWN_MODEL: &str = "not_a_real_model_xyz";
 const TOOL_SINGLE: &str = "mcp__higgsfield__generate_video";
 const TOOL_BATCH: &str = "mcp__higgsfield__generate_video_batch";
 
-/// The one model `check_negation_placement` treats as negative_prompt-capable, read from
-/// the real data file rather than hardcoded, so this keeps working if the list changes.
+/// Historically, the one model `check_negation_placement` treated as
+/// negative_prompt-capable, read from `data/negative_prompt_models.json` rather than
+/// hardcoded so the corpus kept working if the list changed. That check and its data
+/// file were both retired (SPEC.md §5.3; HIGGSFIELD_PROMPT_RESEARCH.md §6, §8.3) - no
+/// reads that retired model list. Active checks now use canonical model constants.
+/// The literal is kept unchanged rather than deleted: this function still feeds every
+/// sweep below that varies a `model` field, and hardcoding the same value keeps those
+/// sweeps generating byte-identical input to what they always have (recorded
+/// `input_len`/`input_fnv1a64` in `rust/tests/golden/expectations.json` are unaffected) -
+/// only the *expected outputs* for the cases that used to trigger
+/// `check_negation_placement` changed when the check was disabled.
 fn known_model() -> String {
-    let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("data/negative_prompt_models.json");
-    let text = std::fs::read_to_string(&path)
-        .unwrap_or_else(|e| panic!("could not read {}: {e}", path.display()));
-    let list: Vec<String> =
-        serde_json::from_str(&text).expect("data/negative_prompt_models.json must be a JSON list");
-    list.into_iter()
-        .next()
-        .expect("data/negative_prompt_models.json must be non-empty")
+    "kling2_6".to_string()
 }
 
 fn wrap(tool_name: &str, tool_input: Value) -> Vec<u8> {
@@ -142,7 +173,11 @@ fn batch_one(index: Value, params: Value) -> Value {
     json!({"requests": [{"index": index, "params": params}]})
 }
 
-fn with_optional(mut obj: serde_json::Map<String, Value>, negative: Option<&str>, model: Option<&str>) -> Value {
+fn with_optional(
+    mut obj: serde_json::Map<String, Value>,
+    negative: Option<&str>,
+    model: Option<&str>,
+) -> Value {
     if let Some(n) = negative {
         obj.insert("negative_prompt".to_string(), json!(n));
     }
@@ -183,7 +218,10 @@ fn fixture_inputs() -> Vec<(String, Vec<u8>)> {
         let fixture: Value = serde_json::from_str(&text).unwrap();
         let name = path.file_name().unwrap().to_string_lossy().to_string();
 
-        out.push((format!("fixture:{name}:single"), wrap(TOOL_SINGLE, fixture.clone())));
+        out.push((
+            format!("fixture:{name}:single"),
+            wrap(TOOL_SINGLE, fixture.clone()),
+        ));
 
         let params = fixture
             .get("params")
@@ -212,16 +250,34 @@ fn pathological_inputs() -> Vec<(String, Vec<u8>)> {
         ("garbage", b"not json".to_vec()),
         ("empty_object", b"{}".to_vec()),
         ("tool_input_null", br#"{"tool_input": null}"#.to_vec()),
-        ("tool_input_string", br#"{"tool_input": "a string"}"#.to_vec()),
-        ("params_bare_string", br#"{"tool_input": {"params": "a bare string"}}"#.to_vec()),
-        ("params_non_dict_list", br#"{"tool_input": {"params": []}}"#.to_vec()),
-        ("requests_not_a_list", br#"{"tool_input": {"requests": "not a list"}}"#.to_vec()),
-        ("requests_junk_entries", br#"{"tool_input": {"requests": [null, 3, "x"]}}"#.to_vec()),
+        (
+            "tool_input_string",
+            br#"{"tool_input": "a string"}"#.to_vec(),
+        ),
+        (
+            "params_bare_string",
+            br#"{"tool_input": {"params": "a bare string"}}"#.to_vec(),
+        ),
+        (
+            "params_non_dict_list",
+            br#"{"tool_input": {"params": []}}"#.to_vec(),
+        ),
+        (
+            "requests_not_a_list",
+            br#"{"tool_input": {"requests": "not a list"}}"#.to_vec(),
+        ),
+        (
+            "requests_junk_entries",
+            br#"{"tool_input": {"requests": [null, 3, "x"]}}"#.to_vec(),
+        ),
         ("invalid_utf8", vec![0xff, 0xfe, 0x00, 0x01]),
         (
             "huge_prompt",
-            format!(r#"{{"tool_input":{{"params":{{"prompt":"{}"}}}}}}"#, "a".repeat(5_000_000))
-                .into_bytes(),
+            format!(
+                r#"{{"tool_input":{{"params":{{"prompt":"{}"}}}}}}"#,
+                "a".repeat(5_000_000)
+            )
+            .into_bytes(),
         ),
         (
             "deeply_nested_array",
@@ -232,7 +288,10 @@ fn pathological_inputs() -> Vec<(String, Vec<u8>)> {
         // nothing special in either implementation (no field named `__panic__` is read by
         // either the oracle or the port), so both sides simply find no prompt/resolution
         // and stay silent - which is itself worth confirming stays true.
-        ("magic_panic_key", br#"{"tool_input": {"params": {"__panic__": true}}}"#.to_vec()),
+        (
+            "magic_panic_key",
+            br#"{"tool_input": {"params": {"__panic__": true}}}"#.to_vec(),
+        ),
     ];
     cases
         .into_iter()
@@ -254,19 +313,35 @@ fn resolution_sweep() -> Vec<(String, Vec<u8>)> {
             let prompt = format!("epic cinematic scene, {variant}, highly detailed");
             for (w, h) in DIMENSION_PAIRS {
                 let params = json!({"prompt": prompt, "width": w, "height": h});
-                out.push((format!("resolution:{variant}:{w}x{h}:obj"), wrap(TOOL_SINGLE, single(params.clone()))));
-                out.push((format!("resolution:{variant}:{w}x{h}:str"), wrap(TOOL_SINGLE, single_str(&params))));
+                out.push((
+                    format!("resolution:{variant}:{w}x{h}:obj"),
+                    wrap(TOOL_SINGLE, single(params.clone())),
+                ));
+                out.push((
+                    format!("resolution:{variant}:{w}x{h}:str"),
+                    wrap(TOOL_SINGLE, single_str(&params)),
+                ));
             }
             // Booleans must be excluded from dimension logic even though
             // `isinstance(True, int)` is `True` in Python - the oracle explicitly guards
             // against this (`_is_int_dimension`).
             let bool_params = json!({"prompt": prompt, "width": true, "height": true});
-            out.push((format!("resolution:{variant}:bool_dims"), wrap(TOOL_SINGLE, single(bool_params))));
+            out.push((
+                format!("resolution:{variant}:bool_dims"),
+                wrap(TOOL_SINGLE, single(bool_params)),
+            ));
         }
     }
-    for res_val in KNOWN_RESOLUTION_PARAM_VALUES.iter().chain(UNKNOWN_RESOLUTION_PARAM_VALUES.iter()) {
-        let params = json!({"prompt": "shot in 4k, cinematic establishing shot", "resolution": res_val});
-        out.push((format!("resolution_param:{res_val}"), wrap(TOOL_SINGLE, single(params))));
+    for res_val in KNOWN_RESOLUTION_PARAM_VALUES
+        .iter()
+        .chain(UNKNOWN_RESOLUTION_PARAM_VALUES.iter())
+    {
+        let params =
+            json!({"prompt": "shot in 4k, cinematic establishing shot", "resolution": res_val});
+        out.push((
+            format!("resolution_param:{res_val}"),
+            wrap(TOOL_SINGLE, single(params)),
+        ));
     }
     out
 }
@@ -281,14 +356,23 @@ fn conflict_phrase_sweep() -> Vec<(String, Vec<u8>)> {
             "prompt": format!("a scene featuring {phrase}, cinematic composition"),
             "negative_prompt": format!("{phrase}, low quality")
         });
-        out.push((format!("conflict:{phrase}:obj"), wrap(TOOL_SINGLE, single(params.clone()))));
-        out.push((format!("conflict:{phrase}:str"), wrap(TOOL_SINGLE, single_str(&params))));
+        out.push((
+            format!("conflict:{phrase}:obj"),
+            wrap(TOOL_SINGLE, single(params.clone())),
+        ));
+        out.push((
+            format!("conflict:{phrase}:str"),
+            wrap(TOOL_SINGLE, single_str(&params)),
+        ));
 
         let negated_params = json!({
             "prompt": format!("no {phrase}, cat on a windowsill"),
             "negative_prompt": format!("{phrase}, low quality")
         });
-        out.push((format!("conflict_agreement:{phrase}"), wrap(TOOL_SINGLE, single(negated_params))));
+        out.push((
+            format!("conflict_agreement:{phrase}"),
+            wrap(TOOL_SINGLE, single(negated_params)),
+        ));
     }
     out
 }
@@ -311,7 +395,10 @@ fn negation_form_sweep(known: &str) -> Vec<(String, Vec<u8>)> {
             }
         }
         let base = json!({"prompt": prompt, "negative_prompt": "blurry"});
-        out.push((format!("negation_form:{form}:str"), wrap(TOOL_SINGLE, single_str(&base))));
+        out.push((
+            format!("negation_form:{form}:str"),
+            wrap(TOOL_SINGLE, single_str(&base)),
+        ));
     }
     out
 }
@@ -322,7 +409,10 @@ fn negation_form_sweep(known: &str) -> Vec<(String, Vec<u8>)> {
 fn stopword_sweep(known: &str) -> Vec<(String, Vec<u8>)> {
     let mut out = Vec::new();
     let idioms = [
-        ("no_more", "a busy street with no more than three people visible"),
+        (
+            "no_more",
+            "a busy street with no more than three people visible",
+        ),
         ("no_longer", "a building that is no longer standing"),
         ("no_matter", "a hero who fights no matter what happens"),
     ];
@@ -331,11 +421,17 @@ fn stopword_sweep(known: &str) -> Vec<(String, Vec<u8>)> {
             let mut m = serde_json::Map::new();
             m.insert("prompt".to_string(), json!(prompt));
             let params = with_optional(m, Some("blurry"), model);
-            out.push((format!("stopword:{name}:model={model:?}"), wrap(TOOL_SINGLE, single(params))));
+            out.push((
+                format!("stopword:{name}:model={model:?}"),
+                wrap(TOOL_SINGLE, single(params)),
+            ));
         }
         let mixed_prompt = format!("{prompt}, no clutter");
         let params = json!({"prompt": mixed_prompt, "negative_prompt": "blurry"});
-        out.push((format!("stopword:{name}:mixed_with_directive"), wrap(TOOL_SINGLE, single(params))));
+        out.push((
+            format!("stopword:{name}:mixed_with_directive"),
+            wrap(TOOL_SINGLE, single(params)),
+        ));
     }
     out
 }
@@ -345,22 +441,39 @@ fn stopword_sweep(known: &str) -> Vec<(String, Vec<u8>)> {
 fn gerund_sweep(known: &str) -> Vec<(String, Vec<u8>)> {
     let mut out = Vec::new();
     let noise_phrases = ["without moving", "without breathing", "without blinking"];
-    let directive_phrases = ["no flickering", "no warping", "avoid flickering", "avoid shimmering"];
+    let directive_phrases = [
+        "no flickering",
+        "no warping",
+        "avoid flickering",
+        "avoid shimmering",
+    ];
 
     for phrase in noise_phrases {
         for model in [Some(known), None] {
             let mut m = serde_json::Map::new();
-            m.insert("prompt".to_string(), json!(format!("a monk sitting {phrase}, breathing slowly")));
+            m.insert(
+                "prompt".to_string(),
+                json!(format!("a monk sitting {phrase}, breathing slowly")),
+            );
             let params = with_optional(m, Some("blurry"), model);
-            out.push((format!("gerund_noise:{phrase}:model={model:?}"), wrap(TOOL_SINGLE, single(params))));
+            out.push((
+                format!("gerund_noise:{phrase}:model={model:?}"),
+                wrap(TOOL_SINGLE, single(params)),
+            ));
         }
     }
     for phrase in directive_phrases {
         for model in [Some(known), None] {
             let mut m = serde_json::Map::new();
-            m.insert("prompt".to_string(), json!(format!("a scene, {phrase}, cinematic")));
+            m.insert(
+                "prompt".to_string(),
+                json!(format!("a scene, {phrase}, cinematic")),
+            );
             let params = with_optional(m, Some("blurry"), model);
-            out.push((format!("gerund_directive:{phrase}:model={model:?}"), wrap(TOOL_SINGLE, single(params))));
+            out.push((
+                format!("gerund_directive:{phrase}:model={model:?}"),
+                wrap(TOOL_SINGLE, single(params)),
+            ));
         }
     }
     out
@@ -382,13 +495,27 @@ fn dimension_pair_sweep() -> Vec<(String, Vec<u8>)> {
         // and pairs that clear the floor ((1920,100), (1376,768), (3840,2160)) all fire,
         // since none reaches the 8k claim's 4320px minimum short side.
         let params = json!({"prompt": "a calm nature scene shot in 8k", "width": w, "height": h});
-        out.push((format!("dims:{w}x{h}:obj"), wrap(TOOL_SINGLE, single(params.clone()))));
-        out.push((format!("dims:{w}x{h}:str"), wrap(TOOL_SINGLE, single_str(&params))));
+        out.push((
+            format!("dims:{w}x{h}:obj"),
+            wrap(TOOL_SINGLE, single(params.clone())),
+        ));
+        out.push((
+            format!("dims:{w}x{h}:str"),
+            wrap(TOOL_SINGLE, single_str(&params)),
+        ));
     }
-    let bool_params = json!({"prompt": "shot in 8k, dramatic lighting", "width": true, "height": true});
-    out.push(("dims:true_true".to_string(), wrap(TOOL_SINGLE, single(bool_params))));
-    let float_params = json!({"prompt": "shot in 4k, dramatic lighting", "width": 100.0, "height": 100.0});
-    out.push(("dims:floats_excluded".to_string(), wrap(TOOL_SINGLE, single(float_params))));
+    let bool_params =
+        json!({"prompt": "shot in 8k, dramatic lighting", "width": true, "height": true});
+    out.push((
+        "dims:true_true".to_string(),
+        wrap(TOOL_SINGLE, single(bool_params)),
+    ));
+    let float_params =
+        json!({"prompt": "shot in 4k, dramatic lighting", "width": 100.0, "height": 100.0});
+    out.push((
+        "dims:floats_excluded".to_string(),
+        wrap(TOOL_SINGLE, single(float_params)),
+    ));
 
     // F1: an ASYMMETRIC boolean/integer pair. Every other boolean case in this corpus
     // pairs `true` with `true` (or `false` with `false`), which is non-discriminating: a
@@ -400,7 +527,10 @@ fn dimension_pair_sweep() -> Vec<(String, Vec<u8>)> {
     // WOULD fire against the "8k" claim's 4320px minimum, while the correct
     // implementation excludes the boolean `width` entirely and stays silent.
     let asymmetric_bool_params = json!({"prompt": "shot in 8k", "width": true, "height": 3840});
-    out.push(("dims:asymmetric_bool".to_string(), wrap(TOOL_SINGLE, single(asymmetric_bool_params))));
+    out.push((
+        "dims:asymmetric_bool".to_string(),
+        wrap(TOOL_SINGLE, single(asymmetric_bool_params)),
+    ));
     out
 }
 
@@ -444,14 +574,20 @@ fn batch_sweep(known: &str) -> Vec<(String, Vec<u8>)> {
         // silence-equals-silence match, never exercising `format_index`'s rendering of
         // the index into the "request {index}: ..." message text at all.
         let params = json!({"prompt": "shot in 4k, cinematic", "width": 1280, "height": 100});
-        out.push((format!("batch:index={idx}"), wrap(TOOL_BATCH, batch_one(idx.clone(), params))));
+        out.push((
+            format!("batch:index={idx}"),
+            wrap(TOOL_BATCH, batch_one(idx.clone(), params)),
+        ));
     }
 
     let positional_fallback = json!({"requests": [
         {"params": {"prompt": "a cat on a windowsill", "width": 100, "height": 100}},
         {"params": {"prompt": "shot in 4k, cinematic", "width": 1280, "height": 720}},
     ]});
-    out.push(("batch:positional_fallback".to_string(), wrap(TOOL_BATCH, positional_fallback)));
+    out.push((
+        "batch:positional_fallback".to_string(),
+        wrap(TOOL_BATCH, positional_fallback),
+    ));
 
     let mixed = json!({"requests": [
         {"index": "req-a", "params": {"prompt": "shot in 4k, cinematic", "width": 1280, "height": 720}},
@@ -510,6 +646,217 @@ fn combined_sweep(known: &str) -> Vec<(String, Vec<u8>)> {
     out
 }
 
+/// Permanent negative controls for the five false-positive classes that
+/// `negation_placement` was confirmed to fire on (HIGGSFIELD_PROMPT_RESEARCH.md §8.3).
+/// Each is a *real* firing against the shipped binary, not hypothetical: FP1 quotes
+/// Higgsfield's own published style header, and FP4 is the span-spill case where the
+/// <=3-word window crossed a clause boundary and quoted "no logos a beautiful", a phrase
+/// nobody wrote. They exist to guard against the original rule returning unchanged.
+fn negation_placement_fp_controls() -> Vec<(String, Vec<u8>)> {
+    vec![
+        // FP1 - Higgsfield house style. Every quoted span is copied from their own ad-guide
+        // style header, and a negative_prompt is present so the old gate would open.
+        (
+            "fp_control:negation_placement:higgsfield_style_header",
+            json!({
+                "model": "seedance_2_5",
+                "prompt": "Style: 8K IMAX commercial. No jitter, no music, no subtitles, no readable text.",
+                "negative_prompt": "watermark"
+            }),
+        ),
+        // FP2 - scene description. These describe what is in the frame, not an artifact to
+        // suppress; moving them to negative_prompt would remove the subject.
+        (
+            "fp_control:negation_placement:scene_description",
+            json!({
+                "model": "kling2_6",
+                "prompt": "A road with no cars. A man with no hat walks along it."
+            }),
+        ),
+        // FP3 - quoted literal. The text is the subject of the shot.
+        (
+            "fp_control:negation_placement:quoted_literal",
+            json!({
+                "model": "kling2_6",
+                "prompt": "A sign reading \"NO PARKING\" hangs above the door."
+            }),
+        ),
+        // FP4 - span spill. Unpunctuated prose let the window cross a clause boundary.
+        (
+            "fp_control:negation_placement:span_spill",
+            json!({
+                "model": "kling2_6",
+                "prompt": "a wide establishing shot with no logos a beautiful sunlit plaza and no signage anywhere in frame"
+            }),
+        ),
+        // FP5 - the seed-list branch alone. No negative_prompt in the call at all; the rule
+        // fired purely because the model name was on a one-entry list seeded from the field
+        // having once been *sent*, never from evidence it is honoured.
+        (
+            "fp_control:negation_placement:seed_list_only_no_negative_prompt",
+            json!({
+                "model": "kling2_6",
+                "prompt": "a calm harbour at dawn, no text and no watermark"
+            }),
+        ),
+    ]
+    .into_iter()
+    .map(|(name, params)| (name.to_string(), wrap(TOOL_SINGLE, single(params))))
+    .collect()
+}
+
+/// Permanent negative controls for `prompt_negative_conflict`'s recalibration
+/// (HIGGSFIELD_PROMPT_RESEARCH.md §8.2, §10; SPEC.md §5.2). The first three are *real*
+/// firings against the shipped pre-recalibration binary, not hypothetical - the audit ran
+/// them and recorded the actual output. They must all be silent once the four changes from
+/// research §10 land:
+///   - a common-noun homograph (`pan` the cookware vs `pan` the camera move),
+///   - a quoted literal the prompt is supposed to contain per Nano Banana's own guidance
+///     (`text` inside `"OPEN"` vs `misspelled text` as a thing to avoid),
+///   - agreement rather than conflict (`sharp` in the prompt vs `not sharp` in
+///     `negative_prompt` - both fields want the same thing once negations are stripped
+///     from both, not just the prompt).
+///
+/// **`sharp_focus_soft_focus` and `not_sharp_leading_in_negative` are confounded and prove
+/// nothing about change 1.** They were written to cover the third bullet above (strip
+/// negations from BOTH fields, not just the prompt), but `sharp` was ALSO dropped from
+/// `CONFLICT_PHRASES` outright, in the very same recalibration commit (change 4: a
+/// confirmed-obvious homograph). A term that is not in the lexicon at all can never fire,
+/// independent of whether negations are stripped from one field or two - so both controls
+/// stay silent for a reason that has nothing to do with change 1. Confirmed by reverting
+/// only `strip_negations(negative)` back to `negative` in a scratch copy of this repo and
+/// re-running the golden suite: it stayed 344/344/0, naming neither control (see the
+/// task-3 fix report, finding F2, for the full before/after). They are kept below because
+/// they still legitimately cover the homograph drop (change 4) for `sharp` specifically -
+/// just relabelled to say so - but `handheld_survivor_negation_strip` is the control that
+/// actually exercises change 1: it uses `handheld`, a term that SURVIVES the recalibrated
+/// lexicon, so reverting change 1 alone has something left to flip. The same reviewer
+/// re-run with change 1 reverted DOES flip `handheld_survivor_negation_strip` (and does not
+/// flip anything else), proving this new control discriminates where the old two did not.
+///
+/// The remaining entries: one more exercises the negation-in-negative-field strip with a
+/// minimal `negative_prompt` value; a quoted-survivor entry covers change 2 (the quote
+/// exclusion) with a term that also survives the lexicon, for the same reason;
+/// `letterbox_mail_slot` and `paper_watermark` are F3's real confirmed firings that
+/// motivated demoting `letterbox` and `watermark` to bigrams (see the comment on
+/// `CONFLICT_PHRASES` above); and the final two are the `""` / whitespace-only
+/// `negative_prompt` edge cases research §8.2's "Benchmark additions" row calls for.
+/// `whitespace_only_negative_prompt` deliberately uses different prompt text from
+/// `extra_edge_sweep`'s `edge:negative_prompt_whitespace_only` case - identical stdin
+/// bytes under two labels would be silently dropped by the corpus's
+/// de-duplication guard (see the collision check in
+/// `rust_matches_recorded_golden_expectations` below).
+fn prompt_negative_conflict_fp_controls() -> Vec<(String, Vec<u8>)> {
+    vec![
+        // FP1 - common-noun homograph. Research §8.2: confirmed firing on the shipped
+        // binary before recalibration.
+        (
+            "fp_control:prompt_negative_conflict:cast_iron_pan",
+            json!({
+                "prompt": "A cast-iron pan sizzles on the stove.",
+                "negative_prompt": "pan, zoom, camera movement"
+            }),
+        ),
+        // FP2 - quoted literal text, exactly the pairing Nano Banana's own help article
+        // recommends: quote the literal, suppress typography artifacts in the negative.
+        (
+            "fp_control:prompt_negative_conflict:quoted_literal_text",
+            json!({
+                "prompt": "A poster with the text \"OPEN\" in bold.",
+                "negative_prompt": "misspelled text, distorted letters"
+            }),
+        ),
+        // FP3 - agreement, not conflict, in intent: "not sharp" in negative_prompt already
+        // says the same thing "soft focus" does. BUT: `sharp` was dropped from
+        // CONFLICT_PHRASES entirely (change 4, homograph), so this control is silent for
+        // that reason alone and proves nothing about change 1 (strip negations from both
+        // fields) - see the doc comment above this function. Kept as a homograph-drop
+        // control, not a change-1 control.
+        (
+            "fp_control:prompt_negative_conflict:sharp_focus_soft_focus",
+            json!({
+                "prompt": "sharp focus on the blade",
+                "negative_prompt": "soft focus, not sharp"
+            }),
+        ),
+        // "not sharp" in the negative field specifically, isolated from FP3's longer
+        // string and phrased so the negation sits at the very start of the field. Same
+        // caveat as FP3: `sharp` is not in the lexicon at all, so this is a homograph-drop
+        // control, not a change-1 control - see the doc comment above this function.
+        (
+            "fp_control:prompt_negative_conflict:not_sharp_leading_in_negative",
+            json!({
+                "prompt": "a knife with a sharp edge on the counter",
+                "negative_prompt": "not sharp, oversaturated colors"
+            }),
+        ),
+        // F2 (task-3 fix report): the control that actually exercises change 1 (strip
+        // negations from BOTH fields, not just the prompt). Unlike the two `sharp` controls
+        // above, `handheld` SURVIVES the recalibrated lexicon - so reverting change 1 alone
+        // (leaving `negative` unstripped) has something to flip here. Verified: on this
+        // change 1 fires and this control is silent; reverting only `strip_negations(negative)`
+        // -> `negative` in a scratch copy makes the golden suite FAIL, naming exactly this
+        // label (see the task-3 fix report for the full transcript).
+        (
+            "fp_control:prompt_negative_conflict:handheld_survivor_negation_strip",
+            json!({
+                "prompt": "a handheld tracking shot",
+                "negative_prompt": "not handheld, tripod-mounted only"
+            }),
+        ),
+        // A quoted occurrence of a term that SURVIVES the recalibrated lexicon
+        // (`close-up` is kept, per SPEC.md §5.2) - proves the quote-exclusion helper does
+        // real work here, rather than the case only passing because the term itself was
+        // dropped as a homograph (as FP2's `text` is).
+        (
+            "fp_control:prompt_negative_conflict:quoted_survivor_term",
+            json!({
+                "prompt": "The subtitle card reads \"close-up\" as the scene direction.",
+                "negative_prompt": "close-up, motion blur"
+            }),
+        ),
+        // F3 (task-3 fix report) - the two demonstrated false positives that motivated
+        // demoting `letterbox` and `watermark` from bare tokens to bigrams
+        // (`letterbox bars`, `watermark overlay`): both confirmed firing on the shipped
+        // binary before this change, same homograph shape as FP1's cast-iron pan.
+        (
+            "fp_control:prompt_negative_conflict:letterbox_mail_slot",
+            json!({
+                "prompt": "A red letterbox on a quiet village street at dawn.",
+                "negative_prompt": "letterbox, black bars, borders"
+            }),
+        ),
+        (
+            "fp_control:prompt_negative_conflict:paper_watermark",
+            json!({
+                "prompt": "A close look at handmade paper with a visible watermark.",
+                "negative_prompt": "watermark, logo, signature"
+            }),
+        ),
+        // negative_prompt of "" - no term can match an empty string.
+        (
+            "fp_control:prompt_negative_conflict:empty_negative_prompt",
+            json!({
+                "prompt": "a scene with sharp focus, slow motion, camera pan across the skyline",
+                "negative_prompt": ""
+            }),
+        ),
+        // negative_prompt of whitespace only - distinct prompt text from
+        // extra_edge_sweep's edge:negative_prompt_whitespace_only to avoid a byte
+        // collision (see the doc comment above).
+        (
+            "fp_control:prompt_negative_conflict:whitespace_only_negative_prompt",
+            json!({
+                "prompt": "slow motion establishing shot, panning across the skyline",
+                "negative_prompt": "   "
+            }),
+        ),
+    ]
+    .into_iter()
+    .map(|(name, params)| (name.to_string(), wrap(TOOL_SINGLE, single(params))))
+    .collect()
+}
+
 /// Type-confusion and other edges not otherwise covered: wrong-typed fields, whitespace-only
 /// negative_prompt, non-string resolution, negative/string-encoded dimensions, missing
 /// prompt, and a non-ASCII prompt (exercises the char-based, not byte-based, boundary scan).
@@ -541,52 +888,163 @@ fn extra_edge_sweep() -> Vec<(String, Vec<u8>)> {
 }
 
 // =============================================================================================
+// Golden expectations
+// =============================================================================================
+
+/// One recorded expectation: the label it was captured under, the length and FNV-1a hash of
+/// the exact input bytes the corpus generator produced for that label at capture time, and
+/// the expected output (`None` means the hook must be silent - empty stdout).
+struct GoldenEntry {
+    input_len: usize,
+    input_hash: String,
+    output: Option<Value>,
+}
+
+/// Loads `rust/tests/golden/expectations.json` into a label -> entry map. Panics (not a
+/// soft failure) on a malformed golden file or a duplicate label - both mean the file was
+/// hand-edited into an inconsistent state, which is a setup bug, not a rule-behaviour
+/// question the divergence report should have to explain.
+fn load_golden() -> HashMap<String, GoldenEntry> {
+    let path =
+        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("rust/tests/golden/expectations.json");
+    let text = std::fs::read_to_string(&path)
+        .unwrap_or_else(|e| panic!("could not read {}: {e}", path.display()));
+    let doc: Value = serde_json::from_str(&text)
+        .unwrap_or_else(|e| panic!("{} is not valid JSON: {e}", path.display()));
+    let entries = doc
+        .get("entries")
+        .and_then(Value::as_array)
+        .unwrap_or_else(|| panic!("{} has no top-level \"entries\" array", path.display()));
+
+    let mut map = HashMap::with_capacity(entries.len());
+    for entry in entries {
+        let label = entry
+            .get("label")
+            .and_then(Value::as_str)
+            .unwrap_or_else(|| panic!("a golden entry is missing its \"label\" string: {entry}"))
+            .to_string();
+        let input_len = entry
+            .get("input_len")
+            .and_then(Value::as_u64)
+            .unwrap_or_else(|| panic!("golden entry {label:?} is missing \"input_len\""))
+            as usize;
+        let input_hash = entry
+            .get("input_fnv1a64")
+            .and_then(Value::as_str)
+            .unwrap_or_else(|| panic!("golden entry {label:?} is missing \"input_fnv1a64\""))
+            .to_string();
+        let output = entry.get("output").cloned().filter(|v| !v.is_null());
+        let prior = map.insert(
+            label.clone(),
+            GoldenEntry {
+                input_len,
+                input_hash,
+                output,
+            },
+        );
+        assert!(
+            prior.is_none(),
+            "duplicate golden label {label:?} in {}",
+            path.display()
+        );
+    }
+    map
+}
+
+// =============================================================================================
 // Comparison
 // =============================================================================================
 
-fn compare(rust_out: &Outcome, py_out: &Outcome, label: &str, input: &[u8]) -> Option<String> {
+/// Compares one corpus input's actual behaviour against its recorded golden expectation.
+/// Returns `None` when everything matches, or a `Some(String)` naming the input and showing
+/// expected vs. actual - callers accumulate these across the whole corpus rather than
+/// failing on the first one, so a single test run reports every offending input at once.
+fn compare(
+    label: &str,
+    input: &[u8],
+    rust_out: &Outcome,
+    golden: Option<&GoldenEntry>,
+) -> Option<String> {
     let mut problems = Vec::new();
 
+    // The hook-path contract applies to every input in this corpus, golden entry or not:
+    // never a non-zero exit, never stderr. Checked here in addition to `fail_silent.rs`
+    // because this corpus's sweep covers far more shapes than that file's fixed list.
     if rust_out.code != 0 {
         problems.push(format!("rust exited {} (expected 0)", rust_out.code));
     }
-    if py_out.code != 0 {
-        problems.push(format!("python exited {} (expected 0)", py_out.code));
-    }
     if !rust_out.stderr.is_empty() {
-        problems.push(format!("rust stderr was non-empty: {:?}", String::from_utf8_lossy(&rust_out.stderr)));
-    }
-    if !py_out.stderr.is_empty() {
-        problems.push(format!("python stderr was non-empty: {:?}", String::from_utf8_lossy(&py_out.stderr)));
+        problems.push(format!(
+            "rust stderr was non-empty: {:?}",
+            String::from_utf8_lossy(&rust_out.stderr)
+        ));
     }
 
+    // Computed regardless of whether a golden entry exists: a "missing golden entry"
+    // report is far more useful with the actual output attached, so whoever adds this
+    // label to expectations.json can see exactly what to paste in rather than having to
+    // re-run the binary by hand to find out.
     let rust_empty = rust_out.stdout.is_empty();
-    let py_empty = py_out.stdout.is_empty();
-    if rust_empty != py_empty {
-        problems.push(format!(
-            "stdout emptiness differs: rust_empty={rust_empty} (len {}), python_empty={py_empty} (len {})",
-            rust_out.stdout.len(),
-            py_out.stdout.len()
-        ));
-    } else if !rust_empty {
-        let rust_json: Result<Value, _> = serde_json::from_slice(&rust_out.stdout);
-        let py_json: Result<Value, _> = serde_json::from_slice(&py_out.stdout);
-        match (rust_json, py_json) {
-            (Ok(rv), Ok(pv)) => {
-                if rv != pv {
-                    problems.push(format!("parsed JSON differs:\n    rust:   {rv}\n    python: {pv}"));
-                }
-            }
-            (rr, pr) => {
+    let actual_value: Option<Value> = if rust_empty {
+        None
+    } else {
+        match serde_json::from_slice::<Value>(&rust_out.stdout) {
+            Ok(v) => Some(v),
+            Err(e) => {
                 problems.push(format!(
-                    "stdout did not parse as JSON on both sides (rust_parsed_ok={}, python_parsed_ok={}); \
-                     rust stdout={:?} python stdout={:?}",
-                    rr.is_ok(),
-                    pr.is_ok(),
-                    String::from_utf8_lossy(&rust_out.stdout),
-                    String::from_utf8_lossy(&py_out.stdout)
+                    "rust stdout did not parse as JSON: {e}; raw stdout={:?}",
+                    String::from_utf8_lossy(&rust_out.stdout)
                 ));
+                None
             }
+        }
+    };
+
+    let Some(golden) = golden else {
+        problems.push(format!(
+            "no golden expectation recorded for this label - this is a NEW input, not a \
+             flip; add it deliberately to rust/tests/golden/expectations.json (see that \
+             file's README/note on how it was captured)\n    actual output: {}",
+            render_expectation(actual_value.as_ref()),
+        ));
+        return Some(format!(
+            "MISSING GOLDEN ENTRY [{label}]\n  stdin: {}\n  {}",
+            truncated_lossy(input, 2000),
+            problems.join("\n  ")
+        ));
+    };
+
+    // Corpus-drift check: did the generator actually build the same bytes for this label
+    // that were recorded at capture time? This is orthogonal to whether the *behaviour*
+    // changed - it catches someone editing a sweep function (e.g. changing a prompt
+    // string) without recapturing, which would otherwise silently compare the new bytes'
+    // output against the OLD bytes' recorded expectation.
+    let actual_hash = format!("{:016x}", fnv1a64(input));
+    if actual_hash != golden.input_hash || input.len() != golden.input_len {
+        problems.push(format!(
+            "input bytes for this label no longer match what was captured (len {} -> {}, \
+             hash {} -> {}) - the corpus generator changed what this label produces; \
+             recapture deliberately if that was intended",
+            golden.input_len,
+            input.len(),
+            golden.input_hash,
+            actual_hash
+        ));
+    }
+
+    let expected_empty = golden.output.is_none();
+    if rust_empty != expected_empty {
+        problems.push(format!(
+            "stdout emptiness differs from the golden expectation: expected_empty={expected_empty}, \
+             actual_empty={rust_empty}\n    expected: {}\n    actual:   {}",
+            render_expectation(golden.output.as_ref()),
+            render_expectation(actual_value.as_ref()),
+        ));
+    } else if let (Some(expected_v), Some(actual_v)) = (&golden.output, &actual_value) {
+        if expected_v != actual_v {
+            problems.push(format!(
+                "parsed JSON differs from the golden expectation:\n    expected: {expected_v}\n    actual:   {actual_v}"
+            ));
         }
     }
 
@@ -594,10 +1052,32 @@ fn compare(rust_out: &Outcome, py_out: &Outcome, label: &str, input: &[u8]) -> O
         None
     } else {
         Some(format!(
-            "DIVERGENCE [{label}]\n  stdin: {}\n  {}",
-            String::from_utf8_lossy(input),
+            "GOLDEN MISMATCH [{label}]\n  stdin: {}\n  {}",
+            truncated_lossy(input, 2000),
             problems.join("\n  ")
         ))
+    }
+}
+
+fn render_expectation(v: Option<&Value>) -> String {
+    match v {
+        None => "<no output (silent)>".to_string(),
+        Some(v) => v.to_string(),
+    }
+}
+
+/// Echoes stdin in a failure message, capped so a divergence on one of the pathological
+/// multi-megabyte inputs (`huge_prompt`, `deeply_nested_array`) can't turn one test failure
+/// into megabytes of terminal output.
+fn truncated_lossy(input: &[u8], max_bytes: usize) -> String {
+    if input.len() <= max_bytes {
+        String::from_utf8_lossy(input).to_string()
+    } else {
+        format!(
+            "{}... [truncated, {} bytes total]",
+            String::from_utf8_lossy(&input[..max_bytes]),
+            input.len()
+        )
     }
 }
 
@@ -605,8 +1085,7 @@ fn compare(rust_out: &Outcome, py_out: &Outcome, label: &str, input: &[u8]) -> O
 // The test
 // =============================================================================================
 
-#[test]
-fn rust_matches_python_oracle_across_the_corpus() {
+fn all_inputs() -> Vec<(String, Vec<u8>)> {
     let known = known_model();
 
     let mut all: Vec<(String, Vec<u8>)> = Vec::new();
@@ -621,17 +1100,238 @@ fn rust_matches_python_oracle_across_the_corpus() {
     all.extend(batch_sweep(&known));
     all.extend(combined_sweep(&known));
     all.extend(extra_edge_sweep());
+    all.extend(negation_placement_fp_controls());
+    all.extend(prompt_negative_conflict_fp_controls());
 
+    for case in semantic_cases() {
+        all.push((
+            case["label"].as_str().unwrap().to_string(),
+            serde_json::to_vec(&case["input"]).unwrap(),
+        ));
+    }
+    all
+}
+
+#[test]
+fn research_mapping_references_live_controls() {
+    let labels: HashSet<String> = all_inputs().into_iter().map(|(label, _)| label).collect();
+    let sources = concat!(
+        include_str!("../src/checks.rs"),
+        include_str!("fail_silent.rs"),
+        include_str!("../src/lint.rs")
+    );
+    let mut seen = HashSet::new();
+    let mut covered = 0;
+    let mut deferred = 0;
+    for line in include_str!("golden/README.md")
+        .lines()
+        .filter(|line| line.starts_with("| F-"))
+    {
+        let fields: Vec<&str> = line.split('|').map(str::trim).collect();
+        let id = fields[1];
+        assert!(seen.insert(id), "duplicate {id}");
+        let reference = fields[3].trim_matches('`');
+        match fields[2] {
+            "covered" => {
+                covered += 1;
+                if let Some(name) = reference.strip_prefix("unit:") {
+                    assert!(
+                        sources.contains(&format!("fn {name}(")),
+                        "missing test {id}: {name}"
+                    );
+                } else {
+                    assert!(
+                        labels.contains(reference),
+                        "missing corpus {id}: {reference}"
+                    );
+                }
+            }
+            "deferred" => {
+                deferred += 1;
+                assert!(["HFR-002", "HFR-003", "HFR-004", "HFR-007"].contains(&reference));
+            }
+            status => panic!("unknown mapping status {status}"),
+        }
+        assert!(!fields[4].is_empty(), "missing explanation {id}");
+    }
+    let expected: HashSet<String> = (1..=6)
+        .chain([101, 102, 103, 201, 202, 203, 301, 302])
+        .chain(401..=416)
+        .chain(501..=508)
+        .chain(601..=624)
+        .chain(701..=703)
+        .map(|n| format!("F-{n:03}"))
+        .collect();
+    assert_eq!(
+        seen.into_iter().map(str::to_string).collect::<HashSet<_>>(),
+        expected
+    );
+    println!("research mapping: {covered} covered / {deferred} deferred / 0 accepted = 65; representative coverage explicitly marked");
+}
+
+fn semantic_cases() -> Vec<Value> {
+    let data: Value = serde_json::from_str(include_str!("golden/semantic-cases.json")).unwrap();
+    data["cases"].as_array().unwrap().clone()
+}
+
+fn actual_context(out: &Outcome) -> Option<String> {
+    if out.stdout.is_empty() {
+        return None;
+    }
+    let value: Value = serde_json::from_slice(&out.stdout).expect("hook JSON");
+    Some(
+        value["hookSpecificOutput"]["additionalContext"]
+            .as_str()
+            .expect("context")
+            .to_string(),
+    )
+}
+fn actual_ids(context: Option<&str>) -> Vec<&str> {
+    context
+        .into_iter()
+        .flat_map(|s| s.lines().skip(1))
+        .map(|line| line.strip_prefix("- ").unwrap().split_once(": ").unwrap().0)
+        .collect()
+}
+
+#[test]
+fn semantic_contract_and_repeated_process_determinism() {
+    let cases = semantic_cases();
+    let mut positives: std::collections::BTreeMap<String, (usize, usize)> = Default::default();
+    let mut negative = 0;
+    let mut limitations = 0;
+    let mut robustness = 0;
+    let mut repeated = 0;
+    for case in &cases {
+        let label = case["label"].as_str().unwrap();
+        let input = serde_json::to_vec(&case["input"]).unwrap();
+        let out = run_rust(&input);
+        assert_eq!(out.code, 0, "{label}");
+        assert!(out.stderr.is_empty(), "{label}");
+        let context = actual_context(&out);
+        let expected = case["expected_context"].as_str();
+        assert_eq!(context.as_deref(), expected, "semantic message: {label}");
+        let actual = actual_ids(context.as_deref());
+        let expected_ids: Vec<&str> = case["expected_ids"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|v| v.as_str().unwrap())
+            .collect();
+        assert_eq!(actual, expected_ids, "semantic ids: {label}");
+        match case["class"].as_str().unwrap() {
+            "negative" => {
+                negative += 1;
+                assert!(actual.is_empty(), "{label}");
+            }
+            "positive" => {
+                assert!(!expected_ids.is_empty(), "{label}");
+                for id in expected_ids.into_iter().collect::<HashSet<_>>() {
+                    let counts = positives.entry(id.to_string()).or_default();
+                    counts.0 += 1;
+                    counts.1 += usize::from(actual.contains(&id));
+                }
+            }
+            "robustness" => robustness += 1,
+            "limitation" => {
+                limitations += 1;
+                assert!(
+                    case.get("ideal_ids").is_some(),
+                    "{label}: missing ideal behavior"
+                );
+                println!(
+                    "known limitation {label}: actual={actual:?}, ideal={}",
+                    case["ideal_ids"]
+                );
+            }
+            class => panic!("unknown semantic class {class}"),
+        }
+        // Named selection, not a timing test. Covers all-check/scope, Unicode and batch paths.
+        if label.starts_with("canonical:scope:") || label == "canonical:text:fullwidth" {
+            let again = run_rust(&input);
+            assert_eq!(
+                (again.code, again.stdout, again.stderr),
+                (out.code, out.stdout, out.stderr),
+                "{label}: nondeterministic"
+            );
+            repeated += 1;
+        }
+    }
+    println!("semantic mandatory negatives: {negative}, unexpected firings: 0");
+    for (id, (total, correct)) in positives {
+        println!("supported positives {id}: {correct}/{total}");
+    }
+    println!("known limitations: {limitations}; robustness: {robustness}; repeated process cases: {repeated}; output mismatches: 0");
+}
+
+/// Read-only review aid; never writes or accepts a golden expectation.
+#[test]
+#[ignore = "read-only mismatch inspection for an intentional behavior review"]
+fn audit_golden_changes() {
+    let golden = load_golden();
+    for (label, input) in all_inputs() {
+        let out = run_rust(&input);
+        let value = if out.stdout.is_empty() {
+            Value::Null
+        } else {
+            serde_json::from_slice(&out.stdout).unwrap()
+        };
+        if golden
+            .get(&label)
+            .is_none_or(|g| g.output.as_ref().unwrap_or(&Value::Null) != &value)
+        {
+            let preview: Value = serde_json::from_slice(&input).unwrap_or(Value::Null);
+            let preview =
+                truncated_lossy(serde_json::to_string(&preview).unwrap().as_bytes(), 1500);
+            println!(
+                "AUDIT{}",
+                json!({"label":label,"input_len":input.len(),"input_fnv1a64":format!("{:016x}",fnv1a64(&input)),"preview":preview,"output":value,"code":out.code,"stderr_empty":out.stderr.is_empty()})
+            );
+        }
+    }
+}
+
+#[test]
+fn rust_matches_recorded_golden_expectations() {
+    let all = all_inputs();
     // De-duplicate by exact stdin byte content. Different sweep groups can legitimately
     // land on the same bytes (e.g. two groups both happening to build an identical params
     // object); the harness should report a distinct-input count, not an inflated one.
-    let mut seen: HashSet<Vec<u8>> = HashSet::new();
+    //
+    // Discarding the duplicate *input* is fine; discarding the *label* silently is not. If
+    // a later task adds a case - e.g. a negative control - whose bytes happen to collide
+    // with something already in the corpus, that label would otherwise vanish with no
+    // MISSING report, no ORPHANED report, no count change, and a green test: it would just
+    // never run. So every collision is named here and fails the test up front, before the
+    // golden comparison even starts, rather than disappearing into a `HashSet`.
+    let mut owner: HashMap<Vec<u8>, String> = HashMap::new();
     let mut corpus: Vec<(String, Vec<u8>)> = Vec::new();
+    let mut collisions: Vec<String> = Vec::new();
     for (label, bytes) in all {
-        if seen.insert(bytes.clone()) {
-            corpus.push((label, bytes));
+        match owner.get(&bytes) {
+            Some(existing_label) => {
+                collisions.push(format!(
+                    "  [{label}] was dropped by de-duplication: its stdin bytes are identical to \
+                     [{existing_label}], already in the corpus. If [{label}] is meant to be a distinct \
+                     case, vary its input so it doesn't collide - [{existing_label}] is likely already \
+                     covering what it tests. If the duplication really is intentional, delete one of the \
+                     two labels from the generator instead of leaving both to collide."
+                ));
+            }
+            None => {
+                owner.insert(bytes.clone(), label.clone());
+                corpus.push((label, bytes));
+            }
         }
     }
+
+    assert!(
+        collisions.is_empty(),
+        "{} corpus label(s) were silently dropped by de-duplication because their stdin bytes \
+         collided with an input already generated under a different label:\n\n{}",
+        collisions.len(),
+        collisions.join("\n")
+    );
 
     assert!(
         corpus.len() >= 300,
@@ -639,24 +1339,60 @@ fn rust_matches_python_oracle_across_the_corpus() {
         corpus.len()
     );
 
+    let golden = load_golden();
+
+    let missing = corpus
+        .iter()
+        .filter(|(label, _)| !golden.contains_key(label))
+        .count();
+    let changed_inputs = corpus
+        .iter()
+        .filter(|(label, input)| {
+            golden.get(label).is_some_and(|g| {
+                g.input_len != input.len() || g.input_hash != format!("{:016x}", fnv1a64(input))
+            })
+        })
+        .count();
     let mut divergences: Vec<String> = Vec::new();
+    let mut seen_labels: HashSet<String> = HashSet::new();
     for (label, input) in &corpus {
+        seen_labels.insert(label.clone());
         let rust_out = run_rust(input);
-        let py_out = run_python(input);
-        if let Some(problem) = compare(&rust_out, &py_out, label, input) {
+        if let Some(problem) = compare(label, input, &rust_out, golden.get(label)) {
             divergences.push(problem);
         }
     }
 
+    // The reverse of "missing golden entry": a label the golden file still records that the
+    // corpus no longer generates at all. Left unreported, `expectations.json` would quietly
+    // accumulate dead entries for inputs nothing exercises any more.
+    let mut orphaned: Vec<&String> = golden
+        .keys()
+        .filter(|l| !seen_labels.contains(*l))
+        .collect();
+    orphaned.sort();
+    for label in &orphaned {
+        divergences.push(format!(
+            "ORPHANED GOLDEN ENTRY [{label}]\n  recorded in expectations.json but the corpus \
+             no longer generates this label - either the corpus generator changed or this \
+             entry is stale and should be removed"
+        ));
+    }
+
     println!(
-        "parity harness: compared {} distinct inputs against the Python oracle - {} divergence(s)",
+        "golden integrity: missing {missing}; orphaned {}; changed input cases {changed_inputs}",
+        orphaned.len()
+    );
+    println!(
+        "golden corpus: compared {} distinct inputs against {} recorded expectations - {} divergence(s)",
         corpus.len(),
+        golden.len(),
         divergences.len()
     );
 
     assert!(
         divergences.is_empty(),
-        "{} divergence(s) found between the Rust port and the Python oracle:\n\n{}",
+        "{} divergence(s) found between the Rust binary and the recorded golden expectations:\n\n{}",
         divergences.len(),
         divergences.join("\n\n")
     );

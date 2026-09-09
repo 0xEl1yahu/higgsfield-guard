@@ -1,5 +1,9 @@
 # Project Intent Profile Implementation Plan
 
+> Historical, not active implementation instructions. The approved current scope is
+> [PLAN.md](../../../PLAN.md); the Python runtime and runtime profile loader proposed
+> below are not part of the shipped Rust hook. Retained to preserve decision history.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Let the lint compare each call against an approved project profile, so a forgotten directive, a stray palette colour, or a wrong aspect ratio is caught before the render is paid for.

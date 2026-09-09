@@ -11,6 +11,10 @@ model when the prompt argues with its own parameters. Advisory only. It never bl
 
 ## 1. Why this is small
 
+This section records the original Mar–Aug 2026 account measurements, not a current
+balance, entitlement or refund-policy guarantee. No billing state was refreshed during
+the September implementation; canonical schemas do not by themselves prove charges.
+
 The predecessor design was 990 lines aimed at stopping contract violations before they
 burned credits. Measurement killed the premise.
 
@@ -25,9 +29,9 @@ burned credits. Measurement killed the premise.
 | Video generations, lifetime | **9** | `show_generations`, `next_cursor: null` |
 | Seed rules that would have fired on those 9 | **0** | manual check against the archived §8 |
 
-Two facts end the credit-saving argument. Credits are not scarce, since roughly ten times
-more are forfeited to monthly expiry than are spent generating. And failures are already
-free, because Higgsfield refunds them.
+For that measured account history, credits were not scarce: roughly ten times more
+expired than were spent. All four observed failures were refunded. Those observations
+motivated an advisory-only design; they do not establish universal future refunds.
 
 The archived `E[gain] = p_fail·(C_credits + C_latency + C_rework)`, evaluated at last:
 `p_fail ≈ 0.11`, `C_credits = 0`. What remains is latency and rework on about four events
@@ -44,10 +48,13 @@ fired on real usage:
 1. **`"4K"` in the prompt against `width: 1376, height: 768`.** Three `kling2_6` calls.
 2. **`"slow motion"` in both `prompt` and `negative_prompt`.** The same three calls.
 3. **Negations in the positive prompt** (`"no text"`, `"no logos"`, `"no added text"`,
-   `"no text overlays"`) in seven of nine, while `kling2_6` accepts a `negative_prompt`
-   and was being given one at the same time.
+   `"no text overlays"`) in seven of nine, while `kling2_6` was being supplied a
+   `negative_prompt`. *(Submitted fields never proved model support; see §5.3.)*
 
-Those three are the product. Everything else is cut.
+These are historical observations, not proof of parameter effect. Canonical reconciliation
+removed the first pattern's generic dimension inference. The current product comprises
+model-grounded resolution comparisons, local textual consistency, and eligible video
+supplied-duration over-claims (§5).
 
 ## 3. Mechanism
 
@@ -83,22 +90,52 @@ authority, because block authority is not on offer.
 
 ## 5. Checks
 
-### 5.1 Resolution claim contradicts dimensions
+### 5.1 Resolution claim contradicts a declared output setting
 
-Prompt asserts a resolution the call will not produce.
+Canonical basis: [2026-09-09 MCP reconciliation](docs/higgsfield-canonical-contract.md)
+and its sanitized envelope/catalog capture. A permissive params object does not prove
+that the selected model honors arbitrary fields. The old universal short-side map and
+bare width/height inference are removed, including the historical Kling warning.
 
-Lexicon maps a claim to its minimum short-side pixel count:
+Require Image/Video tool context and an exact supported MCP model/field/option
+association. Unknown tools/models, wrong model kind, unsupported settings, absent
+settings, or unresolved precedence are silent. No defaults are synthesized.
+Recognize standalone ASCII-case-insensitive `4k`, `1080p`, `720p`, `480p`,
+using §5.2a normalization and paired-quote exclusions. Highest eligible claim wins.
+`8k`, `uhd`, and `full hd` are deliberately dropped as ambiguous style vocabulary.
 
-| Claim | Min short side |
-|---|---|
-| `8k` | 4320 |
-| `4k`, `uhd` | 2160 |
-| `1080p`, `full hd` | 1080 |
-| `720p` | 720 |
-| `480p` | 480 |
+| Submitted source | Comparison domain | Contract |
+|---|---|---|
+| Declared resolution K tiers | nominal 1k < 1.5k < 2k < 4k | 4K vs lower K tier fires; no fixed pixel geometry |
+| Declared video p tiers | 360p < 480p < 720p < 768p < 1080p < 2160p | Compare p claims directly; 4K vs sub-2160p is a local label convention |
+| wan2_6 quality | 720p / 1080p | Same video-tier convention; advice names quality |
+| soul_2, soul_cinematic, soul_v2 quality | 1.5k / 2k | Nominal K tiers only; CLI ids are not MCP aliases |
+| kling3_0, kling_video_edit mode | 4k only | Matching 4K; std/pro have no inferred numeric size |
+| topaz_image, topaz_image_generative output_width/output_height | positive JSON integers within i64 | Compare requested min(width,height) to local thresholds 4K→2160,1080p→1080,720p→720,480p→480; not guaranteed output |
 
-Actual is `params.resolution` when present, otherwise `min(width, height)`. Fires when
-claimed exceeds actual. Silent when neither is present.
+The exact declared-resolution allowlist and option groups live in checks.rs and are
+cross-checked against the saved catalog in tests. No hook-time network or data-file
+loading. Naked Hailuo strings 512/768/1080 remain deferred. Mixed nominal K and p
+claims are incomparable (except the explicitly stated video 4K convention).
+For Topaz, positive tiny targets are actual requested pixel fields, not ratio hints:
+the old 128px floor is unnecessary and is not carried over from bare dimensions.
+
+No generic resolution→dimensions→quality priority. Stray undeclared dimensions cannot
+override a verified carrier. Seedream stored width/height and Clipify processing caps
+are excluded. marketing_studio_video with explicit width or height alongside resolution
+is suppressed because precedence is unresolved. Seedance 2.0 fast with 1080p/4k is not
+treated as a confirmed selection. Unknown explicit modes on mode-sensitive models are
+silent rather than coerced to defaults.
+
+Example message: `prompt says "4K" but resolution selects the "2k" output tier.
+Choose a supported higher tier, or revise the claim.`
+Topaz names requested output_width/output_height and their short side. Claims retain
+their original spelling, including fullwidth letters. At most one resolution finding
+per entry; finding never claims a successful render or suggests an absent setting.
+
+Accepted limitations: genuine 8K claims, unknown models, missing settings, ambiguous
+geometry, ceiling-only contradictions, and negated resolution wording are not generally
+understood. A supported `not 4k` can still fire; keep it in limitation metrics.
 
 ### 5.2 Term in both prompt and negative_prompt
 
@@ -106,110 +143,269 @@ Fires when a phrase from a curated directive list appears in both fields. Restri
 phrase list rather than free tokens, because common words in both fields are normal and
 would make this unusable.
 
-Seed list: `slow motion`, `slow-mo`, `static`, `blurred`, `blurry`, `sharp`, `text`,
-`motion blur`, `close-up`, `wide shot`, `zoom`, `pan`, `handheld`, `grain`.
+**Recalibrated** (`HIGGSFIELD_PROMPT_RESEARCH.md` §10, "Rule 5.2 recalibration") after
+three confirmed false positives (research §8.2), each verified against the shipped
+binary:
 
-### 5.3 Negation belongs in negative_prompt
+- `{"prompt":"A cast-iron pan sizzles on the stove.","negative_prompt":"pan, zoom, camera movement"}`
+  fired on `pan` — a common-noun homograph, not a camera directive.
+- `{"prompt":"A poster with the text \"OPEN\" in bold.","negative_prompt":"misspelled text, distorted letters"}`
+  fired on `text` — but quoting a literal in the prompt and suppressing typography
+  artifacts in `negative_prompt` is exactly the pairing Nano Banana's own help article
+  recommends. This is content, not conflict.
+- `{"prompt":"sharp focus on the blade","negative_prompt":"soft focus, not sharp"}` fired
+  on `sharp` — but `not sharp` in the negative field is *agreement* with the prompt, not a
+  conflict with it. Negations were being stripped from the prompt only.
 
-Fires when the positive prompt contains a negation (`no X`, `without X`, `avoid X`) **and**
-the model is known to accept a `negative_prompt`. Only these three forms count as a
-directive; ordinary narrative negation (`"has not yet risen"`), quantifier idioms
-(`"no more than three"`, `"no longer"`, `"no matter"`), and a bare gerund right after the
-negator (`"without moving"`) are not treated as a misplaced directive, since moving any of
-those into `negative_prompt` would do nothing or damage the shot.
+Four changes fix these without weakening genuine detections:
 
-Known-accepts is evidence-seeded, not inferred: a model qualifies when `negative_prompt` is
-already present in this call **and non-empty**, or when it appears in
-`data/negative_prompt_models.json`, which starts as `["kling2_6"]` because that is what the
-generation history proves. The catalog does not publish negative-prompt support, so
-guessing would produce false findings on models that silently ignore the field.
+1. **Strip negations from both fields**, not just the prompt. `not sharp` in
+   `negative_prompt` is a double negative and must not count as a hit.
+2. **Exclude occurrences inside matched double quotes in the prompt.** A quoted literal
+   (`The poster reads "OPEN"`) is Higgsfield-recommended content, not direction.
+3. **Require a phrase to be ≥2 tokens, or a member of a strict, unambiguous single-token
+   set with a 4-character minimum.** No stemming or fuzzy matching — an inflectional
+   match (`blur` vs `blurry`) is exactly where a curated list turns into a fuzzy matcher,
+   so that class of miss is an accepted cost.
+4. **Drop the bare single-token entries with a confirmed or obvious homograph** — `pan`,
+   `text`, `sharp`, `static`, `zoom`, `grain` — since a common-noun sense of each collides
+   with normal prompt language. Where the directive sense still matters, a bigram takes
+   its place instead.
+
+**Accepted cost of change 1:** stripping negations from `negative_prompt` too means a
+negated mention there no longer counts as containing the term at all —
+`negative_prompt: "no close-up"`, `"avoid slow motion"`, `"not handheld"` now go silent
+against an unnegated `close-up`/`slow motion`/`handheld` in the prompt, even though the
+bare word is present in both fields. This is deliberate and matches the field's own
+semantics (`negative_prompt` already means "avoid this"; a negation stacked on top of
+that is genuinely ambiguous, not a coherent conflict signal), but it is a real false
+negative class, not a free lunch — recorded here for the same reason item 3's
+`blur`/`blurry` miss is.
+
+Recalibrated list (multi-token entries kept from the seed list, plus the bigram
+replacements and new entries):
+
+`slow motion`, `slow-mo`, `motion blur`, `close-up`, `wide shot`, `handheld`, `blurred`,
+`blurry`, `camera pan`, `whip pan`, `slow zoom`, `on-screen text`, `film grain`, `static
+shot`, `lens flare`, `letterbox bars`, `watermark overlay`, `subtitles`.
+
+The rule's one confirmed genuine historical hit, `slow motion`, is two tokens and
+survives unchanged.
+
+**Follow-up demotion (task-3 fix report, finding F3):** `letterbox` and `watermark`
+shipped as bare single-token entries per research §10's recommended list, then turned up
+the same homograph shape as `pan` once tested against ordinary prompt language:
+
+- `{"prompt":"A red letterbox on a quiet village street at dawn.","negative_prompt":"letterbox, black bars, borders"}`
+  fired on `letterbox` — a mail slot / postbox, not a camera-format directive.
+- `{"prompt":"A close look at handmade paper with a visible watermark.","negative_prompt":"watermark, logo, signature"}`
+  fired on `watermark` — a paper watermark (security paper, stationery, currency), not an
+  image overlay.
+
+Research §10's recommended list and its own criterion (change 3 above: "a strict,
+unambiguous single-token set") disagree here — both terms are recommended as single
+tokens, but both fail the unambiguity test that same recommendation demands. Where §10's
+list conflicts with §10's own criterion, **the criterion governs**: both are demoted to
+bigrams, `letterbox bars` and `watermark overlay`, carrying the same directive sense
+without the homograph. This is the same standard, applied after the fact, that condemned
+`pan` in the original recalibration.
+
+The overlap finding is a local textual consistency convention, not proof that a model
+honors negative_prompt: none of the79 MCP model details publishes that field.
+Inline exclusions remain valid; do not advise moving them into an unsupported field.
+
+### 5.2a Shared text normalization
+
+| Input | Matching representation |
+|---|---|
+| U+201C/D/E/F | ASCII double quote |
+| U+FF01–U+FF5E | Corresponding ASCII |
+| U+00A0 / U+3000 | Space |
+| Horizontal spaces/tabs | One space, never across newline |
+| CRLF / CR | LF |
+| Other scalars | Unchanged |
+
+This is narrow folding, not NFKC. Do not remove punctuation, join hyphen-separated
+tokens, or reinterpret apostrophes as double quotes. Normalize both conflict fields,
+strip the existing both-field negations, lowercase, normalize resulting horizontal
+spacing, then calculate positive quote spans on the exact scanned representation.
+The negation regex's existing three-word scope is retained, including its accepted
+over-stripping costs.
+
+Pair double quotes positionally, first/second then third/fourth. Unpaired trailing
+quotes do not exclude content. Doubled quotes and unrelated inch marks retain their
+documented quirks. Resolution recovers source spelling by one transform replay after
+choosing its match, with no full-input per-character source map. Duration reports a
+number and needs no source mapping. Unsupported typography and newline-separated
+phrases are accepted misses.
+
+### 5.3 negation_placement — disabled
+
+This rule fired when the positive prompt contained a negation (`no X`, `without X`,
+`avoid X`) and the model was treated as accepting a `negative_prompt` (the field already
+present and non-empty in this call, or the model listed in
+`data/negative_prompt_models.json`, seeded as `["kling2_6"]`). It fired on 7 of 9
+historical calls, which §2 read as signal.
+
+`HIGGSFIELD_PROMPT_RESEARCH.md` §6 shows the opposite. Higgsfield's own help centre tells
+users to keep exclusions **in the positive prompt**; its Seedance 2.5 testing writeup
+calls inline exclusion the highest-yield part of a prompt; and no model across the
+~63-entry catalog declares a `negative_prompt` parameter at all. The rule's gate — "the
+caller supplied the field, or the model is on a seed list" — was never evidence that the
+field does anything, and its remedy sentence asserted a mechanism Higgsfield's own
+testing contradicts. Research §8.3 audits five confirmed false-positive classes on this
+rule, including Higgsfield's own published style header; all five are now permanent
+negative controls in `rust/tests/golden/expectations.json`.
+
+The rule is disabled, not deleted: `check_negation_placement` is gone from
+`rust/src/checks.rs`, but `PLACEMENT_NEGATION_RE`, its noise filter, and its stoplist
+stay in place, unused, because research §10 (**HFR-006**) reuses that exact filter
+unchanged in a volume-based replacement — counting how many exclusions a prompt carries,
+rather than judging where they sit. That replacement is out of scope here; its
+thresholds still need calibrating against the corpus before it ships.
+
+`data/negative_prompt_models.json`, the evidence-seeded model list this rule's gate
+depended on, is retired. The loader module and all invocation-time reads are removed.
+Doctor separately checks that the retired file has not reappeared.
+
+### 5.4 Tool context
+
+Classify exact generate_image/video/audio names and their _batch forms, bare or the final
+component of an MCP name. Case-sensitive; lookalikes, missing and non-string names are
+Unknown. One outer kind applies to every batch entry.
+
+| Kind | Resolution | Local conflict | Duration |
+|---|---|---|---|
+| Image | matching model only | run | skip |
+| Video | matching model only | run | eligible model/mode only |
+| Audio | skip before params parsing | skip | skip |
+| Unknown | skip | run | skip |
+
+### 5.5 Video supplied-duration over-claim
+
+Public id: duration_claim, appended after resolution_claim and prompt_negative_conflict.
+Require Video context, a known duration-capable MCP video model, a string prompt and
+finite numeric supplied duration 1..600. No inferred default. Exclude Seedance 2.5 and
+ad_multiplier video_edit (duration ignored), video_extension (total ambiguous), unknown
+modes, and source-only workflows. video_deflicker is conservatively excluded as a
+source-processing workflow despite its optional duration field; video_upscale, Clipify
+and Kling video edit likewise do not establish eligible output-duration semantics here.
+
+Supported grammar: Total: 15s / Total: 15 seconds; 12-second / 12 second / 12 seconds;
+15s total; 0–3s / 12-15s / 12—15s; 3s to 7s. Spaces/tabs may separate tokens but
+newlines cannot manufacture phrases. Unsigned ASCII decimal syntax only, with digits
+on both sides of a decimal point. Fullwidth digits fold first. Reject signed numbers,
+exponents, thousands separators, malformed decimals, embedded alphanumeric tokens,
+clock tails, reversed spans, and any candidate overlapping a paired quote.
+A rejected candidate must not suppress a later independent valid claim or allow a
+partial tail to be rescued. Parse finite values only; keep the maximum eligible claim
+without collecting all matches. Prompt claims may exceed 600 (e.g. 900s).
+
+Fire only if maximum claimed seconds > supplied duration. No under-claim warning or
+percentage tolerance. Video MCP duration is integer; fractional supplied values are
+deliberate schema-invalid tolerance tests, not canonical accepted inputs.
+Message: `prompt describes 15s of action but the supplied duration is 5s. Check the
+model's supported duration or retime the beats.` Never promise effective duration or
+guaranteed truncation: the backend may clamp/adjust. Format finite numbers without
+unchecked integer casts; bound huge finite displays.
+
+Accepted limitations: worded numbers, frames, colon-less totals, secs, default/inherited
+duration, semantic scene-vs-total distinctions and negated timing. "holds for 12 seconds"
+against 5 can fire; track this as a known contextual ambiguity.
 
 ## 6. Output contract
 
-Findings are returned as one `additionalContext` string. No finding means exit 0 with no
-output.
+Findings are returned as one `additionalContext` string. No finding means exit 0 with
+empty stdout. For each entry the order is resolution, local conflict, duration.
+Batch findings retain entry order and prefix their messages with `request <index>:`.
+
+This example is the reconciled historical Kling fixture (no output-size assertion):
 
 ```json
 {
   "hookSpecificOutput": {
     "hookEventName": "PreToolUse",
-    "additionalContext": "higgsfield-lint: 2 findings\n- resolution_claim: prompt says \"4K\" but width 1376 x height 768 gives a 768px short side. Set resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep it in one."
+    "additionalContext": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one."
   }
 }
 ```
 
-Each finding is one line: `<check_id>: <what was observed>. <mechanical fix>.`
+Each finding is one line: `<check_id>: <observed contradiction>. <advice>.`
 
 ## 7. Failure behaviour
 
-The hook is in the path of every Higgsfield generation call, so its own failure must be
-invisible.
+Normal hook execution exits 0 and writes no stderr, including malformed JSON, invalid
+UTF-8, missing/unusable fields and caught Rust panics. No finding means no stdout.
+Missing one field can suppress its rule without suppressing other valid rules.
 
-- Any exception, malformed stdin, or missing field exits 0 with no output.
-- The hook never writes to stderr on the success path, since exit 2 plus stderr would block.
-- No network calls, no MCP access, no filesystem writes beyond reading its own data file.
-- The shipped hook is a statically-linked Rust binary (`serde_json` and `regex` are the
-  only two dependencies; see §12) rather than a standard-library-only script. The
-  dependency-import failure this line originally guarded against doesn't apply the same
-  way to a compiled binary: there is no import step at `PreToolUse` time, since both
-  crates are compiled in at `cargo build --release` and become part of the single
-  executable. What still must hold, and does: no dependency is fetched or resolved at
-  run time, and a missing or stale binary is a build-and-deploy problem (§12.1), not a
-  standard-library-only one.
+The hook makes no network/MCP calls, application data-file reads, or filesystem writes.
+The two direct crate dependencies, serde_json and regex, are compiled into the executable;
+no runtime interpreter or dependency fetching is required. Platform system libraries
+may still be dynamically linked. Doctor is a separate, explicit diagnostic path that
+reads local files, prints checks and can exit nonzero. OS termination, out-of-memory
+abort, broken output pipes and a missing executable cannot be turned into a universal
+successful-execution guarantee by catch_unwind.
 
 ## 8. Credit expiry reminder
 
-Separate from the hook, because a hook cannot call MCP tools.
+Separate proposed operational workflow; no reminder was created or changed by this
+implementation. See [credit-expiry task](docs/credit-expiry-task.md).
+The historical six resets are 30 days apart, not fixed calendar-month dates.
+Re-anchor any reminder on fresh transactions, then query balance; the old August
+balance/reset examples are not current account state.
 
-A weekly scheduled Claude Code task calls `balance` and reports the credit total against the
-renewal date, which the transaction log places between the 5th and 7th of each month. This
-is one call and a date comparison, and on the §1 numbers it is worth more than every check
-in §5 combined.
+## 9. Testing and authority
 
-## 9. Testing
+SPEC defines intended local behavior; the dated MCP capture defines documented provider
+fields/options. Rust is the sole executable implementation. Goldens record reviewed
+behavior, not independent proof that provider semantics are correct. Archived Python
+is historical evidence, never a live oracle or runtime fallback.
 
-Fixtures are real tool inputs reconstructed from `show_generations`, so the regression
-corpus is actual usage rather than invented cases.
+Captured inputs remain unchanged: the Kling fixture produces only the local
+prompt_negative_conflict; Seedance stays silent. Confirmed model-scoped synthetic
+controls separately prove each active rule, avoiding fixture expectations based on
+undeclared dimensions.
 
-- **Positive fixtures:** the three `kling2_6` calls, which must produce findings 5.1 and 5.2.
-- **Negative fixtures:** the six `seedance_2_5` calls, which must produce **no** findings
-  for 5.1 and 5.2. These matter more than the positives; a check that fires on a known-good
-  call is a bug, and the whole value of an advisory tool is that its advice is worth reading.
-- **Malformed fixtures:** empty stdin, absent `params`, absent `prompt`. All must exit 0
-  silently per §7. `params` as a string is not malformed: all three tool schemas declare
-  `params` as `anyOf: [object, string]`, so a JSON-encoded string is parsed and linted like
-  any other call. Only a string that fails to parse, or that parses to something other than
-  an object, falls through to silence.
+The six captured tool schemas differ: the three single-generation tools accept
+`params` as object or JSON-encoded string; batch entries declare object params.
+The hook tolerates JSON-object strings in batches as an explicit fail-open extension,
+not a claim that the server schema accepts them. A nonempty requests list prevents
+top-level fallback; an empty list may fall back to params within tool_input.
 
-Since the port (§12), `tests/test_lint.py` verifies only the Python oracle. The Rust
-binary is verified two ways:
+Run `cargo test --release`, plus `cargo test --test fail_silent` for genuine debug panic
+injection. Release contains no magic-field panic behavior. Unit, doctor and process
+tests verify exact messages, scopes, source-aware carriers, normalization, duration
+grammar, malformed inputs, fixture loading and build freshness. A deterministic
+comparison-count guard tests production quote lookup, separately from latency.
 
-- **Unit and integration tests** (`cargo test --release`), covering each check's ported
-  logic directly against the same behaviour documented above.
-- **The differential parity harness** (`rust/tests/parity.rs`), which is the actual
-  verification instrument for the port: it runs an identical corpus of stdin payloads
-  (fixtures, pathological inputs, and a generated sweep across every lexicon entry,
-  dimension pair, and negation form - 320 distinct inputs at last count) through both
-  `src/higgsfield_lint.py` and the compiled Rust binary, and asserts their outputs are
-  equal as parsed JSON (see §3 note in §12 on why not as raw bytes). A single divergence
-  fails the whole test, and the fix is always to change the Rust, never the oracle.
-  Run it with `cargo test --release --test parity`.
+The golden corpus currently contains 538 distinct inputs with input lengths and
+FNV-1a hashes, compared as parsed output JSON plus exact exit/status/stderr requirements.
+The 347 historical inputs retain their original bytes; 87 deliberately revised outputs
+lose only unsupported resolution findings. The 191 new semantic cases have independently
+authored expected ids and messages, mandatory-negative/positive/robustness/limitation
+classes, and selected repeated-output checks. See the
+[golden guide and research mapping](rust/tests/golden/README.md),
+[per-label change ledger](docs/golden-change-ledger.json), and
+[implementation report](docs/rule-regrounding-implementation-report.md).
+Adding a case requires deciding its expected behavior before reviewing actual output.
+There is no bulk acceptance/regeneration command. The optional audit test is read-only.
 
 ## 10. Repository layout
 
 ```
 SPEC.md                              this document
-README.md                            setup/build steps and the oracle-retention note
+README.md                            setup/build steps
 Cargo.toml, Cargo.lock               Rust package manifest (serde_json, regex)
 rust/src/*.rs                        the hook, compiled to a Rust binary (§12)
 target/release/higgsfield-lint       the built hook; PreToolUse runs this directly (§12.1)
-src/higgsfield_lint.py               retained parity oracle, stdlib only - NOT the hook (§12.2)
-data/negative_prompt_models.json     evidence-seeded model list
+data/.gitkeep                        placeholder; negative_prompt_models.json retired here (§5.3)
 tests/fixtures/*.json                real captured tool inputs
-tests/test_lint.py                   pytest, verifies the Python oracle only
-rust/tests/parity.rs                 differential parity harness, the port's real verification (§9)
+rust/tests/parity.rs                 golden-output regression corpus, the port's real verification (§9)
+rust/tests/golden/expectations.json  recorded expectations rust/tests/parity.rs checks against (§9)
+rust/tests/golden/README.md          how to add/change a golden entry (§9)
 rust/tests/fail_silent.rs            pathological-input and panic-silence tests
-docs/archive/                        the rejected design and its pseudocode
+docs/archive/                        the rejected design, its pseudocode, and the retired Python port
+docs/archive/verified-port/          archived Python port + pytest suite - historical record (§12.2)
 docs/superpowers/plans/              implementation plan
 ```
 
@@ -245,8 +441,8 @@ person who chose Rust in the first place. That is a process error, independent o
 Python was the right call, and it is recorded here so the next stack decision does not
 repeat it.
 
-This plan reverses the reversal. The three checks in §5 are ported from
-`src/higgsfield_lint.py` to a compiled Rust binary, proven output-equivalent as parsed
+The completed migration reversed that decision. The then-existing checks were ported from
+`docs/archive/verified-port/higgsfield_lint.py` to a compiled Rust binary, proven output-equivalent as parsed
 JSON to the Python via a differential parity harness (`rust/tests/parity.rs`, 320
 distinct inputs, zero divergences) rather than by hand-ported assertions. The two
 implementations are not byte-identical: `serde_json::to_string` and Python's `json.dump`
@@ -280,34 +476,54 @@ file is missing, or was built against an older source tree, the hook exits 127 o
 stale logic. `PreToolUse` treats a non-zero exit as non-blocking, the same way it treats
 §7's fail-silent exit 0: the generation call proceeds either way, but the two outcomes are
 not the same. Exit 127 means the lint did not run at all, and nothing distinguishes that
-from "the lint ran and found nothing." Nothing in the current setup surfaces the
-difference.
+from "the lint ran and found nothing" on the silent hook path. The opt-in doctor
+now detects missing/stale local build inputs and runs fixture-backed checks. It cannot
+prove that a separate already-open Claude session loaded this hook.
 
 Consequence: **`cargo build --release` is a required setup step**, not a one-time
-convenience. It must be rerun whenever `rust/src/*.rs` changes, and confirmed before the
-binary is relied on for the first time.
+convenience. Rerun it whenever any recursive rust/src source, Cargo.toml or Cargo.lock changes,
+then run `target/release/higgsfield-lint doctor`. Freshness is an mtime heuristic, not
+a content-hash proof. Inspect `/hooks` and a target-session tool trace before claiming
+that the hook is loaded there; this implementation did not establish that session proof.
 
-### 12.2 `src/higgsfield_lint.py` after the port
+### 12.2 `docs/archive/verified-port/higgsfield_lint.py` is archived, not deleted
 
-`src/higgsfield_lint.py` is retained as the parity oracle: the fixed point that
-`rust/tests/parity.rs` compares the Rust binary against. It is not a runtime fallback.
-Nothing in the hook path calls it if the Rust binary fails; the Rust binary's own
-fail-silent behaviour (§7) is what runs on any internal error, not the Python.
+The port was verified: 320 differential inputs / 0 divergences, plus 4,200
+independently-fuzzed inputs from a separate reviewer (`docs/archive/verified-port/
+README.md` has the full record and the commit it was true at). That job is finished,
+and every rule change from here on would otherwise need implementing twice - once in
+Rust, once in a Python file kept alive for nothing but comparison. So
+the Python port and its pytest suite were moved to
+`docs/archive/verified-port/`, retained as a **historical record**, not deleted.
 
-Deleting it is a separate, later decision, gated on the Rust binary having run against
-real production traffic for a period the human decides. It is not part of this plan.
+It was never a runtime fallback - nothing in the hook path ever called it, and the Rust
+binary's own fail-silent behaviour (§7) is what runs on any internal error, not the
+Python - so archiving it changes nothing about the hook itself. What changes is the test
+harness: `rust/tests/parity.rs` no longer runs a second live process at all. It compares
+the compiled binary's output against recorded expectations in
+`rust/tests/golden/expectations.json`, captured from the Rust binary at the moment the
+Python comparison last passed. Rust is the sole implementation; SPEC and canonical evidence govern intended behavior.
+The golden file, not archived Python, is the regression instrument going forward (§9).
 
-### 12.3 Known divergence: compound `index` values
+The archived files must not be edited to match anything that changes here afterward;
+doing so would misrepresent them as still-verified current behaviour, which they are not.
+
+### 12.3 Known divergence: compound `index` values (historical)
 
 `index` in a batch request is schema-typed as an integer. If a caller passes a JSON array
-or object as `index` anyway, which only happens on a malformed call, the Python oracle's
-`str()` renders it in Python repr form (`[1, 2]` with a space, `{'a': 1}` with single
-quotes), while the Rust port's `serde_json` `Display` renders `[1,2]` and `{"a":1}`, with no
-spaces and double quotes. This is a deliberate, accepted divergence, not a bug: emulating
-Python's `repr()` for arbitrarily nested JSON in Rust, to cover a case that only arises from
-a malformed call, would make the port look like parity without being it.
-`rust/tests/parity.rs` deliberately generates scalar indices only, for this reason; see the
-comment at `format_index` in `rust/src/lint.rs`.
+or object as `index` anyway, which only happens on a malformed call, the archived
+Python's `str()` rendered it in Python repr form (`[1, 2]` with a space, `{'a': 1}` with
+single quotes), while the Rust port's `serde_json` `Display` renders `[1,2]` and
+`{"a":1}`, with no spaces and double quotes. This was a deliberate, accepted divergence
+from the Python, not a bug: emulating Python's `repr()` for arbitrarily nested JSON in
+Rust, to cover a case that only arises from a malformed call, would have made the port
+look like parity without being it.
+
+The comparison this reasoning came from is historical now that the Python is archived
+(§12.2), but the corpus design it produced is still current: `rust/tests/parity.rs`
+deliberately generates scalar indices only, and `rust/tests/golden/expectations.json`
+records expectations only for those. See the comment at `format_index` in
+`rust/src/lint.rs`.
 
 ## 13. What would bring the big design back
 

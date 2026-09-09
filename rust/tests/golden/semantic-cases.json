@@ -1,0 +1,4092 @@
+{
+  "note": "Explicit semantic expectations decided from SPEC and canonical evidence, independent of golden outputs. session_id distinguishes test provenance; no runtime dependency.",
+  "cases": [
+    {
+      "label": "canonical:resolution:gpt_image_2",
+      "input": {
+        "session_id": "contract-resolution:gpt_image_2",
+        "tool_name": "mcp__higgsfield__generate_image",
+        "tool_input": {
+          "params": {
+            "model": "gpt_image_2",
+            "prompt": "4K",
+            "resolution": "1k"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:gpt_image_2:batch",
+      "input": {
+        "session_id": "contract-resolution:gpt_image_2:batch",
+        "tool_name": "mcp__higgsfield__generate_image_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "gpt_image_2",
+                "prompt": "4K",
+                "resolution": "1k"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:cinematic_studio_2_5",
+      "input": {
+        "session_id": "contract-resolution:cinematic_studio_2_5",
+        "tool_name": "mcp__higgsfield__generate_image",
+        "tool_input": {
+          "params": {
+            "model": "cinematic_studio_2_5",
+            "prompt": "4K",
+            "resolution": "1k"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:cinematic_studio_2_5:batch",
+      "input": {
+        "session_id": "contract-resolution:cinematic_studio_2_5:batch",
+        "tool_name": "mcp__higgsfield__generate_image_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "cinematic_studio_2_5",
+                "prompt": "4K",
+                "resolution": "1k"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:marketing_studio_image",
+      "input": {
+        "session_id": "contract-resolution:marketing_studio_image",
+        "tool_name": "mcp__higgsfield__generate_image",
+        "tool_input": {
+          "params": {
+            "model": "marketing_studio_image",
+            "prompt": "4K",
+            "resolution": "1k"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:marketing_studio_image:batch",
+      "input": {
+        "session_id": "contract-resolution:marketing_studio_image:batch",
+        "tool_name": "mcp__higgsfield__generate_image_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "marketing_studio_image",
+                "prompt": "4K",
+                "resolution": "1k"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:ms_image",
+      "input": {
+        "session_id": "contract-resolution:ms_image",
+        "tool_name": "mcp__higgsfield__generate_image",
+        "tool_input": {
+          "params": {
+            "model": "ms_image",
+            "prompt": "4K",
+            "resolution": "1k"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:ms_image:batch",
+      "input": {
+        "session_id": "contract-resolution:ms_image:batch",
+        "tool_name": "mcp__higgsfield__generate_image_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "ms_image",
+                "prompt": "4K",
+                "resolution": "1k"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:nano_banana_pro",
+      "input": {
+        "session_id": "contract-resolution:nano_banana_pro",
+        "tool_name": "mcp__higgsfield__generate_image",
+        "tool_input": {
+          "params": {
+            "model": "nano_banana_pro",
+            "prompt": "4K",
+            "resolution": "1k"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:nano_banana_pro:batch",
+      "input": {
+        "session_id": "contract-resolution:nano_banana_pro:batch",
+        "tool_name": "mcp__higgsfield__generate_image_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "nano_banana_pro",
+                "prompt": "4K",
+                "resolution": "1k"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:nano_banana_2",
+      "input": {
+        "session_id": "contract-resolution:nano_banana_2",
+        "tool_name": "mcp__higgsfield__generate_image",
+        "tool_input": {
+          "params": {
+            "model": "nano_banana_2",
+            "prompt": "4K",
+            "resolution": "1k"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:nano_banana_2:batch",
+      "input": {
+        "session_id": "contract-resolution:nano_banana_2:batch",
+        "tool_name": "mcp__higgsfield__generate_image_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "nano_banana_2",
+                "prompt": "4K",
+                "resolution": "1k"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:nano_banana_2_lite",
+      "input": {
+        "session_id": "contract-resolution:nano_banana_2_lite",
+        "tool_name": "mcp__higgsfield__generate_image",
+        "tool_input": {
+          "params": {
+            "model": "nano_banana_2_lite",
+            "prompt": "4K",
+            "resolution": "1k"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:nano_banana_2_lite:batch",
+      "input": {
+        "session_id": "contract-resolution:nano_banana_2_lite:batch",
+        "tool_name": "mcp__higgsfield__generate_image_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "nano_banana_2_lite",
+                "prompt": "4K",
+                "resolution": "1k"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:flux_2",
+      "input": {
+        "session_id": "contract-resolution:flux_2",
+        "tool_name": "mcp__higgsfield__generate_image",
+        "tool_input": {
+          "params": {
+            "model": "flux_2",
+            "prompt": "4K",
+            "resolution": "1k"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:flux_2:batch",
+      "input": {
+        "session_id": "contract-resolution:flux_2:batch",
+        "tool_name": "mcp__higgsfield__generate_image_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "flux_2",
+                "prompt": "4K",
+                "resolution": "1k"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:kling_omni_image",
+      "input": {
+        "session_id": "contract-resolution:kling_omni_image",
+        "tool_name": "mcp__higgsfield__generate_image",
+        "tool_input": {
+          "params": {
+            "model": "kling_omni_image",
+            "prompt": "4K",
+            "resolution": "1k"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:kling_omni_image:batch",
+      "input": {
+        "session_id": "contract-resolution:kling_omni_image:batch",
+        "tool_name": "mcp__higgsfield__generate_image_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "kling_omni_image",
+                "prompt": "4K",
+                "resolution": "1k"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:gpt_image_2_5",
+      "input": {
+        "session_id": "contract-resolution:gpt_image_2_5",
+        "tool_name": "mcp__higgsfield__generate_image",
+        "tool_input": {
+          "params": {
+            "model": "gpt_image_2_5",
+            "prompt": "4K",
+            "resolution": "1k"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:gpt_image_2_5:batch",
+      "input": {
+        "session_id": "contract-resolution:gpt_image_2_5:batch",
+        "tool_name": "mcp__higgsfield__generate_image_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "gpt_image_2_5",
+                "prompt": "4K",
+                "resolution": "1k"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:seedream_v5_pro",
+      "input": {
+        "session_id": "contract-resolution:seedream_v5_pro",
+        "tool_name": "mcp__higgsfield__generate_image",
+        "tool_input": {
+          "params": {
+            "model": "seedream_v5_pro",
+            "prompt": "4K",
+            "resolution": "1k"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:seedream_v5_pro:batch",
+      "input": {
+        "session_id": "contract-resolution:seedream_v5_pro:batch",
+        "tool_name": "mcp__higgsfield__generate_image_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "seedream_v5_pro",
+                "prompt": "4K",
+                "resolution": "1k"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:grok_image",
+      "input": {
+        "session_id": "contract-resolution:grok_image",
+        "tool_name": "mcp__higgsfield__generate_image",
+        "tool_input": {
+          "params": {
+            "model": "grok_image",
+            "prompt": "4K",
+            "resolution": "1k"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:grok_image:batch",
+      "input": {
+        "session_id": "contract-resolution:grok_image:batch",
+        "tool_name": "mcp__higgsfield__generate_image_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "grok_image",
+                "prompt": "4K",
+                "resolution": "1k"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:grok_image_2_0",
+      "input": {
+        "session_id": "contract-resolution:grok_image_2_0",
+        "tool_name": "mcp__higgsfield__generate_image",
+        "tool_input": {
+          "params": {
+            "model": "grok_image_2_0",
+            "prompt": "4K",
+            "resolution": "1k"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:grok_image_2_0:batch",
+      "input": {
+        "session_id": "contract-resolution:grok_image_2_0:batch",
+        "tool_name": "mcp__higgsfield__generate_image_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "grok_image_2_0",
+                "prompt": "4K",
+                "resolution": "1k"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:recraft_v4_1",
+      "input": {
+        "session_id": "contract-resolution:recraft_v4_1",
+        "tool_name": "mcp__higgsfield__generate_image",
+        "tool_input": {
+          "params": {
+            "model": "recraft_v4_1",
+            "prompt": "4K",
+            "resolution": "1k"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:recraft_v4_1:batch",
+      "input": {
+        "session_id": "contract-resolution:recraft_v4_1:batch",
+        "tool_name": "mcp__higgsfield__generate_image_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "recraft_v4_1",
+                "prompt": "4K",
+                "resolution": "1k"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1k\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:bytedance_image_upscale",
+      "input": {
+        "session_id": "contract-resolution:bytedance_image_upscale",
+        "tool_name": "mcp__higgsfield__generate_image",
+        "tool_input": {
+          "params": {
+            "model": "bytedance_image_upscale",
+            "prompt": "4K",
+            "resolution": "2k"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"2k\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:bytedance_image_upscale:batch",
+      "input": {
+        "session_id": "contract-resolution:bytedance_image_upscale:batch",
+        "tool_name": "mcp__higgsfield__generate_image_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "bytedance_image_upscale",
+                "prompt": "4K",
+                "resolution": "2k"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"2k\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:cinematic_studio_3_0",
+      "input": {
+        "session_id": "contract-resolution:cinematic_studio_3_0",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "cinematic_studio_3_0",
+            "prompt": "4K",
+            "resolution": "480p"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:cinematic_studio_3_0:batch",
+      "input": {
+        "session_id": "contract-resolution:cinematic_studio_3_0:batch",
+        "tool_name": "mcp__higgsfield__generate_video_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "cinematic_studio_3_0",
+                "prompt": "4K",
+                "resolution": "480p"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:marketing_studio_video",
+      "input": {
+        "session_id": "contract-resolution:marketing_studio_video",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "marketing_studio_video",
+            "prompt": "4K",
+            "resolution": "480p"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:marketing_studio_video:batch",
+      "input": {
+        "session_id": "contract-resolution:marketing_studio_video:batch",
+        "tool_name": "mcp__higgsfield__generate_video_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "marketing_studio_video",
+                "prompt": "4K",
+                "resolution": "480p"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:flux_3_video",
+      "input": {
+        "session_id": "contract-resolution:flux_3_video",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "flux_3_video",
+            "prompt": "4K",
+            "resolution": "720p"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:flux_3_video:batch",
+      "input": {
+        "session_id": "contract-resolution:flux_3_video:batch",
+        "tool_name": "mcp__higgsfield__generate_video_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "flux_3_video",
+                "prompt": "4K",
+                "resolution": "720p"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:grok_video_v15",
+      "input": {
+        "session_id": "contract-resolution:grok_video_v15",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "grok_video_v15",
+            "prompt": "4K",
+            "resolution": "480p"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:grok_video_v15:batch",
+      "input": {
+        "session_id": "contract-resolution:grok_video_v15:batch",
+        "tool_name": "mcp__higgsfield__generate_video_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "grok_video_v15",
+                "prompt": "4K",
+                "resolution": "480p"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:minimax_h3",
+      "input": {
+        "session_id": "contract-resolution:minimax_h3",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "minimax_h3",
+            "prompt": "4K",
+            "resolution": "2K"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"2K\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:minimax_h3:batch",
+      "input": {
+        "session_id": "contract-resolution:minimax_h3:batch",
+        "tool_name": "mcp__higgsfield__generate_video_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "minimax_h3",
+                "prompt": "4K",
+                "resolution": "2K"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"2K\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:minimax_h3_max",
+      "input": {
+        "session_id": "contract-resolution:minimax_h3_max",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "minimax_h3_max",
+            "prompt": "4K",
+            "resolution": "480p"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:minimax_h3_max:batch",
+      "input": {
+        "session_id": "contract-resolution:minimax_h3_max:batch",
+        "tool_name": "mcp__higgsfield__generate_video_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "minimax_h3_max",
+                "prompt": "4K",
+                "resolution": "480p"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:seedance1_5",
+      "input": {
+        "session_id": "contract-resolution:seedance1_5",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "seedance1_5",
+            "prompt": "4K",
+            "resolution": "480p"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:seedance1_5:batch",
+      "input": {
+        "session_id": "contract-resolution:seedance1_5:batch",
+        "tool_name": "mcp__higgsfield__generate_video_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "seedance1_5",
+                "prompt": "4K",
+                "resolution": "480p"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:seedance_2_0",
+      "input": {
+        "session_id": "contract-resolution:seedance_2_0",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "seedance_2_0",
+            "prompt": "4K",
+            "resolution": "480p"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:seedance_2_0:batch",
+      "input": {
+        "session_id": "contract-resolution:seedance_2_0:batch",
+        "tool_name": "mcp__higgsfield__generate_video_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "seedance_2_0",
+                "prompt": "4K",
+                "resolution": "480p"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:seedance_2_0_mini",
+      "input": {
+        "session_id": "contract-resolution:seedance_2_0_mini",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "seedance_2_0_mini",
+            "prompt": "4K",
+            "resolution": "480p"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:seedance_2_0_mini:batch",
+      "input": {
+        "session_id": "contract-resolution:seedance_2_0_mini:batch",
+        "tool_name": "mcp__higgsfield__generate_video_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "seedance_2_0_mini",
+                "prompt": "4K",
+                "resolution": "480p"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:seedance_2_5",
+      "input": {
+        "session_id": "contract-resolution:seedance_2_5",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "seedance_2_5",
+            "prompt": "4K",
+            "resolution": "480p"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:seedance_2_5:batch",
+      "input": {
+        "session_id": "contract-resolution:seedance_2_5:batch",
+        "tool_name": "mcp__higgsfield__generate_video_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "seedance_2_5",
+                "prompt": "4K",
+                "resolution": "480p"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:ad_multiplier",
+      "input": {
+        "session_id": "contract-resolution:ad_multiplier",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "ad_multiplier",
+            "prompt": "4K",
+            "resolution": "480p"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:ad_multiplier:batch",
+      "input": {
+        "session_id": "contract-resolution:ad_multiplier:batch",
+        "tool_name": "mcp__higgsfield__generate_video_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "ad_multiplier",
+                "prompt": "4K",
+                "resolution": "480p"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:topaz_video",
+      "input": {
+        "session_id": "contract-resolution:topaz_video",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "topaz_video",
+            "prompt": "4K",
+            "resolution": "1080p"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1080p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:topaz_video:batch",
+      "input": {
+        "session_id": "contract-resolution:topaz_video:batch",
+        "tool_name": "mcp__higgsfield__generate_video_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "topaz_video",
+                "prompt": "4K",
+                "resolution": "1080p"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1080p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:bytedance_video_upscale",
+      "input": {
+        "session_id": "contract-resolution:bytedance_video_upscale",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "bytedance_video_upscale",
+            "prompt": "4K",
+            "resolution": "1080p"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"1080p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:bytedance_video_upscale:batch",
+      "input": {
+        "session_id": "contract-resolution:bytedance_video_upscale:batch",
+        "tool_name": "mcp__higgsfield__generate_video_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "bytedance_video_upscale",
+                "prompt": "4K",
+                "resolution": "1080p"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"1080p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:kling3_0_turbo",
+      "input": {
+        "session_id": "contract-resolution:kling3_0_turbo",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "kling3_0_turbo",
+            "prompt": "4K",
+            "resolution": "720p"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:kling3_0_turbo:batch",
+      "input": {
+        "session_id": "contract-resolution:kling3_0_turbo:batch",
+        "tool_name": "mcp__higgsfield__generate_video_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "kling3_0_turbo",
+                "prompt": "4K",
+                "resolution": "720p"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:happy_horse_video",
+      "input": {
+        "session_id": "contract-resolution:happy_horse_video",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "happy_horse_video",
+            "prompt": "4K",
+            "resolution": "720p"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:happy_horse_video:batch",
+      "input": {
+        "session_id": "contract-resolution:happy_horse_video:batch",
+        "tool_name": "mcp__higgsfield__generate_video_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "happy_horse_video",
+                "prompt": "4K",
+                "resolution": "720p"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:hf_mult_motion_control",
+      "input": {
+        "session_id": "contract-resolution:hf_mult_motion_control",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "hf_mult_motion_control",
+            "prompt": "4K",
+            "resolution": "480p"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:hf_mult_motion_control:batch",
+      "input": {
+        "session_id": "contract-resolution:hf_mult_motion_control:batch",
+        "tool_name": "mcp__higgsfield__generate_video_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "hf_mult_motion_control",
+                "prompt": "4K",
+                "resolution": "480p"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:hf_mult_replace_object",
+      "input": {
+        "session_id": "contract-resolution:hf_mult_replace_object",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "hf_mult_replace_object",
+            "prompt": "4K",
+            "resolution": "480p"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:hf_mult_replace_object:batch",
+      "input": {
+        "session_id": "contract-resolution:hf_mult_replace_object:batch",
+        "tool_name": "mcp__higgsfield__generate_video_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "hf_mult_replace_object",
+                "prompt": "4K",
+                "resolution": "480p"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:gemini_omni",
+      "input": {
+        "session_id": "contract-resolution:gemini_omni",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "gemini_omni",
+            "prompt": "4K",
+            "resolution": "720p"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:gemini_omni:batch",
+      "input": {
+        "session_id": "contract-resolution:gemini_omni:batch",
+        "tool_name": "mcp__higgsfield__generate_video_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "gemini_omni",
+                "prompt": "4K",
+                "resolution": "720p"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:gemini_omni_flash_1_1",
+      "input": {
+        "session_id": "contract-resolution:gemini_omni_flash_1_1",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "gemini_omni_flash_1_1",
+            "prompt": "4K",
+            "resolution": "360p",
+            "mode": "text-to-video"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"360p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:gemini_omni_flash_1_1:batch",
+      "input": {
+        "session_id": "contract-resolution:gemini_omni_flash_1_1:batch",
+        "tool_name": "mcp__higgsfield__generate_video_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "gemini_omni_flash_1_1",
+                "prompt": "4K",
+                "resolution": "360p",
+                "mode": "text-to-video"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"360p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:wan2_7",
+      "input": {
+        "session_id": "contract-resolution:wan2_7",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "wan2_7",
+            "prompt": "4K",
+            "resolution": "720p"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:wan2_7:batch",
+      "input": {
+        "session_id": "contract-resolution:wan2_7:batch",
+        "tool_name": "mcp__higgsfield__generate_video_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "wan2_7",
+                "prompt": "4K",
+                "resolution": "720p"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:wan3_0",
+      "input": {
+        "session_id": "contract-resolution:wan3_0",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "wan3_0",
+            "prompt": "4K",
+            "resolution": "480p"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:wan3_0:batch",
+      "input": {
+        "session_id": "contract-resolution:wan3_0:batch",
+        "tool_name": "mcp__higgsfield__generate_video_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "wan3_0",
+                "prompt": "4K",
+                "resolution": "480p"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:wan3_0_prime",
+      "input": {
+        "session_id": "contract-resolution:wan3_0_prime",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "wan3_0_prime",
+            "prompt": "4K",
+            "resolution": "480p"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:resolution:wan3_0_prime:batch",
+      "input": {
+        "session_id": "contract-resolution:wan3_0_prime:batch",
+        "tool_name": "mcp__higgsfield__generate_video_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "wan3_0_prime",
+                "prompt": "4K",
+                "resolution": "480p"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"480p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:carrier:wan2_6",
+      "input": {
+        "session_id": "contract-carrier:wan2_6",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "wan2_6",
+            "prompt": "4K",
+            "quality": "720p"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but quality selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:carrier:wan2_6:batch",
+      "input": {
+        "session_id": "contract-carrier:wan2_6:batch",
+        "tool_name": "mcp__higgsfield__generate_video_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "wan2_6",
+                "prompt": "4K",
+                "quality": "720p"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but quality selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:carrier:soul_2",
+      "input": {
+        "session_id": "contract-carrier:soul_2",
+        "tool_name": "mcp__higgsfield__generate_image",
+        "tool_input": {
+          "params": {
+            "model": "soul_2",
+            "prompt": "4K",
+            "quality": "2k"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but quality selects the \"2k\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:carrier:soul_2:batch",
+      "input": {
+        "session_id": "contract-carrier:soul_2:batch",
+        "tool_name": "mcp__higgsfield__generate_image_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "soul_2",
+                "prompt": "4K",
+                "quality": "2k"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but quality selects the \"2k\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:carrier:soul_cinematic",
+      "input": {
+        "session_id": "contract-carrier:soul_cinematic",
+        "tool_name": "mcp__higgsfield__generate_image",
+        "tool_input": {
+          "params": {
+            "model": "soul_cinematic",
+            "prompt": "4K",
+            "quality": "2k"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but quality selects the \"2k\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:carrier:soul_cinematic:batch",
+      "input": {
+        "session_id": "contract-carrier:soul_cinematic:batch",
+        "tool_name": "mcp__higgsfield__generate_image_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "soul_cinematic",
+                "prompt": "4K",
+                "quality": "2k"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but quality selects the \"2k\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:carrier:soul_v2",
+      "input": {
+        "session_id": "contract-carrier:soul_v2",
+        "tool_name": "mcp__higgsfield__generate_image",
+        "tool_input": {
+          "params": {
+            "model": "soul_v2",
+            "prompt": "4K",
+            "quality": "2k"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but quality selects the \"2k\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:carrier:soul_v2:batch",
+      "input": {
+        "session_id": "contract-carrier:soul_v2:batch",
+        "tool_name": "mcp__higgsfield__generate_image_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "soul_v2",
+                "prompt": "4K",
+                "quality": "2k"
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but quality selects the \"2k\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:carrier:kling3_0",
+      "input": {
+        "session_id": "contract-carrier:kling3_0",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "kling3_0",
+            "prompt": "4K",
+            "mode": "4k"
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:carrier:kling3_0:batch",
+      "input": {
+        "session_id": "contract-carrier:kling3_0:batch",
+        "tool_name": "mcp__higgsfield__generate_video_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "kling3_0",
+                "prompt": "4K",
+                "mode": "4k"
+              }
+            }
+          ]
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:carrier:kling_video_edit",
+      "input": {
+        "session_id": "contract-carrier:kling_video_edit",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "kling_video_edit",
+            "prompt": "4K",
+            "mode": "4k"
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:carrier:kling_video_edit:batch",
+      "input": {
+        "session_id": "contract-carrier:kling_video_edit:batch",
+        "tool_name": "mcp__higgsfield__generate_video_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "kling_video_edit",
+                "prompt": "4K",
+                "mode": "4k"
+              }
+            }
+          ]
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:targets:topaz_image",
+      "input": {
+        "session_id": "contract-targets:topaz_image",
+        "tool_name": "mcp__higgsfield__generate_image",
+        "tool_input": {
+          "params": {
+            "model": "topaz_image",
+            "prompt": "4K",
+            "output_width": 1920,
+            "output_height": 100
+          }
+        }
+      },
+      "class": "positive",
+      "research": [
+        "F-619"
+      ],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but requested output_width 1920 x output_height 100 has a 100px short side under the local claim convention. Increase output_width/output_height, or revise the claim."
+    },
+    {
+      "label": "canonical:targets:topaz_image:batch",
+      "input": {
+        "session_id": "contract-targets:topaz_image:batch",
+        "tool_name": "mcp__higgsfield__generate_image_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "topaz_image",
+                "prompt": "4K",
+                "output_width": 1920,
+                "output_height": 100
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [
+        "F-619"
+      ],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but requested output_width 1920 x output_height 100 has a 100px short side under the local claim convention. Increase output_width/output_height, or revise the claim."
+    },
+    {
+      "label": "canonical:targets:topaz_image_generative",
+      "input": {
+        "session_id": "contract-targets:topaz_image_generative",
+        "tool_name": "mcp__higgsfield__generate_image",
+        "tool_input": {
+          "params": {
+            "model": "topaz_image_generative",
+            "prompt": "4K",
+            "output_width": 1920,
+            "output_height": 100
+          }
+        }
+      },
+      "class": "positive",
+      "research": [
+        "F-619"
+      ],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but requested output_width 1920 x output_height 100 has a 100px short side under the local claim convention. Increase output_width/output_height, or revise the claim."
+    },
+    {
+      "label": "canonical:targets:topaz_image_generative:batch",
+      "input": {
+        "session_id": "contract-targets:topaz_image_generative:batch",
+        "tool_name": "mcp__higgsfield__generate_image_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "topaz_image_generative",
+                "prompt": "4K",
+                "output_width": 1920,
+                "output_height": 100
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [
+        "F-619"
+      ],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: request 20: prompt says \"4K\" but requested output_width 1920 x output_height 100 has a 100px short side under the local claim convention. Increase output_width/output_height, or revise the claim."
+    },
+    {
+      "label": "canonical:target-invalid:true",
+      "input": {
+        "session_id": "contract-target-invalid:true",
+        "tool_name": "mcp__higgsfield__generate_image",
+        "tool_input": {
+          "params": {
+            "model": "topaz_image",
+            "prompt": "4K",
+            "output_width": true,
+            "output_height": 3840
+          }
+        }
+      },
+      "class": "robustness",
+      "research": [
+        "F-617"
+      ],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:target-invalid:1280",
+      "input": {
+        "session_id": "contract-target-invalid:1280",
+        "tool_name": "mcp__higgsfield__generate_image",
+        "tool_input": {
+          "params": {
+            "model": "topaz_image",
+            "prompt": "4K",
+            "output_width": "1280",
+            "output_height": 3840
+          }
+        }
+      },
+      "class": "robustness",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:target-invalid:null",
+      "input": {
+        "session_id": "contract-target-invalid:null",
+        "tool_name": "mcp__higgsfield__generate_image",
+        "tool_input": {
+          "params": {
+            "model": "topaz_image",
+            "prompt": "4K",
+            "output_width": null,
+            "output_height": 3840
+          }
+        }
+      },
+      "class": "robustness",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:target-invalid:-1",
+      "input": {
+        "session_id": "contract-target-invalid:-1",
+        "tool_name": "mcp__higgsfield__generate_image",
+        "tool_input": {
+          "params": {
+            "model": "topaz_image",
+            "prompt": "4K",
+            "output_width": -1,
+            "output_height": 3840
+          }
+        }
+      },
+      "class": "robustness",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:target-invalid:0",
+      "input": {
+        "session_id": "contract-target-invalid:0",
+        "tool_name": "mcp__higgsfield__generate_image",
+        "tool_input": {
+          "params": {
+            "model": "topaz_image",
+            "prompt": "4K",
+            "output_width": 0,
+            "output_height": 3840
+          }
+        }
+      },
+      "class": "robustness",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:target-match",
+      "input": {
+        "session_id": "contract-target-match",
+        "tool_name": "mcp__higgsfield__generate_image",
+        "tool_input": {
+          "params": {
+            "model": "topaz_image",
+            "prompt": "4K",
+            "output_width": 3840,
+            "output_height": 2160
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:text:fullwidth",
+      "input": {
+        "session_id": "contract-text:fullwidth",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "seedance_2_0",
+            "prompt": "café 🎥 shot in ４Ｋ",
+            "resolution": "720p"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [
+        "F-603"
+      ],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"４Ｋ\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:text:mixed-quotes",
+      "input": {
+        "session_id": "contract-text:mixed-quotes",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "seedance_2_0",
+            "prompt": "“4K” then ４Ｋ",
+            "resolution": "720p"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"４Ｋ\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:text:ascii-live",
+      "input": {
+        "session_id": "contract-text:ascii-live",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "seedance_2_0",
+            "prompt": "shot in 4K; says \"4K\"",
+            "resolution": "720p"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim."
+    },
+    {
+      "label": "canonical:text:8k",
+      "input": {
+        "session_id": "contract-text:8k",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "seedance_2_0",
+            "prompt": "Style: 8K IMAX commercial, 16:9 widescreen. 8K detail.",
+            "resolution": "720p"
+          }
+        }
+      },
+      "class": "negative",
+      "research": [
+        "F-401"
+      ],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:text:uhd",
+      "input": {
+        "session_id": "contract-text:uhd",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "seedance_2_0",
+            "prompt": "UHD Full HD",
+            "resolution": "720p"
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:text:quoted",
+      "input": {
+        "session_id": "contract-text:quoted",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "seedance_2_0",
+            "prompt": "The presenter says \"shot in 4K\" to the camera.",
+            "resolution": "720p"
+          }
+        }
+      },
+      "class": "negative",
+      "research": [
+        "F-402"
+      ],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:text:curly",
+      "input": {
+        "session_id": "contract-text:curly",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "seedance_2_0",
+            "prompt": "“shot in 4K”",
+            "resolution": "720p"
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:text:fullwidth-quoted",
+      "input": {
+        "session_id": "contract-text:fullwidth-quoted",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "seedance_2_0",
+            "prompt": "＂４Ｋ＂",
+            "resolution": "720p"
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:conflict:spaces",
+      "input": {
+        "session_id": "contract-conflict:spaces",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "prompt": "slow   motion",
+            "negative_prompt": "slow motion"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "prompt_negative_conflict"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one."
+    },
+    {
+      "label": "canonical:conflict:tab",
+      "input": {
+        "session_id": "contract-conflict:tab",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "prompt": "slow\tmotion",
+            "negative_prompt": "slow motion"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "prompt_negative_conflict"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one."
+    },
+    {
+      "label": "canonical:conflict:nbsp",
+      "input": {
+        "session_id": "contract-conflict:nbsp",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "prompt": "slow motion",
+            "negative_prompt": "slow motion"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "prompt_negative_conflict"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one."
+    },
+    {
+      "label": "canonical:conflict:fullwidth",
+      "input": {
+        "session_id": "contract-conflict:fullwidth",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "prompt": "ｓｌｏｗ　ｍｏｔｉｏｎ",
+            "negative_prompt": "slow motion"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "prompt_negative_conflict"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one."
+    },
+    {
+      "label": "canonical:conflict:punctuation",
+      "input": {
+        "session_id": "contract-conflict:punctuation",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "prompt": "(slow motion),",
+            "negative_prompt": "slow motion"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "prompt_negative_conflict"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one."
+    },
+    {
+      "label": "canonical:conflict:newline",
+      "input": {
+        "session_id": "contract-conflict:newline",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "prompt": "slow\nmotion",
+            "negative_prompt": "slow motion"
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:conflict:comma",
+      "input": {
+        "session_id": "contract-conflict:comma",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "prompt": "slow, motion",
+            "negative_prompt": "slow motion"
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:conflict:slash",
+      "input": {
+        "session_id": "contract-conflict:slash",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "prompt": "slow / motion",
+            "negative_prompt": "slow motion"
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:conflict:curly",
+      "input": {
+        "session_id": "contract-conflict:curly",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "prompt": "“slow motion”",
+            "negative_prompt": "slow motion"
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:conflict:negated",
+      "input": {
+        "session_id": "contract-conflict:negated",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "prompt": "ｎｏ ｓｌｏｗ ｍｏｔｉｏｎ",
+            "negative_prompt": "slow motion"
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:conflict:wide",
+      "input": {
+        "session_id": "contract-conflict:wide",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "prompt": "wide shot establishing",
+            "negative_prompt": "wide shot"
+          }
+        }
+      },
+      "class": "positive",
+      "research": [
+        "F-703"
+      ],
+      "expected_ids": [
+        "prompt_negative_conflict"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"wide shot\" appears in both prompt and negative_prompt. Keep each term in one."
+    },
+    {
+      "label": "canonical:overlap:handheld",
+      "input": {
+        "session_id": "contract-overlap:handheld",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "prompt": "handheld, slight wobble",
+            "negative_prompt": "tripod, gimbal, stabilized"
+          }
+        }
+      },
+      "class": "negative",
+      "research": [
+        "F-701"
+      ],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:overlap:grain",
+      "input": {
+        "session_id": "contract-overlap:grain",
+        "tool_name": "mcp__higgsfield__generate_image",
+        "tool_input": {
+          "params": {
+            "prompt": "film grain",
+            "negative_prompt": "digital noise, banding"
+          }
+        }
+      },
+      "class": "negative",
+      "research": [
+        "F-702"
+      ],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:duration:total",
+      "input": {
+        "session_id": "contract-duration:total",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "kling2_6",
+            "prompt": "Total: 15s / 6 shots / 16:9",
+            "duration": 5
+          }
+        }
+      },
+      "class": "positive",
+      "research": [
+        "F-201"
+      ],
+      "expected_ids": [
+        "duration_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- duration_claim: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats."
+    },
+    {
+      "label": "canonical:duration:compound",
+      "input": {
+        "session_id": "contract-duration:compound",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "kling2_6",
+            "prompt": "A 12-second cinematic sportswear ad",
+            "duration": 5
+          }
+        }
+      },
+      "class": "positive",
+      "research": [
+        "F-202"
+      ],
+      "expected_ids": [
+        "duration_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- duration_claim: prompt describes 12s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats."
+    },
+    {
+      "label": "canonical:duration:spans",
+      "input": {
+        "session_id": "contract-duration:spans",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "kling2_6",
+            "prompt": "0–3s … 12–15s",
+            "duration": 5
+          }
+        }
+      },
+      "class": "positive",
+      "research": [
+        "F-203"
+      ],
+      "expected_ids": [
+        "duration_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- duration_claim: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats."
+    },
+    {
+      "label": "canonical:duration:to",
+      "input": {
+        "session_id": "contract-duration:to",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "kling2_6",
+            "prompt": "3s to 7s",
+            "duration": 5
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "duration_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- duration_claim: prompt describes 7s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats."
+    },
+    {
+      "label": "canonical:duration:ending",
+      "input": {
+        "session_id": "contract-duration:ending",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "kling2_6",
+            "prompt": "15s total",
+            "duration": 5
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "duration_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- duration_claim: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats."
+    },
+    {
+      "label": "canonical:duration:fractional",
+      "input": {
+        "session_id": "contract-duration:fractional",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "kling2_6",
+            "prompt": "Total: 5.5s",
+            "duration": 5
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "duration_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- duration_claim: prompt describes 5.5s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats."
+    },
+    {
+      "label": "canonical:duration:beyond-cap",
+      "input": {
+        "session_id": "contract-duration:beyond-cap",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "kling2_6",
+            "prompt": "Total: 900s",
+            "duration": 5
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "duration_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- duration_claim: prompt describes 900s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats."
+    },
+    {
+      "label": "canonical:duration:maximum",
+      "input": {
+        "session_id": "contract-duration:maximum",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "kling2_6",
+            "prompt": "3 seconds; \"Total: 20s\"; 12-second action; Total: 15s",
+            "duration": 5
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "duration_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- duration_claim: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats."
+    },
+    {
+      "label": "canonical:duration:equal",
+      "input": {
+        "session_id": "contract-duration:equal",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "kling2_6",
+            "prompt": "Total: 5s",
+            "duration": 5
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:duration:under",
+      "input": {
+        "session_id": "contract-duration:under",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "kling2_6",
+            "prompt": "holds for 3 seconds",
+            "duration": 5
+          }
+        }
+      },
+      "class": "negative",
+      "research": [
+        "F-414"
+      ],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:duration:fraction-tail",
+      "input": {
+        "session_id": "contract-duration:fraction-tail",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "kling2_6",
+            "prompt": "0.5 seconds",
+            "duration": 5
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:duration:lens",
+      "input": {
+        "session_id": "contract-duration:lens",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "kling2_6",
+            "prompt": "shot on a 50mm at T2.0",
+            "duration": 5
+          }
+        }
+      },
+      "class": "negative",
+      "research": [
+        "F-416"
+      ],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:duration:quoted",
+      "input": {
+        "session_id": "contract-duration:quoted",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "kling2_6",
+            "prompt": "\"Total: 15s\"",
+            "duration": 5
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:duration:curly",
+      "input": {
+        "session_id": "contract-duration:curly",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "kling2_6",
+            "prompt": "“Total: 15s”",
+            "duration": 5
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:duration:fullwidth-quote",
+      "input": {
+        "session_id": "contract-duration:fullwidth-quote",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "kling2_6",
+            "prompt": "＂Total: 15s＂",
+            "duration": 5
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:duration:signed",
+      "input": {
+        "session_id": "contract-duration:signed",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "kling2_6",
+            "prompt": "-15 seconds",
+            "duration": 5
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:duration:positive-sign",
+      "input": {
+        "session_id": "contract-duration:positive-sign",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "kling2_6",
+            "prompt": "+15 seconds",
+            "duration": 5
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:duration:exponent",
+      "input": {
+        "session_id": "contract-duration:exponent",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "kling2_6",
+            "prompt": "1e3 seconds",
+            "duration": 5
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:duration:comma",
+      "input": {
+        "session_id": "contract-duration:comma",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "kling2_6",
+            "prompt": "1,000 seconds",
+            "duration": 5
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:duration:decimal",
+      "input": {
+        "session_id": "contract-duration:decimal",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "kling2_6",
+            "prompt": "1.2.3 seconds",
+            "duration": 5
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:duration:reversed",
+      "input": {
+        "session_id": "contract-duration:reversed",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "kling2_6",
+            "prompt": "15–3s",
+            "duration": 5
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:duration:clock",
+      "input": {
+        "session_id": "contract-duration:clock",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "kling2_6",
+            "prompt": "01:15 seconds",
+            "duration": 5
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:duration:subtotal",
+      "input": {
+        "session_id": "contract-duration:subtotal",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "kling2_6",
+            "prompt": "subtotal: 15s",
+            "duration": 5
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:duration:embedded",
+      "input": {
+        "session_id": "contract-duration:embedded",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "kling2_6",
+            "prompt": "x12-second",
+            "duration": 5
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:duration:tail",
+      "input": {
+        "session_id": "contract-duration:tail",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "kling2_6",
+            "prompt": "15s2",
+            "duration": 5
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:duration:newline",
+      "input": {
+        "session_id": "contract-duration:newline",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "kling2_6",
+            "prompt": "15s\ntotal",
+            "duration": 5
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:duration-mode:seedance_2_5:t2v",
+      "input": {
+        "session_id": "contract-duration-mode:seedance_2_5:t2v",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "seedance_2_5",
+            "mode": "t2v",
+            "prompt": "Total: 15s",
+            "duration": 5
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "duration_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- duration_claim: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats."
+    },
+    {
+      "label": "canonical:duration-mode:seedance_2_5:video_edit",
+      "input": {
+        "session_id": "contract-duration-mode:seedance_2_5:video_edit",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "seedance_2_5",
+            "mode": "video_edit",
+            "prompt": "Total: 15s",
+            "duration": 5
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:duration-mode:seedance_2_5:video_extension",
+      "input": {
+        "session_id": "contract-duration-mode:seedance_2_5:video_extension",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "seedance_2_5",
+            "mode": "video_extension",
+            "prompt": "Total: 15s",
+            "duration": 5
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:duration-mode:seedance_2_5:typo",
+      "input": {
+        "session_id": "contract-duration-mode:seedance_2_5:typo",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "seedance_2_5",
+            "mode": "typo",
+            "prompt": "Total: 15s",
+            "duration": 5
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:duration-mode:ad_multiplier:t2v",
+      "input": {
+        "session_id": "contract-duration-mode:ad_multiplier:t2v",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "ad_multiplier",
+            "mode": "t2v",
+            "prompt": "Total: 15s",
+            "duration": 5
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "duration_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- duration_claim: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats."
+    },
+    {
+      "label": "canonical:duration-mode:ad_multiplier:video_edit",
+      "input": {
+        "session_id": "contract-duration-mode:ad_multiplier:video_edit",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "ad_multiplier",
+            "mode": "video_edit",
+            "prompt": "Total: 15s",
+            "duration": 5
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:duration-mode:ad_multiplier:video_extension",
+      "input": {
+        "session_id": "contract-duration-mode:ad_multiplier:video_extension",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "ad_multiplier",
+            "mode": "video_extension",
+            "prompt": "Total: 15s",
+            "duration": 5
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:duration-mode:ad_multiplier:typo",
+      "input": {
+        "session_id": "contract-duration-mode:ad_multiplier:typo",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "ad_multiplier",
+            "mode": "typo",
+            "prompt": "Total: 15s",
+            "duration": 5
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:duration-mode:gemini:text-to-video",
+      "input": {
+        "session_id": "contract-duration-mode:gemini:text-to-video",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "gemini_omni_flash_1_1",
+            "mode": "text-to-video",
+            "prompt": "Total: 15s",
+            "duration": 5
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "duration_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- duration_claim: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats."
+    },
+    {
+      "label": "canonical:duration-mode:gemini:edit",
+      "input": {
+        "session_id": "contract-duration-mode:gemini:edit",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "gemini_omni_flash_1_1",
+            "mode": "edit",
+            "prompt": "Total: 15s",
+            "duration": 5
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:duration-model:unknown",
+      "input": {
+        "session_id": "contract-duration-model:unknown",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "unknown",
+            "prompt": "Total: 15s",
+            "duration": 5
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:duration-model:video_upscale",
+      "input": {
+        "session_id": "contract-duration-model:video_upscale",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "video_upscale",
+            "prompt": "Total: 15s",
+            "duration": 5
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:duration-model:video_deflicker",
+      "input": {
+        "session_id": "contract-duration-model:video_deflicker",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "video_deflicker",
+            "prompt": "Total: 15s",
+            "duration": 5
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:duration-model:kling_video_edit",
+      "input": {
+        "session_id": "contract-duration-model:kling_video_edit",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "kling_video_edit",
+            "prompt": "Total: 15s",
+            "duration": 5
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:duration-model:clipify",
+      "input": {
+        "session_id": "contract-duration-model:clipify",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "clipify",
+            "prompt": "Total: 15s",
+            "duration": 5
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:scope:video",
+      "input": {
+        "session_id": "contract-scope:video",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "seedance_2_0",
+            "prompt": "4K, slow motion; Total: 15s",
+            "negative_prompt": "slow motion",
+            "resolution": "720p",
+            "duration": 5
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim",
+        "prompt_negative_conflict",
+        "duration_claim"
+      ],
+      "expected_context": "higgsfield-lint: 3 findings\n- resolution_claim: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim.\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.\n- duration_claim: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats."
+    },
+    {
+      "label": "canonical:scope:video:batch",
+      "input": {
+        "session_id": "contract-scope:video:batch",
+        "tool_name": "mcp__higgsfield__generate_video_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "seedance_2_0",
+                "prompt": "4K, slow motion; Total: 15s",
+                "negative_prompt": "slow motion",
+                "resolution": "720p",
+                "duration": 5
+              }
+            }
+          ]
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim",
+        "prompt_negative_conflict",
+        "duration_claim"
+      ],
+      "expected_context": "higgsfield-lint: 3 findings\n- resolution_claim: request 20: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim.\n- prompt_negative_conflict: request 20: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one.\n- duration_claim: request 20: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats."
+    },
+    {
+      "label": "canonical:scope:audio",
+      "input": {
+        "session_id": "contract-scope:audio",
+        "tool_name": "mcp__higgsfield__generate_audio",
+        "tool_input": {
+          "params": {
+            "model": "seedance_2_0",
+            "prompt": "4K, slow motion; Total: 15s",
+            "negative_prompt": "slow motion",
+            "resolution": "720p",
+            "duration": 5
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:scope:audio:batch",
+      "input": {
+        "session_id": "contract-scope:audio:batch",
+        "tool_name": "mcp__higgsfield__generate_audio_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "seedance_2_0",
+                "prompt": "4K, slow motion; Total: 15s",
+                "negative_prompt": "slow motion",
+                "resolution": "720p",
+                "duration": 5
+              }
+            }
+          ]
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:scope:image",
+      "input": {
+        "session_id": "contract-scope:image",
+        "tool_name": "mcp__higgsfield__generate_image",
+        "tool_input": {
+          "params": {
+            "model": "seedance_2_0",
+            "prompt": "4K, slow motion; Total: 15s",
+            "negative_prompt": "slow motion",
+            "resolution": "720p",
+            "duration": 5
+          }
+        }
+      },
+      "class": "robustness",
+      "research": [],
+      "expected_ids": [
+        "prompt_negative_conflict"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one."
+    },
+    {
+      "label": "canonical:scope:image:batch",
+      "input": {
+        "session_id": "contract-scope:image:batch",
+        "tool_name": "mcp__higgsfield__generate_image_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "seedance_2_0",
+                "prompt": "4K, slow motion; Total: 15s",
+                "negative_prompt": "slow motion",
+                "resolution": "720p",
+                "duration": 5
+              }
+            }
+          ]
+        }
+      },
+      "class": "robustness",
+      "research": [],
+      "expected_ids": [
+        "prompt_negative_conflict"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: request 20: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one."
+    },
+    {
+      "label": "canonical:scope:unknown",
+      "input": {
+        "session_id": "contract-scope:unknown",
+        "tool_name": "mcp__higgsfield__generate_unknown",
+        "tool_input": {
+          "params": {
+            "model": "seedance_2_0",
+            "prompt": "4K, slow motion; Total: 15s",
+            "negative_prompt": "slow motion",
+            "resolution": "720p",
+            "duration": 5
+          }
+        }
+      },
+      "class": "robustness",
+      "research": [],
+      "expected_ids": [
+        "prompt_negative_conflict"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one."
+    },
+    {
+      "label": "canonical:scope:unknown:batch",
+      "input": {
+        "session_id": "contract-scope:unknown:batch",
+        "tool_name": "mcp__higgsfield__generate_unknown_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 20,
+              "params": {
+                "model": "seedance_2_0",
+                "prompt": "4K, slow motion; Total: 15s",
+                "negative_prompt": "slow motion",
+                "resolution": "720p",
+                "duration": 5
+              }
+            }
+          ]
+        }
+      },
+      "class": "robustness",
+      "research": [],
+      "expected_ids": [
+        "prompt_negative_conflict"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: request 20: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one."
+    },
+    {
+      "label": "canonical:scope:name:null",
+      "input": {
+        "session_id": "contract-scope:name:null",
+        "tool_name": null,
+        "tool_input": {
+          "params": {
+            "model": "seedance_2_0",
+            "prompt": "4K, slow motion; Total: 15s",
+            "negative_prompt": "slow motion",
+            "resolution": "720p",
+            "duration": 5
+          }
+        }
+      },
+      "class": "robustness",
+      "research": [],
+      "expected_ids": [
+        "prompt_negative_conflict"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one."
+    },
+    {
+      "label": "canonical:scope:name:23",
+      "input": {
+        "session_id": "contract-scope:name:23",
+        "tool_name": 23,
+        "tool_input": {
+          "params": {
+            "model": "seedance_2_0",
+            "prompt": "4K, slow motion; Total: 15s",
+            "negative_prompt": "slow motion",
+            "resolution": "720p",
+            "duration": 5
+          }
+        }
+      },
+      "class": "robustness",
+      "research": [],
+      "expected_ids": [
+        "prompt_negative_conflict"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one."
+    },
+    {
+      "label": "canonical:scope:missing",
+      "input": {
+        "session_id": "contract-scope:missing",
+        "tool_input": {
+          "params": {
+            "model": "seedance_2_0",
+            "prompt": "4K, slow motion; Total: 15s",
+            "negative_prompt": "slow motion",
+            "resolution": "720p",
+            "duration": 5
+          }
+        }
+      },
+      "class": "robustness",
+      "research": [],
+      "expected_ids": [
+        "prompt_negative_conflict"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one."
+    },
+    {
+      "label": "canonical:scope:valid-image",
+      "input": {
+        "session_id": "contract-scope:valid-image",
+        "tool_name": "mcp__higgsfield__generate_image",
+        "tool_input": {
+          "params": {
+            "model": "nano_banana_pro",
+            "prompt": "4K, slow motion; Total: 15s",
+            "negative_prompt": "slow motion",
+            "resolution": "2k",
+            "duration": 5
+          }
+        }
+      },
+      "class": "positive",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim",
+        "prompt_negative_conflict"
+      ],
+      "expected_context": "higgsfield-lint: 2 findings\n- resolution_claim: prompt says \"4K\" but resolution selects the \"2k\" output tier. Choose a supported higher tier, or revise the claim.\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one."
+    },
+    {
+      "label": "canonical:excluded:unknown",
+      "input": {
+        "session_id": "contract-excluded:unknown",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "prompt": "4K",
+            "model": "unknown",
+            "resolution": "720p"
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:excluded:wrongkind",
+      "input": {
+        "session_id": "contract-excluded:wrongkind",
+        "tool_name": "mcp__higgsfield__generate_image",
+        "tool_input": {
+          "params": {
+            "prompt": "4K",
+            "model": "seedance_2_0",
+            "resolution": "720p"
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:excluded:stored",
+      "input": {
+        "session_id": "contract-excluded:stored",
+        "tool_name": "mcp__higgsfield__generate_image",
+        "tool_input": {
+          "params": {
+            "prompt": "4K",
+            "model": "seedream_v5_pro",
+            "width": 1280,
+            "height": 720
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:excluded:marketing",
+      "input": {
+        "session_id": "contract-excluded:marketing",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "prompt": "4K",
+            "model": "marketing_studio_video",
+            "resolution": "720p",
+            "width": 1280,
+            "height": 720
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:excluded:undeclared",
+      "input": {
+        "session_id": "contract-excluded:undeclared",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "prompt": "4K",
+            "model": "kling2_6",
+            "resolution": "720p",
+            "width": 1376,
+            "height": 768
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:excluded:fast",
+      "input": {
+        "session_id": "contract-excluded:fast",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "prompt": "4K",
+            "model": "seedance_2_0",
+            "mode": "fast",
+            "resolution": "1080p"
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:excluded:mixed",
+      "input": {
+        "session_id": "contract-excluded:mixed",
+        "tool_name": "mcp__higgsfield__generate_image",
+        "tool_input": {
+          "params": {
+            "prompt": "1080p",
+            "model": "nano_banana_pro",
+            "resolution": "2k"
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:excluded:hailuo",
+      "input": {
+        "session_id": "contract-excluded:hailuo",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "prompt": "4K",
+            "model": "minimax_hailuo",
+            "resolution": "768"
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:excluded:quality",
+      "input": {
+        "session_id": "contract-excluded:quality",
+        "tool_name": "mcp__higgsfield__generate_image",
+        "tool_input": {
+          "params": {
+            "prompt": "4K",
+            "model": "gpt_image_2",
+            "quality": "high"
+          }
+        }
+      },
+      "class": "negative",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:limitation:negated-resolution",
+      "input": {
+        "session_id": "contract-limitation:negated-resolution",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "seedance_2_0",
+            "prompt": "not 4K",
+            "resolution": "720p"
+          }
+        }
+      },
+      "class": "limitation",
+      "research": [],
+      "expected_ids": [
+        "resolution_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- resolution_claim: prompt says \"4K\" but resolution selects the \"720p\" output tier. Choose a supported higher tier, or revise the claim.",
+      "ideal_ids": []
+    },
+    {
+      "label": "canonical:limitation:scene-duration",
+      "input": {
+        "session_id": "contract-limitation:scene-duration",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "model": "kling2_6",
+            "prompt": "holds for 12 seconds",
+            "duration": 5
+          }
+        }
+      },
+      "class": "limitation",
+      "research": [],
+      "expected_ids": [
+        "duration_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- duration_claim: prompt describes 12s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.",
+      "ideal_ids": []
+    },
+    {
+      "label": "canonical:limitation:inch-marks",
+      "input": {
+        "session_id": "contract-limitation:inch-marks",
+        "tool_name": "mcp__higgsfield__generate_video",
+        "tool_input": {
+          "params": {
+            "prompt": "a 24\" monitor, close-up, 6\" lens",
+            "negative_prompt": "close-up"
+          }
+        }
+      },
+      "class": "limitation",
+      "research": [],
+      "expected_ids": [],
+      "expected_context": null,
+      "ideal_ids": [
+        "prompt_negative_conflict"
+      ]
+    },
+    {
+      "label": "canonical:batch:explicit-mixed",
+      "class": "positive",
+      "research": [],
+      "input": {
+        "session_id": "contract-batch-explicit-mixed",
+        "tool_name": "mcp__higgsfield__generate_video_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 10,
+              "params": {
+                "model": "kling2_6",
+                "prompt": "Total: 5s",
+                "duration": 5
+              }
+            },
+            {
+              "index": 20,
+              "params": {
+                "model": "kling2_6",
+                "prompt": "Total: 15s",
+                "duration": 5
+              }
+            },
+            {
+              "index": 30,
+              "params": null
+            }
+          ],
+          "params": {
+            "model": "kling2_6",
+            "prompt": "Total: 15s",
+            "duration": 5
+          }
+        }
+      },
+      "expected_ids": [
+        "duration_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- duration_claim: request 20: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats."
+    },
+    {
+      "label": "canonical:batch:positional",
+      "class": "positive",
+      "research": [],
+      "input": {
+        "session_id": "contract-batch-positional",
+        "tool_name": "mcp__higgsfield__generate_video_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "params": {
+                "model": "kling2_6",
+                "prompt": "Total: 5s",
+                "duration": 5
+              }
+            },
+            {
+              "params": {
+                "model": "kling2_6",
+                "prompt": "Total: 15s",
+                "duration": 5
+              }
+            }
+          ]
+        }
+      },
+      "expected_ids": [
+        "duration_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- duration_claim: request 1: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats."
+    },
+    {
+      "label": "canonical:batch:two-offenders",
+      "class": "positive",
+      "research": [],
+      "input": {
+        "session_id": "contract-batch-two-offenders",
+        "tool_name": "mcp__higgsfield__generate_video_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": 10,
+              "params": {
+                "model": "kling2_6",
+                "prompt": "Total: 15s",
+                "duration": 5
+              }
+            },
+            {
+              "index": 20,
+              "params": {
+                "model": "kling2_6",
+                "prompt": "Total: 15s",
+                "duration": 5
+              }
+            }
+          ]
+        }
+      },
+      "expected_ids": [
+        "duration_claim",
+        "duration_claim"
+      ],
+      "expected_context": "higgsfield-lint: 2 findings\n- duration_claim: request 10: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats.\n- duration_claim: request 20: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats."
+    },
+    {
+      "label": "canonical:batch:no-fallback",
+      "class": "negative",
+      "research": [],
+      "input": {
+        "session_id": "contract-batch-no-fallback",
+        "tool_name": "mcp__higgsfield__generate_video_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "no_params": true
+            }
+          ],
+          "params": {
+            "model": "kling2_6",
+            "prompt": "Total: 15s",
+            "duration": 5
+          }
+        }
+      },
+      "expected_ids": [],
+      "expected_context": null
+    },
+    {
+      "label": "canonical:batch:empty-fallback",
+      "class": "robustness",
+      "research": [],
+      "input": {
+        "session_id": "contract-batch-empty-fallback",
+        "tool_name": "mcp__higgsfield__generate_video_batch",
+        "tool_input": {
+          "requests": [],
+          "params": {
+            "model": "kling2_6",
+            "prompt": "Total: 15s",
+            "duration": 5
+          }
+        }
+      },
+      "expected_ids": [
+        "duration_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- duration_claim: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats."
+    },
+    {
+      "label": "canonical:batch:index-true",
+      "class": "robustness",
+      "research": [],
+      "input": {
+        "session_id": "contract-batch-index-true",
+        "tool_name": "mcp__higgsfield__generate_video_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": true,
+              "params": {
+                "model": "kling2_6",
+                "prompt": "Total: 15s",
+                "duration": 5
+              }
+            }
+          ]
+        }
+      },
+      "expected_ids": [
+        "duration_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- duration_claim: request True: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats."
+    },
+    {
+      "label": "canonical:batch:index-null",
+      "class": "robustness",
+      "research": [],
+      "input": {
+        "session_id": "contract-batch-index-null",
+        "tool_name": "mcp__higgsfield__generate_video_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": null,
+              "params": {
+                "model": "kling2_6",
+                "prompt": "Total: 15s",
+                "duration": 5
+              }
+            }
+          ]
+        }
+      },
+      "expected_ids": [
+        "duration_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- duration_claim: request None: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats."
+    },
+    {
+      "label": "canonical:batch:index-req-alpha",
+      "class": "robustness",
+      "research": [],
+      "input": {
+        "session_id": "contract-batch-index-req-alpha",
+        "tool_name": "mcp__higgsfield__generate_video_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": "req-alpha",
+              "params": {
+                "model": "kling2_6",
+                "prompt": "Total: 15s",
+                "duration": 5
+              }
+            }
+          ]
+        }
+      },
+      "expected_ids": [
+        "duration_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- duration_claim: request req-alpha: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats."
+    },
+    {
+      "label": "canonical:batch:index--3",
+      "class": "robustness",
+      "research": [],
+      "input": {
+        "session_id": "contract-batch-index--3",
+        "tool_name": "mcp__higgsfield__generate_video_batch",
+        "tool_input": {
+          "requests": [
+            {
+              "index": -3,
+              "params": {
+                "model": "kling2_6",
+                "prompt": "Total: 15s",
+                "duration": 5
+              }
+            }
+          ]
+        }
+      },
+      "expected_ids": [
+        "duration_claim"
+      ],
+      "expected_context": "higgsfield-lint: 1 finding\n- duration_claim: request -3: prompt describes 15s of action but the supplied duration is 5s. Check the model's supported duration or retime the beats."
+    }
+  ]
+}
