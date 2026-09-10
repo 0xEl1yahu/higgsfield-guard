@@ -11,6 +11,10 @@ path = "rust/src/lib.rs"
 name = "higgsfield-lint"
 path = "rust/src/main.rs"
 
+[[bin]]
+name = "higgsfield-lint-review"
+path = "rust/src/bin/review.rs"
+
 [[test]]
 name = "fail_silent"
 path = "rust/tests/fail_silent.rs"

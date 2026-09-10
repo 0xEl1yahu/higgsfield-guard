@@ -38,6 +38,18 @@ instrument for this port: it feeds an identical corpus of inputs to both the Rus
 and the Python oracle (below) and asserts their outputs are equal as parsed JSON. See
 SPEC.md §9.
 
+## Reviewing what the lint has actually done
+
+```
+cargo build --release && ./target/release/higgsfield-lint-review
+```
+
+The hook appends one metadata record per call to `data/findings.jsonl` - no prompt text,
+clean calls included. This prints per-check fire rates over that log and lists models that
+have been seen accepting a `negative_prompt` but are not yet in
+`data/negative_prompt_models.json`. It never writes; promoting a model is a deliberate
+edit and a commit. See SPEC.md §9.1 and §9.2.
+
 ## `src/higgsfield_lint.py` is the parity oracle - do not delete it
 
 The hook itself is the compiled Rust binary. `src/higgsfield_lint.py` is **not** a

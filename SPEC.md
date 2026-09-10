@@ -224,6 +224,23 @@ other tests over the real one.
 
 `higgsfield-lint-review` (9.2) is the only reader.
 
+### 9.2 Review tool
+
+`higgsfield-lint-review` is the only reader of the findings log. It is read-only, is never
+on the generation path, and may print and exit non-zero - the opposite of the hook's
+obligations in 7.
+
+    cargo build --release && ./target/release/higgsfield-lint-review
+
+It reports per-check fire rates over real traffic, which is the instrument 9 asks for
+("a check that fires on a known-good call is a bug"), and lists models observed with a
+non-empty negative_prompt on at least five calls that are not yet in
+`data/negative_prompt_models.json`.
+
+It never edits that file. 5.3 requires the list to be evidence-seeded rather than
+inferred, so promotion stays a human judgement and a commit; the tool supplies the
+evidence and prints the exact line to paste.
+
 ## 10. Repository layout
 
 ```
@@ -233,6 +250,14 @@ Cargo.toml, Cargo.lock               Rust package manifest (serde_json, regex)
 rust/src/*.rs                        the hook, compiled to a Rust binary (§12)
 target/release/higgsfield-lint       the built hook; PreToolUse runs this directly (§12.1)
 src/higgsfield_lint.py               retained parity oracle, stdlib only - NOT the hook (§12.2)
+rust/tests/behaviour.rs              the three bounded CI gates
+rust/src/lib.rs                      library target shared by both binaries
+rust/src/log.rs                      the findings log (9.1)
+rust/src/bin/review.rs               higgsfield-lint-review (9.2)
+scripts/check-hook-freshness.sh      SessionStart staleness guard (12.1)
+data/findings.jsonl                  local findings log, gitignored (9.1)
+requirements-dev.txt                 pytest, for tests/test_lint.py
+.github/workflows/ci.yml             build, both test suites, clippy, fmt
 data/negative_prompt_models.json     evidence-seeded model list
 tests/fixtures/*.json                real captured tool inputs
 tests/test_lint.py                   pytest, verifies the Python oracle only
