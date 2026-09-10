@@ -17,9 +17,14 @@ This is not a one-time convenience, it is required before the hook does anything
 hook runs `target/release/higgsfield-lint` directly. If that binary is missing, or was
 built against an older `rust/src/*.rs`, the hook exits non-zero or runs stale logic -
 either way `PreToolUse` treats it as non-blocking and the generation call proceeds
-exactly as if the lint had found nothing. **Nothing distinguishes "the lint didn't run"
-from "the lint ran and found nothing."** Re-run this build whenever `rust/src/*.rs`
-changes, and confirm it before relying on the hook for the first time. See SPEC.md §12.1.
+exactly as if the lint had found nothing.
+
+A `SessionStart` hook (`scripts/check-hook-freshness.sh`) now closes this: it checks the
+binary at the start of every session and injects a one-line warning when it is missing or
+older than `rust/src/*.rs`. It stays silent when the build is current. That warning is the
+only thing distinguishing "the lint didn't run" from "the lint ran and found nothing", so
+do not remove it without replacing it. Re-run this build whenever `rust/src/*.rs` changes.
+See SPEC.md §12.1.
 
 ## Running the tests
 
