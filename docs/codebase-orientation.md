@@ -1,3 +1,10 @@
+> **Superseded (2026-09-10).** This is a dated snapshot taken at commit `a7e0039`. Since
+> then the third check landed, `models.rs` was removed, the `doctor`-only argv dispatch
+> became the robot-mode CLI, the corpus grew to 538 inputs, and every task list below was
+> completed. `README.md` and `SPEC.md` are the live description;
+> `docs/2026-09-10-readme-audit.md` §7 lists each stale claim in this file. Kept unedited
+> as a record of where the work stood on 2026-09-09.
+
 # higgsfield-lint — Codebase Orientation
 
 Written 2026-09-09 against commit `a7e0039` on `feat/doctor-and-expiry`. A standalone
