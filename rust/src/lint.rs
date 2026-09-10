@@ -40,9 +40,9 @@ fn resolve_params(raw: Option<&Value>) -> Option<Value> {
 
 /// Port of `_lint_params` (oracle lines 222-228). Runs the three checks against a single
 /// resolved `params` object, in the exact order of the oracle's `CHECKS` tuple
-/// (`check_resolution_claim`, `check_prompt_negative_conflict`, `check_negation_placement`)
-/// - the rendered output is order-dependent, so this sequence of pushes (rather than a
-/// set or a map iteration) is what keeps that order stable.
+/// (`check_resolution_claim`, `check_prompt_negative_conflict`,
+/// `check_negation_placement`) - the rendered output is order-dependent, so this sequence
+/// of pushes (rather than a set or a map iteration) is what keeps that order stable.
 fn lint_params(params: &Value, models: &HashSet<String>) -> Vec<Finding> {
     let mut findings = Vec::new();
     if let Some(f) = checks::check_resolution_claim(params) {

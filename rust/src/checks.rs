@@ -59,9 +59,9 @@ const MIN_SANE_DIMENSION: i64 = 128;
 /// Rust's `regex` crate has no lookaround support (and `fancy-regex` is deliberately not
 /// used - see the plan), so this is a manual boundary scan: find each occurrence of the
 /// literal term (case-sensitive), then reject it if the character immediately before or
-/// after is an ASCII lowercase letter or digit. A rejected match does not stop the search
-/// - scanning resumes from the next start position so a later, valid occurrence can still
-/// be found.
+/// after is an ASCII lowercase letter or digit. A rejected match does not stop the
+/// search - scanning resumes from the next start position so a later, valid occurrence
+/// can still be found.
 pub fn has_term(text: &str, term: &str) -> bool {
     find_term_match(text, term, false).is_some()
 }
@@ -114,6 +114,9 @@ fn find_term_match(text: &str, term: &str, ignore_case: bool) -> Option<(usize, 
     if m == 0 {
         return None;
     }
+    // Replaced wholesale in the Unicode-fold task; clippy's `eq_ignore_ascii_case`
+    // suggestion is the wrong shape because the fold is about to stop being ASCII-only.
+    #[allow(clippy::manual_ignore_case_cmp)]
     let eq = |a: char, b: char| {
         if ignore_case {
             a.to_ascii_lowercase() == b.to_ascii_lowercase()

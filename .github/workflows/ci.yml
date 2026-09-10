@@ -1,0 +1,50 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+
+      - uses: actions/setup-python@v5
+        with:
+          # Pinned, not floating: the parity oracle is a Python program and `re` semantics
+          # are what parity is measured against. A divergence that appears only in CI is a
+          # Python-version-dependent `re` behaviour and belongs in SPEC.md 12.3, not in a
+          # silent toolchain bump. If local and CI disagree, reconcile the versions before
+          # touching the code.
+          python-version: '3.12'
+
+      - run: python -m pip install -r requirements-dev.txt
+
+      - run: cargo build --release
+
+      # The contract: three bounded classes of failure, named individually.
+      - name: "gate 1 - bad prompts"
+        run: cargo test --release --test behaviour gate_1 -- --nocapture
+      - name: "gate 2 - missing details"
+        run: cargo test --release --test behaviour gate_2 -- --nocapture
+      - name: "gate 3 - inaccurate or harmful advice"
+        run: cargo test --release --test behaviour gate_3 -- --nocapture
+
+      # Supporting suites.
+      - name: "fail-silent on pathological input"
+        run: cargo test --release --test fail_silent
+      - name: "differential parity against the Python oracle"
+        run: cargo test --release --test parity
+      - name: "unit tests"
+        run: cargo test --release --bin higgsfield-lint
+      - name: "python oracle tests"
+        run: pytest tests/ -q
+
+      # Hygiene, last: a formatting nit should not mask a gate failure in the log.
+      - run: cargo clippy --all-targets --release -- -D warnings
+      - run: cargo fmt --check

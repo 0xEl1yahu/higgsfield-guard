@@ -12,6 +12,10 @@ name = "fail_silent"
 path = "rust/tests/fail_silent.rs"
 
 [[test]]
+name = "behaviour"
+path = "rust/tests/behaviour.rs"
+
+[[test]]
 name = "parity"
 path = "rust/tests/parity.rs"
 
