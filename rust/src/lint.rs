@@ -140,7 +140,11 @@ pub fn lint(tool_input: &Value, models: &HashSet<String>) -> Vec<Finding> {
 /// Port of `render` (oracle lines 256-260).
 pub fn render(findings: &[Finding]) -> String {
     let plural = if findings.len() == 1 { "" } else { "s" };
-    let mut lines = vec![format!("higgsfield-lint: {} finding{}", findings.len(), plural)];
+    let mut lines = vec![format!(
+        "higgsfield-lint: {} finding{}",
+        findings.len(),
+        plural
+    )];
     lines.extend(
         findings
             .iter()

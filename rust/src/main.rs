@@ -8,7 +8,7 @@ mod models;
 fn run() -> Option<String> {
     let mut buf = Vec::new();
     std::io::stdin().read_to_end(&mut buf).ok()?;
-    let text = String::from_utf8(buf).ok()?;            // invalid UTF-8 -> silence
+    let text = String::from_utf8(buf).ok()?; // invalid UTF-8 -> silence
     let payload: serde_json::Value = serde_json::from_str(&text).ok()?;
     let tool_input = payload.get("tool_input")?;
     #[cfg(debug_assertions)]
@@ -25,7 +25,9 @@ fn run() -> Option<String> {
         // that panics on this or any other field name, so a real call happening to
         // contain a field named `__panic__` behaves exactly like any other unrecognised
         // field.
-        if tool_input.get("params").and_then(|p| p.get("__panic__")) == Some(&serde_json::Value::Bool(true)) {
+        if tool_input.get("params").and_then(|p| p.get("__panic__"))
+            == Some(&serde_json::Value::Bool(true))
+        {
             panic!("debug-only panic injection triggered by __panic__ field");
         }
     }

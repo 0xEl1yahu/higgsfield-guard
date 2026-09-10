@@ -142,7 +142,11 @@ fn batch_one(index: Value, params: Value) -> Value {
     json!({"requests": [{"index": index, "params": params}]})
 }
 
-fn with_optional(mut obj: serde_json::Map<String, Value>, negative: Option<&str>, model: Option<&str>) -> Value {
+fn with_optional(
+    mut obj: serde_json::Map<String, Value>,
+    negative: Option<&str>,
+    model: Option<&str>,
+) -> Value {
     if let Some(n) = negative {
         obj.insert("negative_prompt".to_string(), json!(n));
     }
@@ -183,7 +187,10 @@ fn fixture_inputs() -> Vec<(String, Vec<u8>)> {
         let fixture: Value = serde_json::from_str(&text).unwrap();
         let name = path.file_name().unwrap().to_string_lossy().to_string();
 
-        out.push((format!("fixture:{name}:single"), wrap(TOOL_SINGLE, fixture.clone())));
+        out.push((
+            format!("fixture:{name}:single"),
+            wrap(TOOL_SINGLE, fixture.clone()),
+        ));
 
         let params = fixture
             .get("params")
@@ -212,16 +219,34 @@ fn pathological_inputs() -> Vec<(String, Vec<u8>)> {
         ("garbage", b"not json".to_vec()),
         ("empty_object", b"{}".to_vec()),
         ("tool_input_null", br#"{"tool_input": null}"#.to_vec()),
-        ("tool_input_string", br#"{"tool_input": "a string"}"#.to_vec()),
-        ("params_bare_string", br#"{"tool_input": {"params": "a bare string"}}"#.to_vec()),
-        ("params_non_dict_list", br#"{"tool_input": {"params": []}}"#.to_vec()),
-        ("requests_not_a_list", br#"{"tool_input": {"requests": "not a list"}}"#.to_vec()),
-        ("requests_junk_entries", br#"{"tool_input": {"requests": [null, 3, "x"]}}"#.to_vec()),
+        (
+            "tool_input_string",
+            br#"{"tool_input": "a string"}"#.to_vec(),
+        ),
+        (
+            "params_bare_string",
+            br#"{"tool_input": {"params": "a bare string"}}"#.to_vec(),
+        ),
+        (
+            "params_non_dict_list",
+            br#"{"tool_input": {"params": []}}"#.to_vec(),
+        ),
+        (
+            "requests_not_a_list",
+            br#"{"tool_input": {"requests": "not a list"}}"#.to_vec(),
+        ),
+        (
+            "requests_junk_entries",
+            br#"{"tool_input": {"requests": [null, 3, "x"]}}"#.to_vec(),
+        ),
         ("invalid_utf8", vec![0xff, 0xfe, 0x00, 0x01]),
         (
             "huge_prompt",
-            format!(r#"{{"tool_input":{{"params":{{"prompt":"{}"}}}}}}"#, "a".repeat(5_000_000))
-                .into_bytes(),
+            format!(
+                r#"{{"tool_input":{{"params":{{"prompt":"{}"}}}}}}"#,
+                "a".repeat(5_000_000)
+            )
+            .into_bytes(),
         ),
         (
             "deeply_nested_array",
@@ -232,7 +257,10 @@ fn pathological_inputs() -> Vec<(String, Vec<u8>)> {
         // nothing special in either implementation (no field named `__panic__` is read by
         // either the oracle or the port), so both sides simply find no prompt/resolution
         // and stay silent - which is itself worth confirming stays true.
-        ("magic_panic_key", br#"{"tool_input": {"params": {"__panic__": true}}}"#.to_vec()),
+        (
+            "magic_panic_key",
+            br#"{"tool_input": {"params": {"__panic__": true}}}"#.to_vec(),
+        ),
     ];
     cases
         .into_iter()
@@ -254,19 +282,35 @@ fn resolution_sweep() -> Vec<(String, Vec<u8>)> {
             let prompt = format!("epic cinematic scene, {variant}, highly detailed");
             for (w, h) in DIMENSION_PAIRS {
                 let params = json!({"prompt": prompt, "width": w, "height": h});
-                out.push((format!("resolution:{variant}:{w}x{h}:obj"), wrap(TOOL_SINGLE, single(params.clone()))));
-                out.push((format!("resolution:{variant}:{w}x{h}:str"), wrap(TOOL_SINGLE, single_str(&params))));
+                out.push((
+                    format!("resolution:{variant}:{w}x{h}:obj"),
+                    wrap(TOOL_SINGLE, single(params.clone())),
+                ));
+                out.push((
+                    format!("resolution:{variant}:{w}x{h}:str"),
+                    wrap(TOOL_SINGLE, single_str(&params)),
+                ));
             }
             // Booleans must be excluded from dimension logic even though
             // `isinstance(True, int)` is `True` in Python - the oracle explicitly guards
             // against this (`_is_int_dimension`).
             let bool_params = json!({"prompt": prompt, "width": true, "height": true});
-            out.push((format!("resolution:{variant}:bool_dims"), wrap(TOOL_SINGLE, single(bool_params))));
+            out.push((
+                format!("resolution:{variant}:bool_dims"),
+                wrap(TOOL_SINGLE, single(bool_params)),
+            ));
         }
     }
-    for res_val in KNOWN_RESOLUTION_PARAM_VALUES.iter().chain(UNKNOWN_RESOLUTION_PARAM_VALUES.iter()) {
-        let params = json!({"prompt": "shot in 4k, cinematic establishing shot", "resolution": res_val});
-        out.push((format!("resolution_param:{res_val}"), wrap(TOOL_SINGLE, single(params))));
+    for res_val in KNOWN_RESOLUTION_PARAM_VALUES
+        .iter()
+        .chain(UNKNOWN_RESOLUTION_PARAM_VALUES.iter())
+    {
+        let params =
+            json!({"prompt": "shot in 4k, cinematic establishing shot", "resolution": res_val});
+        out.push((
+            format!("resolution_param:{res_val}"),
+            wrap(TOOL_SINGLE, single(params)),
+        ));
     }
     out
 }
@@ -281,14 +325,23 @@ fn conflict_phrase_sweep() -> Vec<(String, Vec<u8>)> {
             "prompt": format!("a scene featuring {phrase}, cinematic composition"),
             "negative_prompt": format!("{phrase}, low quality")
         });
-        out.push((format!("conflict:{phrase}:obj"), wrap(TOOL_SINGLE, single(params.clone()))));
-        out.push((format!("conflict:{phrase}:str"), wrap(TOOL_SINGLE, single_str(&params))));
+        out.push((
+            format!("conflict:{phrase}:obj"),
+            wrap(TOOL_SINGLE, single(params.clone())),
+        ));
+        out.push((
+            format!("conflict:{phrase}:str"),
+            wrap(TOOL_SINGLE, single_str(&params)),
+        ));
 
         let negated_params = json!({
             "prompt": format!("no {phrase}, cat on a windowsill"),
             "negative_prompt": format!("{phrase}, low quality")
         });
-        out.push((format!("conflict_agreement:{phrase}"), wrap(TOOL_SINGLE, single(negated_params))));
+        out.push((
+            format!("conflict_agreement:{phrase}"),
+            wrap(TOOL_SINGLE, single(negated_params)),
+        ));
     }
     out
 }
@@ -311,7 +364,10 @@ fn negation_form_sweep(known: &str) -> Vec<(String, Vec<u8>)> {
             }
         }
         let base = json!({"prompt": prompt, "negative_prompt": "blurry"});
-        out.push((format!("negation_form:{form}:str"), wrap(TOOL_SINGLE, single_str(&base))));
+        out.push((
+            format!("negation_form:{form}:str"),
+            wrap(TOOL_SINGLE, single_str(&base)),
+        ));
     }
     out
 }
@@ -322,7 +378,10 @@ fn negation_form_sweep(known: &str) -> Vec<(String, Vec<u8>)> {
 fn stopword_sweep(known: &str) -> Vec<(String, Vec<u8>)> {
     let mut out = Vec::new();
     let idioms = [
-        ("no_more", "a busy street with no more than three people visible"),
+        (
+            "no_more",
+            "a busy street with no more than three people visible",
+        ),
         ("no_longer", "a building that is no longer standing"),
         ("no_matter", "a hero who fights no matter what happens"),
     ];
@@ -331,11 +390,17 @@ fn stopword_sweep(known: &str) -> Vec<(String, Vec<u8>)> {
             let mut m = serde_json::Map::new();
             m.insert("prompt".to_string(), json!(prompt));
             let params = with_optional(m, Some("blurry"), model);
-            out.push((format!("stopword:{name}:model={model:?}"), wrap(TOOL_SINGLE, single(params))));
+            out.push((
+                format!("stopword:{name}:model={model:?}"),
+                wrap(TOOL_SINGLE, single(params)),
+            ));
         }
         let mixed_prompt = format!("{prompt}, no clutter");
         let params = json!({"prompt": mixed_prompt, "negative_prompt": "blurry"});
-        out.push((format!("stopword:{name}:mixed_with_directive"), wrap(TOOL_SINGLE, single(params))));
+        out.push((
+            format!("stopword:{name}:mixed_with_directive"),
+            wrap(TOOL_SINGLE, single(params)),
+        ));
     }
     out
 }
@@ -345,22 +410,39 @@ fn stopword_sweep(known: &str) -> Vec<(String, Vec<u8>)> {
 fn gerund_sweep(known: &str) -> Vec<(String, Vec<u8>)> {
     let mut out = Vec::new();
     let noise_phrases = ["without moving", "without breathing", "without blinking"];
-    let directive_phrases = ["no flickering", "no warping", "avoid flickering", "avoid shimmering"];
+    let directive_phrases = [
+        "no flickering",
+        "no warping",
+        "avoid flickering",
+        "avoid shimmering",
+    ];
 
     for phrase in noise_phrases {
         for model in [Some(known), None] {
             let mut m = serde_json::Map::new();
-            m.insert("prompt".to_string(), json!(format!("a monk sitting {phrase}, breathing slowly")));
+            m.insert(
+                "prompt".to_string(),
+                json!(format!("a monk sitting {phrase}, breathing slowly")),
+            );
             let params = with_optional(m, Some("blurry"), model);
-            out.push((format!("gerund_noise:{phrase}:model={model:?}"), wrap(TOOL_SINGLE, single(params))));
+            out.push((
+                format!("gerund_noise:{phrase}:model={model:?}"),
+                wrap(TOOL_SINGLE, single(params)),
+            ));
         }
     }
     for phrase in directive_phrases {
         for model in [Some(known), None] {
             let mut m = serde_json::Map::new();
-            m.insert("prompt".to_string(), json!(format!("a scene, {phrase}, cinematic")));
+            m.insert(
+                "prompt".to_string(),
+                json!(format!("a scene, {phrase}, cinematic")),
+            );
             let params = with_optional(m, Some("blurry"), model);
-            out.push((format!("gerund_directive:{phrase}:model={model:?}"), wrap(TOOL_SINGLE, single(params))));
+            out.push((
+                format!("gerund_directive:{phrase}:model={model:?}"),
+                wrap(TOOL_SINGLE, single(params)),
+            ));
         }
     }
     out
@@ -382,13 +464,27 @@ fn dimension_pair_sweep() -> Vec<(String, Vec<u8>)> {
         // and pairs that clear the floor ((1920,100), (1376,768), (3840,2160)) all fire,
         // since none reaches the 8k claim's 4320px minimum short side.
         let params = json!({"prompt": "a calm nature scene shot in 8k", "width": w, "height": h});
-        out.push((format!("dims:{w}x{h}:obj"), wrap(TOOL_SINGLE, single(params.clone()))));
-        out.push((format!("dims:{w}x{h}:str"), wrap(TOOL_SINGLE, single_str(&params))));
+        out.push((
+            format!("dims:{w}x{h}:obj"),
+            wrap(TOOL_SINGLE, single(params.clone())),
+        ));
+        out.push((
+            format!("dims:{w}x{h}:str"),
+            wrap(TOOL_SINGLE, single_str(&params)),
+        ));
     }
-    let bool_params = json!({"prompt": "shot in 8k, dramatic lighting", "width": true, "height": true});
-    out.push(("dims:true_true".to_string(), wrap(TOOL_SINGLE, single(bool_params))));
-    let float_params = json!({"prompt": "shot in 4k, dramatic lighting", "width": 100.0, "height": 100.0});
-    out.push(("dims:floats_excluded".to_string(), wrap(TOOL_SINGLE, single(float_params))));
+    let bool_params =
+        json!({"prompt": "shot in 8k, dramatic lighting", "width": true, "height": true});
+    out.push((
+        "dims:true_true".to_string(),
+        wrap(TOOL_SINGLE, single(bool_params)),
+    ));
+    let float_params =
+        json!({"prompt": "shot in 4k, dramatic lighting", "width": 100.0, "height": 100.0});
+    out.push((
+        "dims:floats_excluded".to_string(),
+        wrap(TOOL_SINGLE, single(float_params)),
+    ));
 
     // F1: an ASYMMETRIC boolean/integer pair. Every other boolean case in this corpus
     // pairs `true` with `true` (or `false` with `false`), which is non-discriminating: a
@@ -400,7 +496,10 @@ fn dimension_pair_sweep() -> Vec<(String, Vec<u8>)> {
     // WOULD fire against the "8k" claim's 4320px minimum, while the correct
     // implementation excludes the boolean `width` entirely and stays silent.
     let asymmetric_bool_params = json!({"prompt": "shot in 8k", "width": true, "height": 3840});
-    out.push(("dims:asymmetric_bool".to_string(), wrap(TOOL_SINGLE, single(asymmetric_bool_params))));
+    out.push((
+        "dims:asymmetric_bool".to_string(),
+        wrap(TOOL_SINGLE, single(asymmetric_bool_params)),
+    ));
     out
 }
 
@@ -444,14 +543,20 @@ fn batch_sweep(known: &str) -> Vec<(String, Vec<u8>)> {
         // silence-equals-silence match, never exercising `format_index`'s rendering of
         // the index into the "request {index}: ..." message text at all.
         let params = json!({"prompt": "shot in 4k, cinematic", "width": 1280, "height": 100});
-        out.push((format!("batch:index={idx}"), wrap(TOOL_BATCH, batch_one(idx.clone(), params))));
+        out.push((
+            format!("batch:index={idx}"),
+            wrap(TOOL_BATCH, batch_one(idx.clone(), params)),
+        ));
     }
 
     let positional_fallback = json!({"requests": [
         {"params": {"prompt": "a cat on a windowsill", "width": 100, "height": 100}},
         {"params": {"prompt": "shot in 4k, cinematic", "width": 1280, "height": 720}},
     ]});
-    out.push(("batch:positional_fallback".to_string(), wrap(TOOL_BATCH, positional_fallback)));
+    out.push((
+        "batch:positional_fallback".to_string(),
+        wrap(TOOL_BATCH, positional_fallback),
+    ));
 
     let mixed = json!({"requests": [
         {"index": "req-a", "params": {"prompt": "shot in 4k, cinematic", "width": 1280, "height": 720}},
@@ -554,10 +659,16 @@ fn compare(rust_out: &Outcome, py_out: &Outcome, label: &str, input: &[u8]) -> O
         problems.push(format!("python exited {} (expected 0)", py_out.code));
     }
     if !rust_out.stderr.is_empty() {
-        problems.push(format!("rust stderr was non-empty: {:?}", String::from_utf8_lossy(&rust_out.stderr)));
+        problems.push(format!(
+            "rust stderr was non-empty: {:?}",
+            String::from_utf8_lossy(&rust_out.stderr)
+        ));
     }
     if !py_out.stderr.is_empty() {
-        problems.push(format!("python stderr was non-empty: {:?}", String::from_utf8_lossy(&py_out.stderr)));
+        problems.push(format!(
+            "python stderr was non-empty: {:?}",
+            String::from_utf8_lossy(&py_out.stderr)
+        ));
     }
 
     let rust_empty = rust_out.stdout.is_empty();
@@ -574,7 +685,9 @@ fn compare(rust_out: &Outcome, py_out: &Outcome, label: &str, input: &[u8]) -> O
         match (rust_json, py_json) {
             (Ok(rv), Ok(pv)) => {
                 if rv != pv {
-                    problems.push(format!("parsed JSON differs:\n    rust:   {rv}\n    python: {pv}"));
+                    problems.push(format!(
+                        "parsed JSON differs:\n    rust:   {rv}\n    python: {pv}"
+                    ));
                 }
             }
             (rr, pr) => {

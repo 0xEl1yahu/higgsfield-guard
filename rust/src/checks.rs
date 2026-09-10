@@ -28,12 +28,8 @@ const RESOLUTION_CLAIMS: &[(&str, i64)] = &[
 ];
 
 // Values the `resolution` parameter itself can take.
-const RESOLUTION_PARAM: &[(&str, i64)] = &[
-    ("4k", 2160),
-    ("1080p", 1080),
-    ("720p", 720),
-    ("480p", 480),
-];
+const RESOLUTION_PARAM: &[(&str, i64)] =
+    &[("4k", 2160), ("1080p", 1080), ("720p", 720), ("480p", 480)];
 
 // A dimension only counts when it looks like a real render size. The 128px floor is meant
 // to ignore aspect-ratio expressions (e.g. width=16, height=9), which have BOTH sides
@@ -355,8 +351,8 @@ pub fn check_negation_placement(params: &Value, models: &HashSet<String>) -> Opt
     let prompt = params.get("prompt").and_then(Value::as_str)?;
     let model = params.get("model").and_then(Value::as_str);
     let negative = params.get("negative_prompt").and_then(Value::as_str);
-    let supports = negative.is_some_and(|n| !n.trim().is_empty())
-        || model.is_some_and(|m| models.contains(m));
+    let supports =
+        negative.is_some_and(|n| !n.trim().is_empty()) || model.is_some_and(|m| models.contains(m));
     if !supports {
         return None;
     }
@@ -468,7 +464,10 @@ mod tests {
         // sensitive); the uppercase-in-text case is exercised separately via
         // `find_original_case` (case-insensitive) below.
         assert!(has_term("\u{201c}4k\u{201d} caf\u{e9} shot", "4k"));
-        assert!(has_term("na\u{ef}ve 4k cr\u{e8}me br\u{fb}l\u{e9}e scene", "4k"));
+        assert!(has_term(
+            "na\u{ef}ve 4k cr\u{e8}me br\u{fb}l\u{e9}e scene",
+            "4k"
+        ));
         assert_eq!(
             find_original_case("\u{201c}4K\u{201d} caf\u{e9} shot", "4k").as_deref(),
             Some("4K")
@@ -699,7 +698,9 @@ mod tests {
         let finding = check_prompt_negative_conflict(&params).expect("should fire");
         assert_eq!(finding.check_id, "prompt_negative_conflict");
         assert!(finding.message.contains("\"slow motion\""));
-        assert!(finding.message.contains("appears in both prompt and negative_prompt"));
+        assert!(finding
+            .message
+            .contains("appears in both prompt and negative_prompt"));
     }
 
     #[test]
@@ -722,7 +723,8 @@ mod tests {
             "prompt": "Slow Motion hero shot, cinematic",
             "negative_prompt": "Blurry, Slow Motion"
         });
-        let finding = check_prompt_negative_conflict(&params).expect("should fire despite mixed case");
+        let finding =
+            check_prompt_negative_conflict(&params).expect("should fire despite mixed case");
         assert!(finding.message.contains("\"slow motion\""));
     }
 
@@ -733,7 +735,9 @@ mod tests {
             "negative_prompt": "sharp, static, grain"
         });
         let finding = check_prompt_negative_conflict(&params).expect("should fire");
-        assert!(finding.message.contains(" appear in both prompt and negative_prompt"));
+        assert!(finding
+            .message
+            .contains(" appear in both prompt and negative_prompt"));
     }
 
     #[test]
@@ -756,7 +760,10 @@ mod tests {
         assert_eq!(strip_negations("avoid harsh shadows").trim(), "");
         // A trailing word beyond the pattern's 3-word reach survives untouched.
         assert_eq!(strip_negations("no text please").trim(), "");
-        assert_eq!(strip_negations("no clutter, cat on a windowsill").trim(), ", cat on a windowsill");
+        assert_eq!(
+            strip_negations("no clutter, cat on a windowsill").trim(),
+            ", cat on a windowsill"
+        );
     }
 
     #[test]
