@@ -74,6 +74,33 @@ pub fn find_original_case(text: &str, term: &str) -> Option<String> {
     find_term_match(text, term, true).map(|(start, end)| text[start..end].to_string())
 }
 
+/// The four non-ASCII characters Python's `re` treats as ASCII letters under
+/// `re.IGNORECASE`. This is documented Python behaviour, not an accident: the `re` docs
+/// state that `[a-z]`/`[A-Z]` with `IGNORECASE` match the 52 ASCII letters plus
+/// U+0130, U+0131, U+017F and U+212A. Measured against Python 3.14 on 2026-09-10: each
+/// is a member of `[a-z0-9]` under IGNORECASE, and each literal-matches exactly the
+/// ASCII letter paired with it here.
+///
+/// The oracle gets this for free from `re`; the hand-rolled boundary scan below does not,
+/// which is what made the two diverge. This table is the whole fix for that.
+const UNICODE_ASCII_FOLDS: &[(char, char)] = &[
+    ('\u{0130}', 'i'), // LATIN CAPITAL LETTER I WITH DOT ABOVE
+    ('\u{0131}', 'i'), // LATIN SMALL LETTER DOTLESS I
+    ('\u{017F}', 's'), // LATIN SMALL LETTER LONG S
+    ('\u{212A}', 'k'), // KELVIN SIGN
+];
+
+/// Case-fold one character the way Python's `re` does under `IGNORECASE`: the four
+/// entries above, then plain ASCII lowercasing. Non-ASCII characters with no entry are
+/// returned unchanged, so they are neither boundary characters nor literal matches -
+/// which is exactly what Python does with them.
+fn fold_char(c: char) -> char {
+    match UNICODE_ASCII_FOLDS.iter().find(|(from, _)| *from == c) {
+        Some((_, to)) => *to,
+        None => c.to_ascii_lowercase(),
+    }
+}
+
 /// Is `c` a boundary-blocking character under the given case sensitivity? Mirrors the
 /// regex character class `[a-z0-9]`, which under `re.IGNORECASE` also matches `A-Z` (a
 /// Python/`re` behaviour: `IGNORECASE` case-folds literal ranges inside character classes
@@ -81,7 +108,7 @@ pub fn find_original_case(text: &str, term: &str) -> Option<String> {
 /// simply not a member of `[a-z0-9]` and does not block anything.
 fn is_boundary_char(c: char, ignore_case: bool) -> bool {
     if ignore_case {
-        c.is_ascii_alphanumeric()
+        fold_char(c).is_ascii_alphanumeric()
     } else {
         c.is_ascii_digit() || c.is_ascii_lowercase()
     }
@@ -114,12 +141,9 @@ fn find_term_match(text: &str, term: &str, ignore_case: bool) -> Option<(usize, 
     if m == 0 {
         return None;
     }
-    // Replaced wholesale in the Unicode-fold task; clippy's `eq_ignore_ascii_case`
-    // suggestion is the wrong shape because the fold is about to stop being ASCII-only.
-    #[allow(clippy::manual_ignore_case_cmp)]
     let eq = |a: char, b: char| {
         if ignore_case {
-            a.to_ascii_lowercase() == b.to_ascii_lowercase()
+            fold_char(a) == fold_char(b)
         } else {
             a == b
         }
@@ -272,7 +296,14 @@ const CONFLICT_PHRASES: &[&str] = &[
 // Feeds strip_negations (via check_prompt_negative_conflict): "not blurry" must still read
 // as a negation there, or it looks like a request for blur. `not` stays in this pattern.
 static NEGATION_RE: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"(?i)\b(?:no|without|avoid|not)\s+(?:[a-z-]+\s+){0,2}[a-z-]+").unwrap()
+    // `\x{130}\x{131}` are in the class because Python's `[a-z-]` under re.IGNORECASE
+    // matches them and the regex crate's Unicode simple folding does not. The other two
+    // folded characters (U+017F, U+212A) need no entry: simple folding already maps them
+    // onto `s` and `k` inside `[a-z]`. Measured, not assumed - see SPEC 12.4.
+    Regex::new(
+        r"(?i)\b(?:no|without|avoid|not)\s+(?:[a-z\x{130}\x{131}-]+\s+){0,2}[a-z\x{130}\x{131}-]+",
+    )
+    .unwrap()
 });
 
 // SPEC §5.3 names exactly three directive forms: "no X", "without X", "avoid X". `not` is
@@ -280,7 +311,10 @@ static NEGATION_RE: LazyLock<Regex> = LazyLock::new(|| {
 // negation, not an instruction to move anything into negative_prompt. check_negation_placement
 // uses this narrower pattern instead of NEGATION_RE so it stops firing on plain English.
 static PLACEMENT_NEGATION_RE: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"(?i)\b(?:no|without|avoid)\s+(?:[a-z-]+\s+){0,2}[a-z-]+").unwrap()
+    Regex::new(
+        r"(?i)\b(?:no|without|avoid)\s+(?:[a-z\x{130}\x{131}-]+\s+){0,2}[a-z\x{130}\x{131}-]+",
+    )
+    .unwrap()
 });
 
 // Quantifier idioms where "no" modifies a comparative or adverb rather than introducing an
@@ -394,6 +428,43 @@ mod tests {
     use super::*;
     use serde_json::json;
     use std::collections::HashSet;
+
+    #[test]
+    fn folded_characters_block_a_boundary_like_their_ascii_equivalents() {
+        // Python's [a-z0-9] under IGNORECASE contains all four of these, so each one
+        // abutting "4k" blocks the match exactly as an ASCII letter would.
+        for t in [
+            "\u{17f}4k",
+            "\u{212a}4k",
+            "\u{130}4k",
+            "\u{131}4k",
+            "4k\u{17f}",
+        ] {
+            assert!(
+                find_original_case(t, "4k").is_none(),
+                "should be blocked: {t:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn folded_characters_match_their_ascii_letter_as_a_literal() {
+        // KELVIN SIGN stands in for "k", so "4<KELVIN>" is a 4k claim in Python and
+        // must be one here. The returned text is the ORIGINAL casing from the prompt.
+        assert_eq!(
+            find_original_case("a shot in 4\u{212a}", "4k").as_deref(),
+            Some("4\u{212a}")
+        );
+    }
+
+    #[test]
+    fn folding_does_not_leak_into_the_case_sensitive_scan() {
+        // has_term is case-SENSITIVE (it mirrors _has_term, which has no IGNORECASE).
+        // Without IGNORECASE, Python's [a-z0-9] does not contain these characters and
+        // the literal does not match them either.
+        assert!(!has_term("a shot in 4\u{212a}", "4k"));
+        assert!(has_term("a shot in \u{17f}4k", "4k"));
+    }
 
     #[test]
     fn has_term_respects_alphanumeric_boundaries() {

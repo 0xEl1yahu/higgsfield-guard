@@ -352,3 +352,16 @@ Re-read the archive before rebuilding. Note that two of its central claims were 
 false: the `BlockAuthority` mechanism cannot be built as written (Rust privacy is
 crate-scoped), and §20's premise that resolved defaults eliminate unspecified parameters is
 contradicted by its own §18 example.
+
+### 12.4 Closed divergence: Unicode case folding
+
+Python's `re` treats U+0130, U+0131, U+017F and U+212A as ASCII letters under
+`IGNORECASE` - both as members of `[a-z0-9]` and as literal matches for `i`, `i`, `s` and
+`k`. The Rust port's hand-rolled boundary scan was ASCII-only and diverged in both roles;
+the `regex` crate's Unicode simple folding covered U+017F and U+212A but not U+0130 or
+U+0131. Closed on 2026-09-10 by `UNICODE_ASCII_FOLDS` in `rust/src/checks.rs` and by
+adding `\x{130}\x{131}` to both negation classes. `unicode_fold_sweep` in
+`rust/tests/parity.rs` covers all four characters in all three roles.
+
+Unlike §12.3 this was a genuine port bug, so the fix went entirely into the Rust and the
+oracle was not touched.

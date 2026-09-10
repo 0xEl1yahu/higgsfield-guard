@@ -645,6 +645,58 @@ fn extra_edge_sweep() -> Vec<(String, Vec<u8>)> {
     .collect()
 }
 
+/// The four characters Python's `re` folds into ASCII letters under `re.IGNORECASE`:
+/// U+0130 I-with-dot, U+0131 dotless-i, U+017F long-s, U+212A KELVIN SIGN. Each is
+/// exercised in all three roles the lint uses case-folding for: as a boundary character
+/// abutting a lexicon term, as a substitute for the ASCII letter inside a term, and
+/// inside the `[a-z-]` class of the two negation patterns.
+fn unicode_fold_sweep(known: &str) -> Vec<(String, Vec<u8>)> {
+    let mut out = Vec::new();
+    for (name, ch) in [
+        ("i_dot", '\u{130}'),
+        ("dotless_i", '\u{131}'),
+        ("long_s", '\u{17f}'),
+        ("kelvin", '\u{212a}'),
+    ] {
+        // Boundary role: the character abuts "4k" and must block the claim, as it does
+        // in Python. 1280x720 clears MIN_SANE_DIMENSION so a match would fire.
+        out.push((
+            format!("unicode:boundary_before:{name}"),
+            wrap(
+                TOOL_SINGLE,
+                single(
+                    json!({"prompt": format!("a shot in {ch}4k"), "width": 1280, "height": 720}),
+                ),
+            ),
+        ));
+        out.push((
+            format!("unicode:boundary_after:{name}"),
+            wrap(
+                TOOL_SINGLE,
+                single(
+                    json!({"prompt": format!("a shot in 4k{ch}"), "width": 1280, "height": 720}),
+                ),
+            ),
+        ));
+        // Literal role: the character stands in for an ASCII letter inside a term.
+        // Only kelvin/long_s/i-forms map onto letters that appear in the lexicons, so
+        // build the substitution generically and let parity decide.
+        out.push((
+            format!("unicode:literal_4k:{name}"),
+            wrap(
+                TOOL_SINGLE,
+                single(json!({"prompt": format!("a shot in 4{ch}"), "width": 1280, "height": 720})),
+            ),
+        ));
+        // Regex role: inside the `[a-z-]` class of PLACEMENT_NEGATION_RE.
+        out.push((
+            format!("unicode:negation:{name}"),
+            wrap(TOOL_SINGLE, single(json!({"model": known, "prompt": format!("a street at dusk, no {ch}ce"), "width": 1280, "height": 720}))),
+        ));
+    }
+    out
+}
+
 // =============================================================================================
 // Comparison
 // =============================================================================================
@@ -734,6 +786,7 @@ fn rust_matches_python_oracle_across_the_corpus() {
     all.extend(batch_sweep(&known));
     all.extend(combined_sweep(&known));
     all.extend(extra_edge_sweep());
+    all.extend(unicode_fold_sweep(&known));
 
     // De-duplicate by exact stdin byte content. Different sweep groups can legitimately
     // land on the same bytes (e.g. two groups both happening to build an identical params
