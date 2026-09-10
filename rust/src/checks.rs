@@ -349,6 +349,25 @@ pub fn strip_negations(text: &str) -> String {
     NEGATION_RE.replace_all(text, " ").into_owned()
 }
 
+// A directive occupies its own short comma-delimited tag; a homograph sits inside a prose
+// clause. Four words admits "slow motion" (2) and "extreme close-up shot" (3) while
+// excluding the measured false positives, which ran six and seven. See SPEC 5.2.
+const MAX_TAG_WORDS: usize = 4;
+
+/// Port of `_appears_as_tag`. True when `term` occurs inside a short delimited segment -
+/// used as a directive tag rather than as a noun inside a clause.
+///
+/// Python splits on the character class `[,.;\n]` and joins each segment's whitespace-
+/// separated words with single spaces before scanning; `split_whitespace` plus `join(" ")`
+/// is the same normalisation, which matters because `has_term`'s boundary rule is
+/// sensitive to the character immediately either side of the term.
+fn appears_as_tag(text: &str, term: &str) -> bool {
+    text.split([',', '.', ';', '\n']).any(|segment| {
+        let words: Vec<&str> = segment.split_whitespace().collect();
+        words.len() <= MAX_TAG_WORDS && has_term(&words.join(" "), term)
+    })
+}
+
 /// Port of `check_prompt_negative_conflict` (higgsfield_lint.py lines 157-172).
 pub fn check_prompt_negative_conflict(params: &Value) -> Option<Finding> {
     let prompt = params.get("prompt").and_then(Value::as_str)?;
@@ -362,7 +381,7 @@ pub fn check_prompt_negative_conflict(params: &Value) -> Option<Finding> {
     let negative_low = negative.to_lowercase();
     let hits: Vec<&str> = CONFLICT_PHRASES
         .iter()
-        .filter(|p| has_term(&positive, p) && has_term(&negative_low, p))
+        .filter(|p| appears_as_tag(&positive, p) && has_term(&negative_low, p))
         .copied()
         .collect();
     if hits.is_empty() {
@@ -464,6 +483,47 @@ mod tests {
         // the literal does not match them either.
         assert!(!has_term("a shot in 4\u{212a}", "4k"));
         assert!(has_term("a shot in \u{17f}4k", "4k"));
+    }
+
+    #[test]
+    fn homograph_in_prose_does_not_conflict() {
+        for (prompt, negative) in [
+            (
+                "a cast iron pan of sizzling garlic, a woman reading a text message",
+                "pan, text, blurry",
+            ),
+            ("a field of grain at golden hour", "grain, noise"),
+            ("a static caravan in a field", "static, jitter"),
+        ] {
+            let params = json!({"prompt": prompt, "negative_prompt": negative, "width": 1280, "height": 720});
+            assert!(
+                check_prompt_negative_conflict(&params).is_none(),
+                "should not fire: {prompt}"
+            );
+        }
+    }
+
+    #[test]
+    fn directive_as_a_tag_still_conflicts() {
+        let params = json!({
+            "prompt": "cinematic, ultra-clean commercial style, slow motion, warm highlights",
+            "negative_prompt": "transitions, slow motion, bad quality",
+            "width": 1376, "height": 768
+        });
+        let finding = check_prompt_negative_conflict(&params).expect("should fire");
+        assert!(
+            finding.message.contains("\"slow motion\""),
+            "got: {}",
+            finding.message
+        );
+    }
+
+    #[test]
+    fn tag_segment_boundary_is_four_words() {
+        let long_tag = json!({"prompt": "a very wide shot of a valley", "negative_prompt": "wide shot", "width": 1280, "height": 720});
+        let short_tag = json!({"prompt": "a valley, wide shot, dawn", "negative_prompt": "wide shot", "width": 1280, "height": 720});
+        assert!(check_prompt_negative_conflict(&long_tag).is_none());
+        assert!(check_prompt_negative_conflict(&short_tag).is_some());
     }
 
     #[test]

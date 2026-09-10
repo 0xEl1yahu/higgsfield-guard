@@ -2286,7 +2286,7 @@ fn tag_segment_sweep() -> Vec<(String, Vec<u8>)> {
             format!("tag:four_words:{phrase}"),
             wrap(TOOL_SINGLE, single(json!({
                 "prompt": format!("a valley, one {phrase} here, dawn"),
-                "negative_prompt": format!("{phrase}"),
+                "negative_prompt": phrase.to_string(),
                 "width": 1280, "height": 720
             }))),
         ));
@@ -2294,7 +2294,7 @@ fn tag_segment_sweep() -> Vec<(String, Vec<u8>)> {
             format!("tag:five_words:{phrase}"),
             wrap(TOOL_SINGLE, single(json!({
                 "prompt": format!("a valley, one more {phrase} over here, dawn"),
-                "negative_prompt": format!("{phrase}"),
+                "negative_prompt": phrase.to_string(),
                 "width": 1280, "height": 720
             }))),
         ));

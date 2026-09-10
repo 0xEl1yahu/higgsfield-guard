@@ -379,3 +379,36 @@ def test_patch2_stays_silent_on_aspect_ratio_style_pair():
 def test_patch2_stays_silent_when_both_dimensions_below_floor():
     params = {"prompt": "a 4k banner shot", "width": 64, "height": 64}
     assert hl.check_resolution_claim(params, frozenset()) is None
+
+
+def test_homograph_in_prose_does_not_conflict():
+    """Measured false positives, 2026-09-10. Each has the term buried in a prose clause
+    on the positive side while the negative_prompt uses it as a directive."""
+    for prompt, negative in [
+        ("a cast iron pan of sizzling garlic, a woman reading a text message", "pan, text, blurry"),
+        ("a field of grain at golden hour", "grain, noise"),
+        ("a static caravan in a field", "static, jitter"),
+    ]:
+        params = {"prompt": prompt, "negative_prompt": negative, "width": 1280, "height": 720}
+        assert hl.check_prompt_negative_conflict(params, frozenset()) is None, prompt
+
+
+def test_directive_as_a_tag_still_conflicts():
+    """The real kling2_6 fixture behaviour must survive: "slow motion" is its own
+    two-word comma-delimited tag on both sides."""
+    params = {
+        "prompt": "cinematic, ultra-clean commercial style, slow motion, warm highlights",
+        "negative_prompt": "transitions, slow motion, bad quality",
+        "width": 1376,
+        "height": 768,
+    }
+    finding = hl.check_prompt_negative_conflict(params, frozenset())
+    assert finding is not None
+    assert '"slow motion"' in finding.message
+
+
+def test_tag_segment_boundary_is_four_words():
+    long_tag = {"prompt": "a very wide shot of a valley", "negative_prompt": "wide shot", "width": 1280, "height": 720}
+    short_tag = {"prompt": "a valley, wide shot, dawn", "negative_prompt": "wide shot", "width": 1280, "height": 720}
+    assert hl.check_prompt_negative_conflict(long_tag, frozenset()) is None
+    assert hl.check_prompt_negative_conflict(short_tag, frozenset()) is not None

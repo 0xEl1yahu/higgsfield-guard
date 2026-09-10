@@ -263,6 +263,31 @@ fn gate_3_inaccurate_or_harmful_advice() {
             r#"{"params":{"prompt":"cinematic 4k","width":16,"height":9}}"#,
             &[],
         ),
+        // Homographs: the term is a directive in the negative_prompt and an ordinary noun
+        // in the positive prompt. Measured false positives, 2026-09-10, fixed by the
+        // tag-segment rule in SPEC 5.2.
+        (
+            "homograph: pan and text in prose",
+            r#"{"params":{"prompt":"a cast iron pan of sizzling garlic, a woman reading a text message","negative_prompt":"pan, text, blurry","width":1280,"height":720}}"#,
+            &[],
+        ),
+        (
+            "homograph: grain in prose",
+            r#"{"params":{"prompt":"a field of grain at golden hour","negative_prompt":"grain, noise","width":1280,"height":720}}"#,
+            &[],
+        ),
+        (
+            "homograph: static in prose",
+            r#"{"params":{"prompt":"a static caravan in a field","negative_prompt":"static, jitter","width":1280,"height":720}}"#,
+            &[],
+        ),
+        // The other half of the contract: the same term as its own short tag on both
+        // sides is still a real conflict and must still fire.
+        (
+            "directive as a tag still conflicts",
+            r#"{"params":{"prompt":"a valley, slow motion, dawn","negative_prompt":"transitions, slow motion","width":1280,"height":720}}"#,
+            &["prompt_negative_conflict"],
+        ),
     ];
     run_gate("inaccurate or harmful advice", cases);
 }

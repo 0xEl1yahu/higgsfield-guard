@@ -154,6 +154,22 @@ def strip_negations(text: str) -> str:
     return NEGATION_RE.sub(" ", text)
 
 
+# A directive occupies its own short comma-delimited tag; a homograph sits inside a prose
+# clause. Four words admits "slow motion" (2) and "extreme close-up shot" (3) while
+# excluding the measured false positives, which ran six and seven. See SPEC 5.2.
+_MAX_TAG_WORDS = 4
+
+
+def _appears_as_tag(text: str, term: str) -> bool:
+    """True when `term` occurs inside a short delimited segment - used as a directive tag
+    rather than as a noun inside a clause."""
+    for segment in re.split(r"[,.;\n]", text):
+        words = segment.split()
+        if len(words) <= _MAX_TAG_WORDS and _has_term(" ".join(words), term):
+            return True
+    return False
+
+
 def check_prompt_negative_conflict(params: dict, models: frozenset) -> Optional[Finding]:
     prompt = params.get("prompt")
     negative = params.get("negative_prompt")
@@ -161,7 +177,7 @@ def check_prompt_negative_conflict(params: dict, models: frozenset) -> Optional[
         return None
     positive = strip_negations(prompt).lower()
     negative_low = negative.lower()
-    hits = [p for p in CONFLICT_PHRASES if _has_term(positive, p) and _has_term(negative_low, p)]
+    hits = [p for p in CONFLICT_PHRASES if _appears_as_tag(positive, p) and _has_term(negative_low, p)]
     if not hits:
         return None
     listed = ", ".join(f'"{h}"' for h in hits)

@@ -701,6 +701,63 @@ fn unicode_fold_sweep(known: &str) -> Vec<(String, Vec<u8>)> {
     out
 }
 
+/// The tag-segment rule (SPEC 5.2): the same term is a finding as a short tag and not a
+/// finding inside a prose clause. Both sides must agree on the boundary, so this sweeps
+/// segment lengths either side of MAX_TAG_WORDS for every conflict phrase.
+fn tag_segment_sweep() -> Vec<(String, Vec<u8>)> {
+    let mut out = Vec::new();
+    for phrase in CONFLICT_PHRASES {
+        // As its own tag: must fire on both sides.
+        out.push((
+            format!("tag:bare:{phrase}"),
+            wrap(
+                TOOL_SINGLE,
+                single(json!({
+                    "prompt": format!("a valley at dawn, {phrase}, warm light"),
+                    "negative_prompt": format!("{phrase}, bad quality"),
+                    "width": 1280, "height": 720
+                })),
+            ),
+        ));
+        // Buried in a seven-word clause: must be silent on both sides.
+        out.push((
+            format!("tag:prose:{phrase}"),
+            wrap(
+                TOOL_SINGLE,
+                single(json!({
+                    "prompt": format!("a quiet room where the {phrase} was left alone"),
+                    "negative_prompt": format!("{phrase}, bad quality"),
+                    "width": 1280, "height": 720
+                })),
+            ),
+        ));
+        // Exactly at the boundary, four and five words.
+        out.push((
+            format!("tag:four_words:{phrase}"),
+            wrap(
+                TOOL_SINGLE,
+                single(json!({
+                    "prompt": format!("a valley, one {phrase} here, dawn"),
+                    "negative_prompt": phrase.to_string(),
+                    "width": 1280, "height": 720
+                })),
+            ),
+        ));
+        out.push((
+            format!("tag:five_words:{phrase}"),
+            wrap(
+                TOOL_SINGLE,
+                single(json!({
+                    "prompt": format!("a valley, one more {phrase} over here, dawn"),
+                    "negative_prompt": phrase.to_string(),
+                    "width": 1280, "height": 720
+                })),
+            ),
+        ));
+    }
+    out
+}
+
 // =============================================================================================
 // Comparison
 // =============================================================================================
@@ -791,6 +848,7 @@ fn rust_matches_python_oracle_across_the_corpus() {
     all.extend(combined_sweep(&known));
     all.extend(extra_edge_sweep());
     all.extend(unicode_fold_sweep(&known));
+    all.extend(tag_segment_sweep());
 
     // De-duplicate by exact stdin byte content. Different sweep groups can legitimately
     // land on the same bytes (e.g. two groups both happening to build an identical params

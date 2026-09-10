@@ -109,6 +109,22 @@ would make this unusable.
 Seed list: `slow motion`, `slow-mo`, `static`, `blurred`, `blurry`, `sharp`, `text`,
 `motion blur`, `close-up`, `wide shot`, `zoom`, `pan`, `handheld`, `grain`.
 
+**The positive side must read as a tag, not as prose.** Half that list is a homograph:
+`pan` is cookware, `grain` is a crop, `text` is a message, `static` is a caravan. Measured
+false positives on all four. The discriminator is not the word but its use - real prompts
+are comma-delimited tag soup, and a directive occupies its own short segment, while a
+homograph sits inside a clause. So a term on the positive side counts only when it appears
+within a comma-, period-, semicolon- or newline-delimited segment of at most four words.
+Negations are stripped before segmentation, as before.
+
+The negative side is unchanged: a `negative_prompt` is a tag list by construction, so no
+segment rule applies to it.
+
+Four words, not three or five: `slow motion` is two and `extreme close-up shot` is three,
+while the measured false positives ran six and seven. The consequence is a deliberate
+false negative - a directive written out in prose is no longer caught - which is the trade
+9 asks for.
+
 ### 5.3 Negation belongs in negative_prompt
 
 Fires when the positive prompt contains a negation (`no X`, `without X`, `avoid X`) **and**
