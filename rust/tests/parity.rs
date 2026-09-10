@@ -246,7 +246,11 @@ fn fixture_inputs() -> Vec<(String, Vec<u8>)> {
 
 fn pathological_inputs() -> Vec<(String, Vec<u8>)> {
     let cases: Vec<(&str, Vec<u8>)> = vec![
-        ("empty", b"".to_vec()),
+        // A 0-byte stdin left this corpus on 2026-09-10 (SPEC.md §6.1, §7): with no
+        // arguments it is the robot quick start, not a hook input, and rust/tests/cli.rs
+        // owns that expectation. The boundary of that branch is exactly 0 bytes, so a
+        // single newline - `echo | higgsfield-lint` - must still be the silent hook.
+        ("whitespace_only", b"\n".to_vec()),
         ("garbage", b"not json".to_vec()),
         ("empty_object", b"{}".to_vec()),
         ("tool_input_null", br#"{"tool_input": null}"#.to_vec()),

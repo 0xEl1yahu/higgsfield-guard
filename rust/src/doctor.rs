@@ -1,7 +1,7 @@
-// `doctor` is a human-invoked diagnostic subcommand, not part of the hook path.
-// Unlike the hook (see main.rs), it is allowed to write to stdout/stderr and to
-// exit non-zero. That permission must never leak into the hook path: main.rs
-// only reaches `run()` here when the first CLI argument is exactly "doctor".
+// `doctor` is a diagnostic subcommand, not part of the hook path. Unlike the hook
+// (see main.rs), it is allowed to exit non-zero. That permission must never leak
+// into the hook path: only the robot CLI (`cli.rs`, reached when the binary is
+// given an argument) calls `collect_checks` and renders a report.
 
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -12,27 +12,92 @@ use serde_json::Value;
 
 use crate::lint;
 
-/// The outcome of a single diagnostic check.
+/// The outcome of a single diagnostic check. The message is always
+/// `<check name>: <detail>`; `split` relies on that, and
+/// `every_check_message_starts_with_a_known_name` pins it.
 pub enum Check {
     Pass(String),
     Warn(String),
     Fail(String),
 }
 
-/// Runs all diagnostic checks, prints a human-readable report to stdout, and
-/// returns the process exit code: 0 if every check passed or warned, 1 if any
-/// check failed.
-pub fn run() -> i32 {
-    let checks = collect_checks();
-    report(&checks);
-    println!("doctor checks this checkout and binary; confirm the hook is loaded with /hooks and verify a hook trace in the target Claude Code session.");
-    exit_code(&checks)
+/// Every check name a message can start with, in report order. The JSON report
+/// splits messages on the first `: ` and this list is what the split is tested
+/// against, so a new check must be added here too.
+#[cfg(test)]
+const CHECK_NAMES: &[&str] = &[
+    "binary location",
+    "data file",
+    "binary freshness",
+    "settings file",
+    "project dir",
+    "matcher present",
+    "matcher correctness",
+    "self-test",
+];
+
+const REPORT_NOTE: &str = "doctor checks this checkout and binary; confirm the hook is loaded with /hooks and verify a hook trace in the target Claude Code session.";
+
+impl Check {
+    fn status(&self) -> &'static str {
+        match self {
+            Check::Pass(_) => "pass",
+            Check::Warn(_) => "warn",
+            Check::Fail(_) => "fail",
+        }
+    }
+
+    fn message(&self) -> &str {
+        match self {
+            Check::Pass(m) | Check::Warn(m) | Check::Fail(m) => m,
+        }
+    }
+
+    /// `(name, detail)` from the `<name>: <detail>` message convention.
+    fn split(&self) -> (&str, &str) {
+        self.message()
+            .split_once(": ")
+            .unwrap_or((self.message(), ""))
+    }
+}
+
+/// The classic human report, byte-for-byte what `doctor` has always printed.
+pub fn report_text(checks: &[Check]) -> String {
+    let mut out = String::from("higgsfield-lint doctor\n=======================\n");
+    for check in checks {
+        out.push_str(&format!(
+            "[{}] {}\n",
+            check.status().to_ascii_uppercase(),
+            check.message()
+        ));
+    }
+    out.push_str(REPORT_NOTE);
+    out.push('\n');
+    out
+}
+
+/// The robot report (SPEC.md §6.1): one object per check plus a summary.
+pub fn report_json(checks: &[Check], exit: i32) -> Value {
+    let count = |status: &str| checks.iter().filter(|c| c.status() == status).count();
+    serde_json::json!({
+        "ok": exit == 0,
+        "exit": exit,
+        "checks": checks
+            .iter()
+            .map(|c| {
+                let (name, detail) = c.split();
+                serde_json::json!({"name": name, "status": c.status(), "detail": detail})
+            })
+            .collect::<Vec<_>>(),
+        "summary": {"pass": count("pass"), "warn": count("warn"), "fail": count("fail")},
+        "note": REPORT_NOTE.trim_end_matches('.'),
+    })
 }
 
 // Checks are ordered so the earliest failure is the most fundamental: each one
 // answers a question that, answered wrongly, means the hook silently does
 // nothing, and each depends on the ones before it actually being true.
-fn collect_checks() -> Vec<Check> {
+pub fn collect_checks() -> Vec<Check> {
     let mut checks = Vec::new();
 
     let exe = match std::env::current_exe() {
@@ -159,7 +224,7 @@ fn check_binary_freshness(repo_root: &Path, exe_mtime: SystemTime) -> Check {
             Ok(())
         }
         let mut out = vec![root.join("Cargo.toml"), root.join("Cargo.lock")];
-        for name in ["main.rs", "lint.rs", "checks.rs", "doctor.rs"] {
+        for name in ["main.rs", "lint.rs", "checks.rs", "doctor.rs", "cli.rs"] {
             let path = root.join("rust/src").join(name);
             if !path.is_file() {
                 return Err(format!("missing required input {}", path.display()));
@@ -455,7 +520,7 @@ const SHOULD_NOT_MATCH: &[&str] = &[
 
 /// Check 6: the matcher on this binary's own `PreToolUse` entry (resolved the
 /// same way check 5 does, via `project_dir`) matches a real Higgsfield tool
-/// name and rejects the two nearest lookalikes.
+/// name and rejects five lookalikes.
 fn check_matcher_correctness(
     repo_root: &Path,
     project_dir: &Path,
@@ -614,19 +679,7 @@ fn check_self_test(repo_root: Option<&Path>) -> Check {
     Check::Pass("self-test: synthetic scope/ordering/typography controls and both committed fixtures match expected ids".into())
 }
 
-fn report(checks: &[Check]) {
-    println!("higgsfield-lint doctor");
-    println!("=======================");
-    for check in checks {
-        match check {
-            Check::Pass(msg) => println!("[PASS] {msg}"),
-            Check::Warn(msg) => println!("[WARN] {msg}"),
-            Check::Fail(msg) => println!("[FAIL] {msg}"),
-        }
-    }
-}
-
-fn exit_code(checks: &[Check]) -> i32 {
+pub fn exit_code(checks: &[Check]) -> i32 {
     if checks.iter().any(|c| matches!(c, Check::Fail(_))) {
         1
     } else {
@@ -763,7 +816,7 @@ mod tests {
         repo.write("rust/src/main.rs", "fn main() {}");
         repo.write("Cargo.toml", "[package]\nname=\"x\"");
         repo.write("Cargo.lock", "# fixture");
-        for name in ["checks.rs", "lint.rs", "doctor.rs"] {
+        for name in ["checks.rs", "lint.rs", "doctor.rs", "cli.rs"] {
             repo.write(&format!("rust/src/{name}"), "// fixture");
         }
         repo.write("data/negative_prompt_models.json", "[]");
@@ -1174,7 +1227,7 @@ mod tests {
     #[test]
     fn freshness_rejects_missing_required_inputs_and_nested_new_source() {
         let repo = TestRepo::new("required");
-        for name in ["main.rs", "checks.rs", "lint.rs", "doctor.rs"] {
+        for name in ["main.rs", "checks.rs", "lint.rs", "doctor.rs", "cli.rs"] {
             repo.write(&format!("rust/src/{name}"), "// fixture");
         }
         repo.write("Cargo.toml", "[package]");
@@ -1184,7 +1237,7 @@ mod tests {
         );
         repo.write("Cargo.lock", "# fixture");
         let before = SystemTime::now() - Duration::from_secs(10);
-        for name in ["main.rs", "checks.rs", "lint.rs", "doctor.rs"] {
+        for name in ["main.rs", "checks.rs", "lint.rs", "doctor.rs", "cli.rs"] {
             fs::File::open(repo.path().join("rust/src").join(name))
                 .unwrap()
                 .set_times(fs::FileTimes::new().set_modified(before))
@@ -1208,7 +1261,7 @@ mod tests {
     #[test]
     fn freshness_detects_only_new_cargo_lock() {
         let repo = TestRepo::new("lock-only");
-        for name in ["main.rs", "checks.rs", "lint.rs", "doctor.rs"] {
+        for name in ["main.rs", "checks.rs", "lint.rs", "doctor.rs", "cli.rs"] {
             repo.write(&format!("rust/src/{name}"), "// fixture");
         }
         repo.write("Cargo.toml", "[package]");
@@ -1251,6 +1304,97 @@ mod tests {
             include_str!("../../tests/fixtures/seedance_tree_clean.json"),
         );
         assert_pass(&check_self_test(Some(repo.path())), "both fixtures");
+    }
+
+    #[test]
+    fn every_check_message_starts_with_a_known_name() {
+        // The JSON report splits each message on its first `: `; this pins the
+        // convention across the real run (whatever passes or fails here) and the
+        // no-repo-root skip path, so a renamed or unlabelled check cannot slip
+        // into the robot report as a garbled name.
+        let mut seen = Vec::new();
+        for check in collect_checks() {
+            let (name, detail) = check.split();
+            assert!(
+                CHECK_NAMES.contains(&name),
+                "unknown check name in {:?}",
+                check.message()
+            );
+            assert!(!detail.is_empty(), "empty detail for {name}");
+            seen.push(name.to_string());
+        }
+        let expected: Vec<&str> = CHECK_NAMES
+            .iter()
+            .copied()
+            .filter(|n| *n != "project dir" || seen.iter().any(|s| s == "project dir"))
+            .collect();
+        assert_eq!(seen, expected, "checks must appear in report order");
+        let skip = Check::Fail(
+            "data file: skipped, no repo root found (see binary location check)".into(),
+        );
+        assert_eq!(
+            skip.split(),
+            (
+                "data file",
+                "skipped, no repo root found (see binary location check)"
+            )
+        );
+    }
+
+    #[test]
+    fn report_json_splits_names_and_counts_statuses() {
+        let checks = vec![
+            Check::Pass("binary location: fine".into()),
+            Check::Warn("project dir: CLAUDE_PROJECT_DIR=/a disagrees with /b".into()),
+            Check::Fail("matcher present: no entry resolves".into()),
+        ];
+        let v = report_json(&checks, exit_code(&checks));
+        assert_eq!(v["ok"], false);
+        assert_eq!(v["exit"], 1);
+        assert_eq!(
+            v["summary"],
+            serde_json::json!({"pass": 1, "warn": 1, "fail": 1})
+        );
+        assert_eq!(v["checks"][1]["name"], "project dir");
+        assert_eq!(v["checks"][1]["status"], "warn");
+        assert_eq!(
+            v["checks"][1]["detail"],
+            "CLAUDE_PROJECT_DIR=/a disagrees with /b"
+        );
+        assert!(!v["note"].as_str().unwrap().ends_with('.'));
+        let text = report_text(&checks);
+        assert!(text.starts_with("higgsfield-lint doctor\n=======================\n[PASS] binary location: fine\n[WARN] project dir:"));
+        assert!(text.ends_with(&format!("{REPORT_NOTE}\n")));
+    }
+
+    #[test]
+    fn a_settings_command_carrying_an_argument_does_not_resolve_to_the_exe() {
+        // The robot CLI treats any argument as a command and a bad one exits 2, which
+        // a live PreToolUse would read as a blocking error. This is the guard: a
+        // settings.json command with a trailing argument fails check 5, so doctor
+        // reports the misconfiguration instead of the hook silently blocking calls.
+        let repo = TestRepo::new("stray-argument");
+        let exe = repo.path().join("target/release/higgsfield-lint");
+        assert!(command_resolves_to_exe(
+            "\"$CLAUDE_PROJECT_DIR/target/release/higgsfield-lint\"",
+            repo.path(),
+            &exe
+        ));
+        for bad in [
+            "\"$CLAUDE_PROJECT_DIR/target/release/higgsfield-lint\" --json",
+            "\"$CLAUDE_PROJECT_DIR/target/release/higgsfield-lint\" lint",
+            "$CLAUDE_PROJECT_DIR/target/release/higgsfield-lint doctor",
+        ] {
+            assert!(!command_resolves_to_exe(bad, repo.path(), &exe), "{bad}");
+            repo.write(
+                ".claude/settings.json",
+                &settings_json(bad, r"mcp__.*__generate_(image|video|audio)(_batch)?$"),
+            );
+            assert_fail(
+                &check_matcher_present(repo.path(), repo.path(), &exe, "test"),
+                "no PreToolUse entry's command resolves",
+            );
+        }
     }
 
     #[test]

@@ -3331,6 +3331,22 @@
           "hookEventName": "PreToolUse"
         }
       }
+    },
+    {
+      "label": "pathological:empty",
+      "change": "removed",
+      "reason": "2026-09-10 robot-mode CLI (SPEC.md §6.1, §7): a 0-byte stdin with no arguments is the quick-start document, not a hook input; Claude Code always writes the event JSON. Expectation now lives in rust/tests/cli.rs.",
+      "input_changed": true,
+      "before": null,
+      "after": null
+    },
+    {
+      "label": "pathological:whitespace_only",
+      "change": "added",
+      "reason": "2026-09-10 replacement control: a single newline on stdin is >0 bytes, so it must remain the silent hook path; pins the exact boundary of the quick-start branch.",
+      "input_changed": true,
+      "before": null,
+      "after": null
     }
   ]
 }

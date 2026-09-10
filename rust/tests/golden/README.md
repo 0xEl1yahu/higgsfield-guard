@@ -73,6 +73,15 @@ and reports positives, limitations and selected repeated-process determinism.
 `audit_golden_changes` is an ignored, read-only mismatch inspector, not an updater.
 Decide expected behavior from SPEC/evidence before using any actual output in review.
 
+## Robot-mode CLI (2026-09-10)
+
+One historical input left the corpus: `pathological:empty` (0 bytes). With no arguments
+a 0-byte stdin is now the quick-start document (SPEC.md §6.1, §7) - Claude Code always
+writes the event JSON, so it was never a hook input - and `rust/tests/cli.rs` owns that
+expectation. Its replacement `pathological:whitespace_only` (a single newline, still
+silent) pins the exact boundary of that branch. Count stays at 538; the
+[change ledger](../../../docs/golden-change-ledger.json) records both entries.
+
 ## Research §12 mapping
 
 All 65 research identifiers appear below. “Covered” includes explicitly identified
@@ -129,7 +138,7 @@ The table is validated by the parity suite against corpus labels and named test 
 | F-603 | covered | `canonical:text:fullwidth` | Now supported, original spelling preserved. |
 | F-604 | covered | `unit:has_term_resumes_scanning_past_a_rejected_match` | Boundary scanner rejects embedded tokens and continues scanning. Pure helper property; process controls cover dispatch separately. |
 | F-605 | covered | `unit:repeated_quoted_prompt_is_silent_but_final_live_occurrence_fires` | Scaling functionality plus separate multi-MB benchmark; historical 250ms is not a portable assertion. Pure helper property; process controls cover dispatch separately. |
-| F-606 | covered | `pathological:empty` | Empty stdin silence. |
+| F-606 | covered | `pathological:whitespace_only` | Whitespace-only stdin silence. A 0-byte stdin with no arguments is the robot quick start (SPEC.md §6.1), pinned in `rust/tests/cli.rs`, not a hook input. |
 | F-607 | covered | `pathological:empty_object` | Missing envelope silence. |
 | F-608 | covered | `pathological:tool_input_null` | Null envelope silence. |
 | F-609 | covered | `edge:no_prompt_at_all` | Equivalent missing-params/prompt tolerance; explicit null also dispatch unit-tested. |

@@ -831,9 +831,9 @@
       "output": null
     },
     {
-      "input_fnv1a64": "cbf29ce484222325",
-      "input_len": 0,
-      "label": "pathological:empty",
+      "input_fnv1a64": "af63c74c8601c8dd",
+      "input_len": 1,
+      "label": "pathological:whitespace_only",
       "output": null
     },
     {

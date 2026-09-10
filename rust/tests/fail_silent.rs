@@ -16,8 +16,11 @@ fn run(input: &[u8]) -> (i32, Vec<u8>, Vec<u8>) {
 
 #[test]
 fn every_pathological_input_exits_zero_and_silent() {
+    // A 0-byte stdin is deliberately absent: Claude Code always writes the event JSON to
+    // a hook's stdin, so that case is the robot quick start (SPEC.md §6.1, §7), covered by
+    // rust/tests/cli.rs. Everything that IS a hook invocation stays silent.
     let cases: Vec<Vec<u8>> = vec![
-        b"".to_vec(),
+        b"\n".to_vec(), // one byte: the boundary of the quick-start branch, still the hook
         b"not json".to_vec(),
         b"{}".to_vec(),
         br#"{"tool_input": null}"#.to_vec(),
@@ -75,47 +78,10 @@ fn an_internal_panic_is_still_silent_and_zero() {
 #[test]
 fn argument_dispatch_does_not_change_the_hook_path() {
     // Every pathological payload must behave identically when the binary is invoked
-    // with no arguments, exactly as before `doctor` existed.
+    // with no arguments, exactly as before `doctor` or the robot CLI existed.
     let payload = br#"{"tool_name":"mcp__higgsfield__generate_video","tool_input":{"params":{"model":"seedance_2_0","prompt":"shot in 4k","resolution":"720p"}}}"#;
     let (code, out, err) = run(payload);
     assert_eq!(code, 0);
     assert!(err.is_empty());
     assert!(!out.is_empty(), "the hook path must still emit findings");
-}
-
-#[test]
-fn an_unrecognised_argument_still_behaves_as_the_hook() {
-    // PreToolUse invokes the command with no arguments. If anything ever passes a stray
-    // argument, the safe behaviour is the hook path, never a diagnostic dump on stdout
-    // that Claude Code would read as `additionalContext`.
-    let exe = env!("CARGO_BIN_EXE_higgsfield-lint");
-    let mut child = std::process::Command::new(exe)
-        .arg("--nonsense")
-        .stdin(std::process::Stdio::piped())
-        .stdout(std::process::Stdio::piped())
-        .stderr(std::process::Stdio::piped())
-        .spawn()
-        .expect("spawn");
-    use std::io::Write;
-    child
-        .stdin
-        .as_mut()
-        .unwrap()
-        .write_all(br#"{"tool_input": {"params": {"prompt": "x"}}}"#)
-        .ok();
-    let out = child.wait_with_output().expect("wait");
-    assert_eq!(out.status.code().unwrap_or(-1), 0);
-    assert!(out.stderr.is_empty());
-    // The payload above produces no findings, so a correctly-dispatched hook path
-    // emits nothing on stdout. A non-empty stdout here means the argument was
-    // wrongly routed to `doctor` (or some other diagnostic path) instead of falling
-    // through to the hook - exactly the `additionalContext` leak this test exists
-    // to catch. Without this assertion the test cannot tell "fell through to the
-    // hook and found nothing" apart from "wrongly dispatched and dumped a report",
-    // since doctor's stub also exits 0 with empty stderr.
-    assert!(
-        out.stdout.is_empty(),
-        "unrecognised argument must not produce diagnostic output on stdout, got: {:?}",
-        String::from_utf8_lossy(&out.stdout)
-    );
 }

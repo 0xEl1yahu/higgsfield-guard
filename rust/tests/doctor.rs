@@ -1,7 +1,7 @@
-// Task 2's seven real checks read the filesystem (exe location, data file,
+// The seven real checks read the filesystem (exe location, data file,
 // source mtimes, settings.json, matcher regex) via `current_exe()`-relative
 // paths, exactly like the hook itself - so they cannot be pointed at a temp
-// directory from here the way `models::locate_data_file` can't either. The
+// directory from here. The
 // per-check pass/fail discrimination (temp dirs standing in for the repo)
 // therefore lives as unit tests inside `rust/src/doctor.rs`, next to the
 // functions they exercise. This file is limited to process-level assertions
@@ -28,7 +28,9 @@ use std::process::{Command, Stdio};
 fn run_doctor_with_env(vars: &[(&str, &str)]) -> (i32, String, String) {
     let exe = env!("CARGO_BIN_EXE_higgsfield-lint");
     let mut cmd = Command::new(exe);
-    cmd.arg("doctor")
+    // These assertions read the classic text report; with stdout piped the CLI would
+    // otherwise auto-select JSON (SPEC.md §6.1). rust/tests/cli.rs covers the JSON shape.
+    cmd.args(["doctor", "--text"])
         .stdin(Stdio::null())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped());

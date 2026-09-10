@@ -4,6 +4,28 @@ use serde_json::Value;
 pub struct Finding {
     pub check_id: String,
     pub message: String,
+    /// Batch entry this finding belongs to (the rendered `index`, or the positional
+    /// fallback), `None` for a single call. `render` turns it into the
+    /// `request <index>: ` prefix; the CLI emits it as its own field.
+    pub request: Option<String>,
+}
+
+/// The check ids `lint_params` runs for a tool kind, in the order it runs them.
+/// Kept next to `lint_params` so the two cannot drift; a unit test pins them together.
+pub fn checks_for(kind: ToolKind) -> &'static [&'static str] {
+    match kind {
+        ToolKind::Image => &["resolution_claim", "prompt_negative_conflict"],
+        ToolKind::Video => &[
+            "resolution_claim",
+            "prompt_negative_conflict",
+            "duration_claim",
+        ],
+        // An unknown tool never reaches the CLI, but the hook lints it: the resolution
+        // check needs image/video context and stays silent, the local conflict check
+        // still runs (SPEC.md §5.4), and duration is video-only.
+        ToolKind::Unknown => &["prompt_negative_conflict"],
+        ToolKind::Audio => &[],
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -152,7 +174,8 @@ pub fn lint(tool_input: &Value, kind: ToolKind) -> Vec<Finding> {
                 for finding in lint_params(&params, kind) {
                     findings.push(Finding {
                         check_id: finding.check_id,
-                        message: format!("request {}: {}", index, finding.message),
+                        message: finding.message,
+                        request: Some(index.clone()),
                     });
                 }
             }
@@ -175,11 +198,10 @@ pub fn render(findings: &[Finding]) -> String {
         findings.len(),
         plural
     )];
-    lines.extend(
-        findings
-            .iter()
-            .map(|f| format!("- {}: {}", f.check_id, f.message)),
-    );
+    lines.extend(findings.iter().map(|f| match &f.request {
+        Some(index) => format!("- {}: request {}: {}", f.check_id, index, f.message),
+        None => format!("- {}: {}", f.check_id, f.message),
+    }));
     lines.join("\n")
 }
 
@@ -235,10 +257,11 @@ mod tests {
         });
         let findings = lint(&tool_input, ToolKind::Video);
         assert_eq!(findings.len(), 1);
+        assert_eq!(findings[0].request.as_deref(), Some("20"));
         assert!(
-            findings[0].message.starts_with("request 20: "),
+            render(&findings).contains("- resolution_claim: request 20: "),
             "got: {}",
-            findings[0].message
+            render(&findings)
         );
     }
 
@@ -253,11 +276,7 @@ mod tests {
         });
         let findings = lint(&tool_input, ToolKind::Video);
         assert_eq!(findings.len(), 1);
-        assert!(
-            findings[0].message.starts_with("request 1: "),
-            "got: {}",
-            findings[0].message
-        );
+        assert_eq!(findings[0].request.as_deref(), Some("1"));
     }
 
     #[test]
@@ -269,7 +288,7 @@ mod tests {
         });
         let findings = lint(&tool_input, ToolKind::Video);
         assert_eq!(findings.len(), 1);
-        assert!(findings[0].message.starts_with("request 0: "));
+        assert_eq!(findings[0].request.as_deref(), Some("0"));
     }
 
     #[test]
@@ -284,11 +303,7 @@ mod tests {
         });
         let findings = lint(&tool_input, ToolKind::Video);
         assert_eq!(findings.len(), 1);
-        assert!(
-            findings[0].message.starts_with("request 3: "),
-            "got: {}",
-            findings[0].message
-        );
+        assert_eq!(findings[0].request.as_deref(), Some("3"));
     }
 
     #[test]
@@ -299,7 +314,7 @@ mod tests {
         });
         let findings = lint(&tool_input, ToolKind::Video);
         assert_eq!(findings.len(), 1);
-        assert!(!findings[0].message.starts_with("request "));
+        assert!(findings[0].request.is_none());
     }
 
     #[test]
@@ -361,6 +376,52 @@ mod tests {
     }
 
     #[test]
+    fn checks_for_matches_what_lint_params_actually_runs() {
+        // One payload per tool kind that trips every check applicable to it; the ids must
+        // come out equal to checks_for, in checks_for order.
+        let video = json!({
+            "params": {
+                "model": "seedance_2_0",
+                "resolution": "720p",
+                "duration": 5,
+                "prompt": "shot in 4k, handheld camera, Total: 15s",
+                "negative_prompt": "handheld"
+            }
+        });
+        let image = json!({
+            "params": {
+                "model": "soul_2",
+                "quality": "1.5k",
+                "prompt": "shot in 4k, handheld camera, Total: 15s",
+                "negative_prompt": "handheld"
+            }
+        });
+        for (kind, tool_input) in [
+            (ToolKind::Video, &video),
+            (ToolKind::Image, &image),
+            (ToolKind::Audio, &video),
+            (ToolKind::Unknown, &video),
+        ] {
+            let findings = lint(tool_input, kind);
+            let ids: Vec<&str> = findings.iter().map(|f| f.check_id.as_str()).collect();
+            assert_eq!(ids, checks_for(kind), "{kind:?}");
+        }
+    }
+
+    #[test]
+    fn render_prefixes_batch_findings_with_their_request_index() {
+        let findings = vec![Finding {
+            check_id: "resolution_claim".to_string(),
+            message: "some message".to_string(),
+            request: Some("20".to_string()),
+        }];
+        assert_eq!(
+            render(&findings),
+            "higgsfield-lint: 1 finding\n- resolution_claim: request 20: some message"
+        );
+    }
+
+    #[test]
     fn non_dict_tool_input_is_silent() {
         assert!(lint(&json!("not an object"), ToolKind::Video).is_empty());
         assert!(lint(&json!(null), ToolKind::Video).is_empty());
@@ -373,6 +434,7 @@ mod tests {
         let findings = vec![Finding {
             check_id: "resolution_claim".to_string(),
             message: "some message".to_string(),
+            request: None,
         }];
         let rendered = render(&findings);
         let mut lines = rendered.lines();
@@ -387,10 +449,12 @@ mod tests {
             Finding {
                 check_id: "resolution_claim".to_string(),
                 message: "first".to_string(),
+                request: None,
             },
             Finding {
                 check_id: "negation_placement".to_string(),
                 message: "second".to_string(),
+                request: None,
             },
         ];
         let rendered = render(&findings);

@@ -1,13 +1,21 @@
-use std::io::{Read, Write};
+use std::io::{IsTerminal, Read, Write};
 use std::panic;
 
 mod checks;
+mod cli;
 mod doctor;
 mod lint;
 
 fn run() -> Option<String> {
     let mut buf = Vec::new();
     std::io::stdin().read_to_end(&mut buf).ok()?;
+    if buf.is_empty() {
+        // Nothing at all on a non-terminal stdin. Claude Code always writes the event
+        // JSON to a hook's stdin, so this is never a hook invocation - it is what the bare
+        // command looks like from an agent's shell. Answer with the quick start (SPEC.md
+        // §6.1, §7) and keep the hook guarantees: exit 0, empty stderr.
+        return Some(cli::quick_start_document(cli::Format::detect()));
+    }
     let text = String::from_utf8(buf).ok()?; // invalid UTF-8 -> silence
     let payload: serde_json::Value = serde_json::from_str(&text).ok()?;
     let tool_input = payload.get("tool_input")?;
@@ -47,15 +55,18 @@ fn run() -> Option<String> {
 
 fn main() {
     // Dispatch BEFORE stdin is ever touched. `PreToolUse` always invokes this
-    // binary with no arguments, so that path is `None` here and falls straight
-    // through to the unchanged hook logic below. `doctor` is the one deliberate,
-    // human-invoked exception permitted to exit non-zero / write to stderr; any
-    // other argument (including unrecognised ones) must NOT be treated as a
-    // request for diagnostics - it falls through to the hook path too, so a
-    // stray argument can never make this binary dump output that Claude Code
-    // would read as `additionalContext`.
-    if std::env::args().nth(1).as_deref() == Some("doctor") {
-        std::process::exit(doctor::run());
+    // binary with no arguments and the event JSON on stdin, so that path skips
+    // this block and falls straight through to the unchanged hook logic below.
+    // Any argument at all - `doctor`, `lint`, `--json`, or a typo - is the robot
+    // CLI (SPEC.md §6.1), which is allowed to exit non-zero and, in text mode,
+    // write to stderr. A stray argument in `.claude/settings.json` would exit 2
+    // and block the call; `doctor`'s matcher-present check fails on exactly
+    // that misconfiguration, which is the guard against it. With no arguments
+    // and a terminal on stdin nobody is piping an event, so that is a human
+    // asking for help, not a hook.
+    let args: Vec<String> = std::env::args().skip(1).collect();
+    if !args.is_empty() || std::io::stdin().is_terminal() {
+        std::process::exit(cli::run(args));
     }
 
     // SPEC 7: the hook must be invisible when it fails. A default panic hook would
