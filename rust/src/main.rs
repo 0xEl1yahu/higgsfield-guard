@@ -1,9 +1,7 @@
 use std::io::{Read, Write};
 use std::panic;
 
-mod checks;
-mod lint;
-mod models;
+use higgsfield_lint::lint;
 
 fn run() -> Option<String> {
     let mut buf = Vec::new();

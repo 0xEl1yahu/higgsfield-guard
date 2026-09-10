@@ -41,7 +41,9 @@ jobs:
       - name: "differential parity against the Python oracle"
         run: cargo test --release --test parity
       - name: "unit tests"
-        run: cargo test --release --bin higgsfield-lint
+        # --lib, not --bin: the unit tests live in the library target since the
+        # findings-log task split the crate. --bin would silently run zero tests.
+        run: cargo test --release --lib
       - name: "python oracle tests"
         run: pytest tests/ -q
 
