@@ -24,7 +24,7 @@ silence and indiscriminate warnings both fail.
 | Job | Failure modes covered |
 |---|---|
 | Format, Clippy and workflow lint | Formatting drift, compiler warnings, invalid workflow expressions/syntax |
-| Contracts (Ubuntu 24.04 and macOS 14) | Full release suite, 538 golden inputs, independent semantic classes, exact envelopes, research mapping, doctor, debug panic injection and hostile process scenarios |
+| Contracts (Ubuntu 24.04 and macOS 14) | Full release suite, 538 golden inputs, independent semantic classes, exact envelopes, research mapping, doctor, robot-mode CLI contract, debug panic injection and hostile process scenarios |
 | Tests detect deliberately broken lint | Nine isolated production mutations must fail their specific named tests; compile errors, no selected tests, and command timeouts do not count |
 | CI required | Fails unless every prerequisite succeeds, including all OS matrix legs; skipped/cancelled jobs cannot become green |
 
@@ -61,6 +61,16 @@ child after 20 seconds. This is a generous hang guard, not a performance SLO. Ex
 golden/doctor processes also have the enclosing CI job timeout. Wall-clock percentiles
 remain measured evidence, not fragile cross-runner assertions.
 
+## Robot-mode CLI contract
+
+`rust/tests/cli.rs` spawns the release binary with piped stdio, an agent's exact
+environment, and pins SPEC.md §6.1: every command in both output formats, every exit
+class, structured errors, the three `lint` document shapes, the 0-byte quick start and
+the one-byte boundary that keeps a lone newline on the silent hook path. Its debug run
+also proves a CLI panic becomes exit 4 with an `internal` error. Three doctor
+assertions need the release binary path that `.claude/settings.json` names and are
+compiled out of debug builds, matching `ci/verify.sh`.
+
 ## Mutation evidence and corpus integrity
 
 Nine regressions: always-silent output, removed audio scope, inverted duration comparison,
@@ -92,7 +102,7 @@ not a claim of exhaustive fuzzing, complete mutation coverage, or schema validat
 ```sh
 cargo fmt --all --check
 cargo clippy --locked --all-targets -- -D warnings
-bash ci/verify.sh
+bash ci/verify.sh   # ends with `doctor --text`: a piped stdout would otherwise select JSON
 python3 ci/mutation_checks.py --output target/ci-mutations
 ```
 

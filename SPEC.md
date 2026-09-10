@@ -211,7 +211,7 @@ without the homograph. This is the same standard, applied after the fact, that c
 `pan` in the original recalibration.
 
 The overlap finding is a local textual consistency convention, not proof that a model
-honors negative_prompt: none of the79 MCP model details publishes that field.
+honors negative_prompt: none of the 79 MCP model details publishes that field.
 Inline exclusions remain valid; do not advise moving them into an unsupported field.
 
 ### 5.2a Shared text normalization
@@ -332,17 +332,78 @@ This example is the reconciled historical Kling fixture (no output-size assertio
 
 Each finding is one line: `<check_id>: <observed contradiction>. <advice>.`
 
+### 6.1 Command-line interface (robot mode)
+
+Added 2026-09-10; design in
+[the robot-mode spec](docs/superpowers/specs/2026-09-10-robot-mode-cli-design.md).
+The same binary is a CLI for humans and AI coding agents. Dispatch is decided before
+stdin is touched:
+
+| argv | stdin | path |
+|---|---|---|
+| any argument, recognised or not | not consulted | CLI |
+| none | a terminal | quick start, text, exit 0 |
+| none | not a terminal, 0 bytes | quick start (JSON when stdout is piped), exit 0 |
+| none | not a terminal, 1 byte or more | hook (§6, §7), unchanged |
+
+Claude Code always writes the event JSON to a hook's stdin, so the 0-byte row is never
+a hook invocation. Any argument is the CLI: a stray argument in `.claude/settings.json`
+would exit 2 and block every call, which is why doctor's matcher-present check fails on
+a command that carries one.
+
+Commands: `lint [FILE|-] --tool image|video|audio`, `doctor`, `checks`, `version`,
+`help [COMMAND]`; aliases `-h`/`--help`, `-V`/`--version`. Output is JSON when stdout
+is not a terminal or `--json` is given, text when stdout is a terminal or `--text` is
+given; both flags together is a usage error. No ANSI, ever. JSON mode writes one
+newline-terminated document per invocation to stdout and nothing to stderr, errors
+included; text mode writes errors to stderr. JSON key order is not significant.
+
+Exit codes: 0 ok (clean lint, every doctor check passed, informational commands);
+1 negative result (lint findings, doctor FAIL); 2 usage; 3 input; 4 internal (a caught
+panic). The hook path stays exit 0 unconditionally.
+
+Every document carries `ok` and `exit`. Errors are
+`{"ok":false,"exit":N,"error":{"code","message","suggestions":[...]}}`. Codes by exit
+class: `unknown_command`, `unknown_flag`, `unexpected_argument`, `conflicting_flags`,
+`missing_value`, `missing_input`, `missing_tool`, `unknown_tool` (2); `file_not_found`,
+`read_failed`, `invalid_utf8`, `invalid_json`, `unsupported_shape` (a non-object document,
+or a `tool_input` that is not an object) (3); `internal` (4).
+
+`lint` reads FILE, `-`, or stdin (a terminal on stdin with no FILE is `missing_input`,
+not a hang). `--tool T` (or `--tool=T`) takes `image`, `video`, `audio` or a tool name in
+either style §3's matcher accepts, and overrides a payload `tool_name`. Three document shapes are
+accepted, tested in this order and echoed back as `shape`: `event` (has `tool_input`;
+tool from `--tool`, else `tool_name`), `tool_input` (has `params` or `requests`; needs
+`--tool`), `params` (any other object; needs `--tool`). Output is
+`{ok, exit, tool, shape, ran, findings:[{check, message, request?}], note?}`: `ran`
+lists the checks that apply to the tool kind, in §6 order, so an empty `findings` reads
+as "these checks passed" (audio runs none and says so in `note`); `message` is the §6
+finding line without its `- <check_id>: ` prefix; `request` is the batch index the hook
+would prefix. Text mode prints the hook's rendering, including the
+`higgsfield-lint: 0 findings` header when clean, where the hook itself prints nothing.
+
+`doctor` text output is unchanged; its JSON is `{ok, exit, checks:[{name, status:
+pass|warn|fail, detail}], summary:{pass, warn, fail}, note}`. `checks` describes each
+live check (`id, tools, fires, fix, silent_when`) plus the conflict phrase list and the
+duration model list. `help` alone is the quick start, held to about 100 tokens by test;
+`help COMMAND` renders usage, arguments, flags, input, output, exit codes and examples
+from one table in both formats. `rust/tests/cli.rs` pins all of this at process level.
+
 ## 7. Failure behaviour
 
 Normal hook execution exits 0 and writes no stderr, including malformed JSON, invalid
 UTF-8, missing/unusable fields and caught Rust panics. No finding means no stdout.
 Missing one field can suppress its rule without suppressing other valid rules.
+One deliberate exception since 2026-09-10: with no arguments and 0 bytes on a
+non-terminal stdin, which Claude Code never produces, the binary prints the §6.1 quick
+start and still exits 0 with empty stderr. Any non-empty stdin, a lone newline included,
+stays on the silent path.
 
 The hook makes no network/MCP calls, application data-file reads, or filesystem writes.
 The two direct crate dependencies, serde_json and regex, are compiled into the executable;
 no runtime interpreter or dependency fetching is required. Platform system libraries
-may still be dynamically linked. Doctor is a separate, explicit diagnostic path that
-reads local files, prints checks and can exit nonzero. OS termination, out-of-memory
+may still be dynamically linked. The CLI (§6.1), doctor included, is a separate explicit
+path that reads local files, prints reports and can exit nonzero. OS termination, out-of-memory
 abort, broken output pipes and a missing executable cannot be turned into a universal
 successful-execution guarantee by catch_unwind.
 
@@ -373,14 +434,17 @@ not a claim that the server schema accepts them. A nonempty requests list preven
 top-level fallback; an empty list may fall back to params within tool_input.
 
 Run `cargo test --release`, plus `cargo test --test fail_silent` for genuine debug panic
-injection. Release contains no magic-field panic behavior. Unit, doctor and process
+injection. `rust/tests/cli.rs` pins the §6.1 CLI contract at process level, in both
+output formats and every exit class; its debug run also proves a CLI panic becomes
+exit 4. Release contains no magic-field panic behavior. Unit, doctor and process
 tests verify exact messages, scopes, source-aware carriers, normalization, duration
 grammar, malformed inputs, fixture loading and build freshness. A deterministic
 comparison-count guard tests production quote lookup, separately from latency.
 
 The golden corpus currently contains 538 distinct inputs with input lengths and
 FNV-1a hashes, compared as parsed output JSON plus exact exit/status/stderr requirements.
-The 347 historical inputs retain their original bytes; 87 deliberately revised outputs
+346 of the 347 historical inputs retain their original bytes (`pathological:empty` became
+`pathological:whitespace_only` on 2026-09-10, §6.1 and §7); 87 deliberately revised outputs
 lose only unsupported resolution findings. The 191 new semantic cases have independently
 authored expected ids and messages, mandatory-negative/positive/robustness/limitation
 classes, and selected repeated-output checks. See the
@@ -397,6 +461,7 @@ SPEC.md                              this document
 README.md                            setup/build steps
 Cargo.toml, Cargo.lock               Rust package manifest (serde_json, regex)
 rust/src/*.rs                        the hook, compiled to a Rust binary (§12)
+rust/src/cli.rs                      robot-mode CLI: lint, doctor, checks, version, help (§6.1)
 target/release/higgsfield-lint       the built hook; PreToolUse runs this directly (§12.1)
 data/.gitkeep                        placeholder; negative_prompt_models.json retired here (§5.3)
 tests/fixtures/*.json                real captured tool inputs
@@ -404,9 +469,11 @@ rust/tests/parity.rs                 golden-output regression corpus, the port's
 rust/tests/golden/expectations.json  recorded expectations rust/tests/parity.rs checks against (§9)
 rust/tests/golden/README.md          how to add/change a golden entry (§9)
 rust/tests/fail_silent.rs            pathological-input and panic-silence tests
+rust/tests/cli.rs                    robot-mode CLI contract tests (§6.1)
 docs/archive/                        the rejected design, its pseudocode, and the retired Python port
 docs/archive/verified-port/          archived Python port + pytest suite - historical record (§12.2)
-docs/superpowers/plans/              implementation plan
+docs/superpowers/plans/              implementation plans
+docs/superpowers/specs/              design specs (robot-mode CLI)
 ```
 
 ## 11. Non-goals

@@ -531,12 +531,13 @@ pub fn check_resolution_claim(params: &Value, kind: ToolKind) -> Option<Finding>
     Some(Finding {
         check_id: "resolution_claim".into(),
         message: format!("prompt says {spelling:?} but {body}"),
+        request: None,
     })
 }
 
 // Output-duration declarations only. Source-processing durations are excluded.
 // These ids are tested against the same dated MCP catalog as resolution_options.
-const DURATION_MODELS: &[&str] = &[
+pub const DURATION_MODELS: &[&str] = &[
     "cinematic_studio_3_0",
     "cinematic_studio_video",
     "cinematic_studio_video_v2",
@@ -665,6 +666,7 @@ pub fn check_duration_claim(params: &Value) -> Option<Finding> {
             "prompt describes {}s of action but the supplied duration is {}s. Check the model's supported duration or retime the beats.",
             seconds_display(claimed), seconds_display(supplied)
         ),
+        request: None,
     })
 }
 
@@ -695,7 +697,7 @@ pub fn check_duration_claim(params: &Value) -> Option<Finding> {
 // unambiguity criterion; where the two conflict, the criterion governs, per SPEC.md §5.2's
 // recorded ruling. `letterbox bars` and `watermark overlay` take their place, carrying the
 // same directive sense without the homograph.
-const CONFLICT_PHRASES: &[&str] = &[
+pub const CONFLICT_PHRASES: &[&str] = &[
     "slow motion",
     "slow-mo",
     "motion blur",
@@ -823,6 +825,7 @@ pub fn check_prompt_negative_conflict(params: &Value) -> Option<Finding> {
             "{} {} in both prompt and negative_prompt. Keep each term in one.",
             listed, verb
         ),
+        request: None,
     })
 }
 

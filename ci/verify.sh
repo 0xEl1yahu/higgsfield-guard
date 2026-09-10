@@ -14,5 +14,6 @@ cargo build --locked --release
 cargo test --locked --release --all-targets -- --nocapture
 # Full debug doctor expects a release executable path. Run only the relevant debug
 # targets: unit tests, real panic containment, and process adversarial scenarios.
-cargo test --locked --bin higgsfield-lint --test fail_silent --test adversarial -- --nocapture
-./target/release/higgsfield-lint doctor
+cargo test --locked --bin higgsfield-lint --test fail_silent --test adversarial --test cli -- --nocapture
+# stdout is a pipe under CI's tee, which would select JSON (SPEC.md §6.1); keep the log readable.
+./target/release/higgsfield-lint doctor --text

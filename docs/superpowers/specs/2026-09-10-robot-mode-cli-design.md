@@ -169,7 +169,7 @@ and examples from a single data table, so text and JSON cannot drift apart.
 | `rust/src/main.rs` | dispatch: any argv → `cli`; empty argv + TTY stdin → quick start; else hook. Hook body untouched; the 0-byte stdin branch is three lines inside `run()` so the mutation anchors survive |
 | `rust/src/lint.rs` | `Finding.request: Option<String>`; `render` adds the `request N: ` prefix; `checks_for(kind)` |
 | `rust/src/checks.rs` | `CONFLICT_PHRASES` and `DURATION_MODELS` become `pub`; `Finding` literals gain `request: None` |
-| `rust/src/doctor.rs` | `run(Format)`; JSON report; a name/detail split with a test pinning every check name |
+| `rust/src/doctor.rs` | `run()` removed; `collect_checks`, `report_text`, `report_json`, `exit_code` become public and the CLI composes them; a name/detail split with a test pinning every check name |
 | `rust/tests/cli.rs` (new) | process-level contract: every command, both formats, every exit class, empty-stdin quick start, stray-argument behaviour |
 | `rust/tests/fail_silent.rs` | the 0-byte case and the stray-argument test move to `cli.rs` with their new expectations; every other pathological input keeps its assertion |
 | `rust/tests/doctor.rs` | text assertions pass `--text`; one JSON assertion added |
