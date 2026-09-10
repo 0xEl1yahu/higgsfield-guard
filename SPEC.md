@@ -133,7 +133,7 @@ output.
 {
   "hookSpecificOutput": {
     "hookEventName": "PreToolUse",
-    "additionalContext": "higgsfield-lint: 2 findings\n- resolution_claim: prompt says \"4K\" but width 1376 x height 768 gives a 768px short side. Set resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep it in one."
+    "additionalContext": "higgsfield-lint: 2 findings\n- resolution_claim: prompt says \"4K\" but width 1376 x height 768 gives a 768px short side. Raise resolution, or drop the claim from the prompt.\n- prompt_negative_conflict: \"slow motion\" appears in both prompt and negative_prompt. Keep each term in one."
   }
 }
 ```
@@ -147,7 +147,13 @@ invisible.
 
 - Any exception, malformed stdin, or missing field exits 0 with no output.
 - The hook never writes to stderr on the success path, since exit 2 plus stderr would block.
-- No network calls, no MCP access, no filesystem writes beyond reading its own data file.
+- No network calls and no MCP access. The hook reads its own data file and appends one
+  metadata record per call to `data/findings.jsonl` (§9.1). That append is best-effort
+  and load-bearing for nothing: every failure mode - unlocatable repo root, unwritable
+  path, a record that would exceed the atomic-append size - is swallowed, and the lint's
+  stdout is byte-identical whether the append succeeded or not. The invariant this bullet
+  protects is not "no writes", it is "the hook's own failure is invisible"; a write that
+  cannot fail visibly does not threaten it.
 - The shipped hook is a statically-linked Rust binary (`serde_json` and `regex` are the
   only two dependencies; see §12) rather than a standard-library-only script. The
   dependency-import failure this line originally guarded against doesn't apply the same
@@ -296,6 +302,24 @@ fail-silent behaviour (§7) is what runs on any internal error, not the Python.
 
 Deleting it is a separate, later decision, gated on the Rust binary having run against
 real production traffic for a period the human decides. It is not part of this plan.
+
+**What "read-only" forbids, precisely.** The oracle is never edited to make a parity
+comparison pass. A divergence discovered without a preceding spec change is a port bug,
+and the Rust is what changes - always.
+
+It is not a ban on the lint ever changing behaviour again. A deliberate change to a check
+follows this order, and only this order:
+
+1. Amend the relevant §5 subsection first, so the intended behaviour exists in writing
+   before either implementation moves.
+2. Change `src/higgsfield_lint.py` to match the amended spec.
+3. Change `rust/src/checks.rs` to match.
+4. Run `cargo test --release --test parity`. It must pass.
+
+If step 4 fails, step 3 is wrong. The oracle is still never the thing that gets edited to
+make step 4 green - it is edited only in step 2, from the spec, before the Rust moves at
+all. A commit that touches the oracle and the Rust without touching §5 is the exact
+failure this rule exists to prevent.
 
 ### 12.3 Known divergence: compound `index` values
 
