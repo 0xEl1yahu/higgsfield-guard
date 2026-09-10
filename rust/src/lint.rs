@@ -23,7 +23,7 @@ pub fn load_models() -> HashSet<String> {
 /// object; anything else (a string that fails to parse, or that parses to a non-object,
 /// or a `raw` that is neither an object nor a string - e.g. missing, null, a list, a bool)
 /// falls through to `None`/silence.
-fn resolve_params(raw: Option<&Value>) -> Option<Value> {
+pub fn resolve_params(raw: Option<&Value>) -> Option<Value> {
     match raw {
         Some(Value::Object(_)) => raw.cloned(),
         Some(Value::String(s)) => {

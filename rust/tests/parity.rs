@@ -56,7 +56,11 @@ fn run(mut cmd: Command, input: &[u8]) -> Outcome {
 
 fn run_rust(input: &[u8]) -> Outcome {
     let exe = env!("CARGO_BIN_EXE_higgsfield-lint");
-    run(Command::new(exe), input)
+    let mut cmd = Command::new(exe);
+    // The harness is not usage. Without this, ~336 synthetic calls per test run land in
+    // data/findings.jsonl and every rate the review tool reports becomes fiction.
+    cmd.env("HIGGSFIELD_LINT_NO_LOG", "1");
+    run(cmd, input)
 }
 
 fn run_python(input: &[u8]) -> Outcome {

@@ -1,7 +1,7 @@
 use std::io::{Read, Write};
 use std::panic;
 
-use higgsfield_lint::lint;
+use higgsfield_lint::{lint, log};
 
 fn run() -> Option<String> {
     let mut buf = Vec::new();
@@ -31,6 +31,9 @@ fn run() -> Option<String> {
     }
     let models = lint::load_models();
     let findings = lint::lint(tool_input, &models);
+    // Logged before the early return, so clean calls are recorded too - they are the
+    // denominator for every rate in `higgsfield-lint-review`.
+    log::record(&payload, tool_input, &findings);
     if findings.is_empty() {
         return None;
     }

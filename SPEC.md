@@ -201,6 +201,29 @@ binary is verified two ways:
   fails the whole test, and the fix is always to change the Rust, never the oracle.
   Run it with `cargo test --release --test parity`.
 
+### 9.1 Findings log
+
+The hook appends one JSON object per call to `data/findings.jsonl` (gitignored). Metadata
+only - no prompt text ever reaches this file:
+
+    {"ts":1757462400,"tool":"mcp__higgsfield__generate_video","models":["kling2_6"],
+     "neg":true,"batch":0,"fired":["resolution_claim","negation_placement"]}
+
+Clean calls are logged with `"fired":[]`. That is deliberate: a log of only the firings
+has no denominator, and every question worth asking of this file is a rate.
+
+The append is best-effort and silent on every failure (7 as amended). It is a single
+`write_all` of one line under 4096 bytes to an `O_APPEND` handle, so concurrent hook
+processes cannot interleave.
+
+Two environment variables control it, both for testing only. `HIGGSFIELD_LINT_NO_LOG`
+suppresses the append entirely; both test harnesses set it, because ~320 synthetic parity
+calls per run would otherwise be indistinguishable from real usage. `HIGGSFIELD_LINT_LOG`
+redirects the append to a given path, so a test can own a private file rather than racing
+other tests over the real one.
+
+`higgsfield-lint-review` (9.2) is the only reader.
+
 ## 10. Repository layout
 
 ```

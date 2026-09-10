@@ -7,4 +7,5 @@
 
 pub mod checks;
 pub mod lint;
+pub mod log;
 pub mod models;

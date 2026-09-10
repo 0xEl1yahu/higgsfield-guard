@@ -7,3 +7,6 @@ __pycache__/
 
 # Rust build artifacts
 target/
+
+# Findings log - local evidence, not source. See SPEC 9.1.
+data/findings.jsonl

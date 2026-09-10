@@ -4,28 +4,27 @@ use std::collections::HashSet;
 use std::fs;
 use std::path::PathBuf;
 
-/// Locate `data/negative_prompt_models.json` at RUNTIME relative to the running
-/// executable, walking up through ancestor directories until one contains it (or the
-/// filesystem root is reached).
+/// Locate the repository root at RUNTIME by walking up from the running executable until
+/// a directory containing `data/negative_prompt_models.json` is found.
 ///
-/// Python's oracle resolves its `DATA_FILE` via `Path(__file__).resolve().parent.parent /
-/// "data" / ...` - relative to the *script's own location on disk*, evaluated every time
-/// it runs, so it keeps working if the whole repo is moved. Baking the path in at Rust
-/// *compile* time (e.g. via `env!("CARGO_MANIFEST_DIR")`) would defeat that: the binary
-/// would keep pointing at the build machine's original path even after the repo moves,
-/// which is exactly the portability the port is supposed to deliver. Resolving via
-/// `current_exe()` at runtime instead is the equivalent: the binary is expected to live
-/// under `<repo>/target/{debug,release}/higgsfield-lint` (or one level deeper, under
-/// `target/{debug,release}/deps/`, for `cargo test` binaries), so walking upward from
-/// wherever the running executable actually is finds `<repo>/data/...` regardless of
-/// which of those it is, and regardless of where `<repo>` itself sits on disk.
-fn locate_data_file() -> Option<PathBuf> {
+/// The data file is the anchor rather than the target: callers that need a file which
+/// does not exist yet (`data/findings.jsonl` on a first run) need the directory, not the
+/// file. See the note below on why this is resolved at run time and not baked in at
+/// compile time.
+///
+/// Python's oracle resolves its `DATA_FILE` via
+/// `Path(__file__).resolve().parent.parent` - relative to the script's own location on
+/// disk, evaluated every time it runs, so it keeps working if the whole repo is moved. Baking the path in at Rust *compile* time
+/// (e.g. via `env!("CARGO_MANIFEST_DIR")`) would defeat that. The binary is expected to
+/// live under `<repo>/target/{debug,release}/higgsfield-lint` (or one level deeper under
+/// `deps/` for `cargo test` binaries), so walking upward finds `<repo>` regardless of
+/// which it is and regardless of where `<repo>` sits on disk.
+pub fn locate_repo_root() -> Option<PathBuf> {
     let exe = std::env::current_exe().ok()?;
     let mut dir = exe.parent();
     while let Some(d) = dir {
-        let candidate = d.join("data").join("negative_prompt_models.json");
-        if candidate.is_file() {
-            return Some(candidate);
+        if d.join("data").join("negative_prompt_models.json").is_file() {
+            return Some(d.to_path_buf());
         }
         dir = d.parent();
     }
@@ -37,8 +36,10 @@ fn locate_data_file() -> Option<PathBuf> {
 /// list of strings - by returning an empty set, exactly as the Python's bare
 /// `except Exception: return frozenset()` does.
 pub fn load_models() -> HashSet<String> {
-    locate_data_file()
-        .and_then(|path| fs::read_to_string(path).ok())
+    locate_repo_root()
+        .and_then(|root| {
+            fs::read_to_string(root.join("data").join("negative_prompt_models.json")).ok()
+        })
         .and_then(|contents| serde_json::from_str::<Vec<String>>(&contents).ok())
         .map(|list| list.into_iter().collect())
         .unwrap_or_default()
